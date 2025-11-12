@@ -10,7 +10,7 @@ import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut } fr
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Admin } from "@shared/schema";
+import type { Admin, Event, Product, Photo } from "@shared/schema";
 
 export default function Admin() {
   const [_, setLocation] = useLocation();
@@ -130,47 +130,19 @@ export default function Admin() {
           </TabsList>
 
           <TabsContent value="events">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление событиями</CardTitle>
-                <CardDescription>
-                  Здесь будет форма создания и редактирования забегов
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <EventsManagement />
           </TabsContent>
 
           <TabsContent value="products">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление товарами</CardTitle>
-                <CardDescription>
-                  Здесь будет форма создания и редактирования товаров
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <ProductsManagement />
           </TabsContent>
 
           <TabsContent value="photos">
-            <Card>
-              <CardHeader>
-                <CardTitle>Модерация фотографий</CardTitle>
-                <CardDescription>
-                  Здесь будет список фотографий для модерации
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <PhotosManagement />
           </TabsContent>
 
           <TabsContent value="orders">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление заказами</CardTitle>
-                <CardDescription>
-                  Здесь будет список заказов
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <OrdersManagement />
           </TabsContent>
 
           <TabsContent value="admins">
@@ -391,5 +363,131 @@ function AdminsManagement() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+function EventsManagement() {
+  const { data: events } = useQuery<Event[]>({
+    queryKey: ["/api/events"],
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Управление событиями</CardTitle>
+        <CardDescription>
+          Список всех забегов клуба
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {events && events.length > 0 ? (
+          <div className="space-y-4">
+            {events.map((event: any) => (
+              <div
+                key={event.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div>
+                  <p className="font-medium">{event.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(event.startsAt).toLocaleDateString('ru-RU')}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">Нет событий</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProductsManagement() {
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Управление товарами</CardTitle>
+        <CardDescription>
+          Каталог мерча клуба
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {products && products.length > 0 ? (
+          <div className="space-y-4">
+            {products.map((product: any) => (
+              <div
+                key={product.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div>
+                  <p className="font-medium">{product.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {product.category}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">Нет товаров</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PhotosManagement() {
+  const { data: photos } = useQuery<Photo[]>({
+    queryKey: ["/api/photos"],
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Модерация фотографий</CardTitle>
+        <CardDescription>
+          Галерея фотографий с забегов
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {photos && photos.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {photos.map((photo: any) => (
+              <div
+                key={photo.id}
+                className="border rounded-lg overflow-hidden"
+              >
+                <img src={photo.url} alt={photo.title || "Photo"} className="w-full h-48 object-cover" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">Нет фотографий</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function OrdersManagement() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Управление заказами</CardTitle>
+        <CardDescription>
+          История продаж магазина
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-muted-foreground">
+          Здесь будет список заказов
+        </p>
+      </CardContent>
+    </Card>
   );
 }

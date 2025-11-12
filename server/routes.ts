@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, hashPassword, verifyPassword } from "./auth";
-import { insertEventSchema, insertPhotoSchema, insertAdminSchema } from "@shared/schema";
+import { insertEventSchema, insertPhotoSchema, insertAdminSchema, insertProductSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import path from "path";
@@ -230,20 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Protected routes for admin/editor
-  const isAdminOrEditor: typeof isAuthenticated = async (req, res, next) => {
-    await isAuthenticated(req, res, async () => {
-      const userId = (req.user as any).claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-      next();
-    });
-  };
-
-  app.post('/api/events', isAdminOrEditor, async (req, res) => {
+  app.post('/api/events', isAuthenticated, async (req, res) => {
     try {
       const validationResult = insertEventSchema.safeParse(req.body);
       if (!validationResult.success) {
@@ -261,7 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/events/:id', isAdminOrEditor, async (req, res) => {
+  app.patch('/api/events/:id', isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const validationResult = insertEventSchema.partial().safeParse(req.body);
@@ -283,7 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/events/:id', isAdminOrEditor, async (req, res) => {
+  app.delete('/api/events/:id', isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const success = await storage.deleteEvent(id);
@@ -297,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/events/:id/gpx', isAdminOrEditor, gpxUpload.single('gpx'), async (req, res) => {
+  app.post('/api/events/:id/gpx', isAuthenticated, gpxUpload.single('gpx'), async (req, res) => {
     try {
       const { id } = req.params;
       
@@ -377,6 +364,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/products', isAuthenticated, async (req, res) => {
+    try {
+      const validationResult = insertProductSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      const product = await storage.createProduct(validationResult.data);
+      res.status(201).json(product);
+    } catch (error) {
+      console.error("Error creating product:", error);
+      res.status(500).json({ message: "Failed to create product" });
+    }
+  });
+
+  app.patch('/api/products/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validationResult = insertProductSchema.partial().safeParse(req.body);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      const product = await storage.updateProduct(id, validationResult.data);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  app.delete('/api/products/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteProduct(id);
+      if (!success) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.sendStatus(204);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
   // Photos routes
   app.get('/api/photos', async (req, res) => {
     try {
@@ -404,17 +445,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No photo file provided" });
       }
 
-      const userId = req.user.claims.sub;
+      const adminId = req.session.adminId;
       const photoUrl = `/uploads/photos/${req.file.filename}`;
       
       const photoData = {
-        userId,
+        adminId,
         eventId: req.body.eventId || null,
         title: req.body.title || null,
         description: req.body.description || null,
         url: photoUrl,
         thumbUrl: photoUrl,
-        status: 'pending' as const,
+        status: 'approved' as const,
       };
 
       const validationResult = insertPhotoSchema.safeParse(photoData);
@@ -440,7 +481,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // YooKassa Checkout routes
-  app.post('/api/checkout', isAuthenticated, async (req: any, res) => {
+  app.post('/api/checkout', async (req: any, res) => {
     try {
       if (!yooKassa) {
         return res.status(503).json({ 
@@ -448,15 +489,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const { items } = req.body;
+      const { items, email } = req.body;
       if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ message: "Items are required" });
       }
-
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
       }
 
       // Calculate total amount and prepare cart items
@@ -476,7 +515,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const variant = variants.find((v) => v.id === item.variantId);
             if (variant && variant.price !== null) {
               price = variant.price;
-              variantTitle = ` - ${variant.title}`;
+              const parts = [];
+              if (variant.size) parts.push(variant.size);
+              if (variant.color) parts.push(variant.color);
+              if (parts.length > 0) {
+                variantTitle = ` (${parts.join(', ')})`;
+              }
             }
           }
           
@@ -514,8 +558,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         description: `Заказ на сумму ${(totalAmount / 100).toFixed(2)} ₽`,
         metadata: {
-          userId: user.id,
-          userEmail: user.email || '',
+          userEmail: email,
           cartItems: JSON.stringify(cartItems),
         },
         capture: true, // Auto-capture payment
@@ -547,10 +590,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       switch (notification.event) {
         case 'payment.succeeded': {
-          const userId = payment.metadata?.userId;
+          const userEmail = payment.metadata?.userEmail;
           const cartItemsStr = payment.metadata?.cartItems;
           
-          if (userId && cartItemsStr) {
+          if (userEmail && cartItemsStr) {
             try {
               // Check if order already exists
               const existingOrder = await storage.getOrderByYookassaPaymentId(payment.id);
@@ -570,7 +613,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 if (item.variantId) {
                   const variant = await storage.getVariant(item.variantId);
                   if (variant) {
-                    name += ` - ${variant.title}`;
+                    const parts = [];
+                    if (variant.size) parts.push(variant.size);
+                    if (variant.color) parts.push(variant.color);
+                    if (parts.length > 0) {
+                      name += ` (${parts.join(', ')})`;
+                    }
                   }
                 }
 
@@ -588,13 +636,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const amountInKopecks = Math.round(parseFloat(payment.amount.value) * 100);
 
               const order = await storage.createOrder({
-                userId,
                 yookassaPaymentId: payment.id,
                 status: 'paid',
                 items: items as any,
                 amountTotal: amountInKopecks,
                 currency: payment.amount.currency,
-                email: payment.metadata?.userEmail || '',
+                email: userEmail,
                 shippingAddress: null,
               });
               console.log('Order created:', order.id);

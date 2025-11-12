@@ -24,7 +24,7 @@ export default function EventDetail() {
   });
 
   const { data: photos = [] } = useQuery<Photo[]>({
-    queryKey: ['/api/photos', { eventId: event?.id }],
+    queryKey: [`/api/photos?eventId=${event?.id}`],
     enabled: !!event?.id,
   });
 
@@ -64,7 +64,7 @@ export default function EventDetail() {
               <img
                 src={event.coverImageUrl}
                 alt={event.title}
-                className="w-full h-full object-cover object-top grayscale"
+                className="w-full h-full object-cover object-top"
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -143,7 +143,7 @@ export default function EventDetail() {
                         <img
                           src={photo.url}
                           alt={photo.title || 'Фото события'}
-                          className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all"
+                          className="w-full h-full object-cover hover:scale-110 transition-transform"
                           data-testid={`img-photo-${photo.id}`}
                         />
                       </div>

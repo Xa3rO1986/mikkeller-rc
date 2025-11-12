@@ -1,15 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import PhotoCard from "@/components/PhotoCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import photo1 from '@assets/generated_images/Runners_celebrating_finish_969c4387.png';
-import photo2 from '@assets/generated_images/Runner_stretching_morning_f3d2063d.png';
-import photo3 from '@assets/generated_images/Runners_at_starting_line_dd1d8745.png';
-import photo4 from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
+import { useQuery } from "@tanstack/react-query";
+import type { Photo, Event } from "@shared/schema";
 
 export default function Gallery() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,14 +15,27 @@ export default function Gallery() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-  const photos = [
-    { id: "1", url: photo1, title: "Финиш забега", eventTitle: "Riverside 10K" },
-    { id: "2", url: photo2, title: "Разминка перед стартом", eventTitle: "Forest Trail 15K" },
-    { id: "3", url: photo3, title: "На старте", eventTitle: "Urban Park 5K" },
-    { id: "4", url: photo4, title: "Групповая пробежка", eventTitle: "Riverside 10K" },
-    { id: "5", url: photo1, title: "Празднование", eventTitle: "Forest Trail 15K" },
-    { id: "6", url: photo2, title: "Подготовка", eventTitle: "Urban Park 5K" },
-  ];
+  const { data: allPhotos = [], isLoading: photosLoading } = useQuery<Photo[]>({
+    queryKey: ['/api/photos?status=approved'],
+  });
+
+  const { data: events = [] } = useQuery<Event[]>({
+    queryKey: ['/api/events'],
+  });
+
+  const eventsMap = useMemo(() => {
+    return new Map(events.map(e => [e.id, e]));
+  }, [events]);
+
+  const filteredPhotos = useMemo(() => {
+    return allPhotos.filter(photo => {
+      const matchesEvent = eventFilter === "all" || photo.eventId === eventFilter;
+      const matchesSearch = !searchQuery || 
+        photo.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        photo.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesEvent && matchesSearch;
+    });
+  }, [allPhotos, eventFilter, searchQuery]);
 
   const openLightbox = (index: number) => {
     setCurrentPhotoIndex(index);
@@ -32,11 +43,17 @@ export default function Gallery() {
   };
 
   const nextPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length);
+    setCurrentPhotoIndex((prev) => (prev + 1) % filteredPhotos.length);
   };
 
   const prevPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    setCurrentPhotoIndex((prev) => (prev - 1 + filteredPhotos.length) % filteredPhotos.length);
+  };
+
+  const getEventTitle = (eventId: string | null) => {
+    if (!eventId) return 'Без события';
+    const event = eventsMap.get(eventId);
+    return event?.title || 'Событие не найдено';
   };
 
   return (
@@ -64,26 +81,49 @@ export default function Gallery() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Все события</SelectItem>
-              <SelectItem value="riverside">Riverside 10K</SelectItem>
-              <SelectItem value="forest">Forest Trail 15K</SelectItem>
-              <SelectItem value="urban">Urban Park 5K</SelectItem>
+              {events.map(event => (
+                <SelectItem key={event.id} value={event.id}>
+                  {event.title}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {photos.map((photo, index) => (
-            <div key={photo.id} className="break-inside-avoid">
-              <PhotoCard
-                {...photo}
-                onClick={() => openLightbox(index)}
-              />
-            </div>
-          ))}
-        </div>
+        {photosLoading ? (
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground">Загрузка фотографий...</p>
+          </div>
+        ) : filteredPhotos.length > 0 ? (
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            {filteredPhotos.map((photo, index) => (
+              <div key={photo.id} className="break-inside-avoid">
+                <PhotoCard
+                  id={photo.id}
+                  url={photo.url}
+                  title={photo.title || ''}
+                  eventTitle={getEventTitle(photo.eventId)}
+                  onClick={() => openLightbox(index)}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground">
+              {searchQuery || eventFilter !== "all" 
+                ? "Фотографий не найдено" 
+                : "Фотографии скоро появятся"}
+            </p>
+          </div>
+        )}
 
         <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
           <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-0">
+            <VisuallyHidden>
+              <DialogTitle>Просмотр фотографии</DialogTitle>
+              <DialogDescription>Увеличенное изображение фотографии</DialogDescription>
+            </VisuallyHidden>
             <div className="relative w-full h-[95vh] flex items-center justify-center">
               <Button
                 variant="ghost"
@@ -105,26 +145,30 @@ export default function Gallery() {
                 <ChevronLeft className="h-8 w-8" />
               </Button>
 
-              <img
-                src={photos[currentPhotoIndex].url}
-                alt={photos[currentPhotoIndex].title}
-                className="max-w-full max-h-full object-contain"
-              />
+              {filteredPhotos[currentPhotoIndex] && (
+                <>
+                  <img
+                    src={filteredPhotos[currentPhotoIndex].url}
+                    alt={filteredPhotos[currentPhotoIndex].title || 'Фото'}
+                    className="max-w-full max-h-full object-contain"
+                  />
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:bg-white/10"
-                onClick={nextPhoto}
-                data-testid="button-next-photo"
-              >
-                <ChevronRight className="h-8 w-8" />
-              </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:bg-white/10"
+                    onClick={nextPhoto}
+                    data-testid="button-next-photo"
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </Button>
 
-              <div className="absolute bottom-4 left-0 right-0 text-center text-white">
-                <p className="text-lg font-medium">{photos[currentPhotoIndex].title}</p>
-                <p className="text-sm text-white/70">{photos[currentPhotoIndex].eventTitle}</p>
-              </div>
+                  <div className="absolute bottom-4 left-0 right-0 text-center text-white">
+                    <p className="text-lg font-medium">{filteredPhotos[currentPhotoIndex].title || 'Без названия'}</p>
+                    <p className="text-sm text-white/70">{getEventTitle(filteredPhotos[currentPhotoIndex].eventId)}</p>
+                  </div>
+                </>
+              )}
             </div>
           </DialogContent>
         </Dialog>

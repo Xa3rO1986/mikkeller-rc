@@ -1,0 +1,105 @@
+# Mikkeller Running Club
+
+## Overview
+
+This is a production-ready website for the Mikkeller Running Club, a running community that combines weekly runs with social gatherings at partner bars. The application features event management, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+
+**Framework**: React 18 with TypeScript using Vite as the build tool and Wouter for client-side routing
+
+**UI Components**: shadcn/ui component library built on Radix UI primitives, providing accessible, customizable components with consistent styling
+
+**Styling**: Tailwind CSS with a custom monochrome design system defined in CSS variables. The theme uses pure black (#000000) and white (#FFFFFF) with grayscale variations for hierarchy. Typography uses Inter for body/headings and Space Grotesk for accents.
+
+**State Management**: TanStack Query (React Query) for server state management with aggressive caching (staleTime: Infinity). No global client state management library is used.
+
+**Form Handling**: react-hook-form with Zod schema validation for type-safe form validation
+
+**Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
+
+### Backend Architecture
+
+**Runtime**: Node.js with Express.js server
+
+**API Pattern**: RESTful API with endpoints under `/api/*` prefix
+
+**Authentication**: Session-based authentication using express-session with PostgreSQL session store (connect-pg-simple). Admin users have password hashing via bcrypt.
+
+**File Uploads**: Multer middleware for handling photo uploads with size limits (10MB) and file type validation. Files stored locally in `server/uploads/photos` directory.
+
+**Route Organization**: Single routes file (`server/routes.ts`) containing all API endpoints for events, photos, products, orders, and admin operations
+
+**Data Access Layer**: Storage abstraction layer (`server/storage.ts`) provides interface-based data access, separating business logic from database operations
+
+### Data Storage
+
+**Database**: PostgreSQL via Neon serverless driver
+
+**ORM**: Drizzle ORM with schema-first approach defined in `shared/schema.ts`
+
+**Schema Design**:
+- `admins`: User authentication and admin management
+- `events`: Running events with geolocation, distance, elevation data
+- `photos`: Event photography with approval workflow (pending/approved/rejected)
+- `products` & `variants`: E-commerce product catalog with size/color variations
+- `orders`: Order tracking with payment status
+- `sessions`: Express session storage
+
+**Migrations**: Drizzle Kit for schema migrations stored in `/migrations` directory
+
+### Authentication & Authorization
+
+**Session Management**: HTTP-only secure cookies with 7-day TTL, stored in PostgreSQL
+
+**Admin Protection**: Middleware (`isAuthenticated`) protects admin routes, checking session for `adminId`
+
+**Password Security**: bcrypt hashing with salt rounds of 10
+
+**Login Flow**: POST to `/api/admin/login` establishes session, `/api/admin/current` returns current admin or null
+
+### External Dependencies
+
+**Payment Processing**: YooKassa (Russian payment gateway) integration for merchandise checkout with webhook support for payment confirmation
+
+**Map Visualization**: Leaflet.js planned for displaying GPX route data on OpenStreetMap tiles
+
+**Comments System**: Disqus integration via embed script, configured with environment variable for shortname. Component dynamically loads Disqus script and handles cleanup.
+
+**Image Assets**: Static assets stored in `attached_assets/` directory, imported directly into components
+
+**Analytics**: Designed to support Plausible or Vercel Analytics via environment flag (implementation pending)
+
+### Build & Deployment
+
+**Development**: Vite dev server with HMR, custom error overlay, and Replit-specific plugins (cartographer, dev banner)
+
+**Production Build**: 
+- Frontend: Vite builds to `dist/public`
+- Backend: esbuild bundles Express server to `dist/index.js` as ESM
+- Single command deployment with `npm run build`
+
+**Environment Variables**:
+- `DATABASE_URL`: PostgreSQL connection string (required)
+- `SESSION_SECRET`: Session encryption key (required)
+- `YOOKASSA_SHOP_ID` & `YOOKASSA_SECRET_KEY`: Payment gateway credentials (optional)
+- `DISQUS_SHORTNAME`: Comments integration (optional)
+
+### File Organization
+
+**Monorepo Structure**:
+- `/client`: Frontend React application
+- `/server`: Backend Express server
+- `/shared`: Shared TypeScript types and Drizzle schema
+- `/migrations`: Database migrations
+- `/attached_assets`: Static assets and generated images
+
+**Path Aliases**: TypeScript path mapping configured for `@/*` (client), `@shared/*` (shared), and `@assets/*` (assets)
+
+**Code Sharing**: Database schema and TypeScript types are shared between client and server via `/shared` directory, ensuring type safety across the stack

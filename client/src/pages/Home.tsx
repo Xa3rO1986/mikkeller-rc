@@ -151,7 +151,7 @@ export default function Home() {
                 </div>
                 <CardContent className="p-8 flex flex-col justify-center">
                   <div className="mb-4">
-                    <div className="inline-block bg-black text-white px-4 py-2 rounded-md font-bold text-sm mb-4">
+                    <div className="inline-block bg-white text-black border border-black px-4 py-2 rounded-md font-bold text-sm mb-4">
                       {new Date(nextEvent.startsAt).getDate()} {formatRussianMonth(nextEvent.startsAt, true)} {new Date(nextEvent.startsAt).getFullYear()}
                     </div>
                   </div>

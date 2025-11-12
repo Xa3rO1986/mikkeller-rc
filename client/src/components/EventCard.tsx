@@ -50,14 +50,10 @@ export default function EventCard({ event }: EventCardProps) {
             <MapPin className="h-4 w-4" />
             <span>{event.address}</span>
           </div>
-          {(event.distanceKm || event.elevationGain) && (
+          {event.distanceKm && (
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              <span>
-                {event.distanceKm && `${event.distanceKm} км`}
-                {event.distanceKm && event.elevationGain && ' • '}
-                {event.elevationGain && `${event.elevationGain}м набор`}
-              </span>
+              <span>{event.distanceKm} км</span>
             </div>
           )}
         </div>

@@ -1,44 +1,102 @@
+import { useParams } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, TrendingUp, Download, Share2, Users } from "lucide-react";
-import PhotoCard from "@/components/PhotoCard";
+import { Calendar, MapPin, TrendingUp, Download, Share2, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
+import type { Event, Photo } from "@shared/schema";
+import { formatRussianDate } from "@/lib/date-utils";
+import { formatEventType } from "@shared/constants/eventTypes";
 import { DisqusComments } from "@/components/DisqusComments";
-
-import coverImage from '@assets/generated_images/Riverside_10k_route_cover_17dba083.png';
-import photo1 from '@assets/generated_images/Runners_celebrating_finish_969c4387.png';
-import photo2 from '@assets/generated_images/Runner_stretching_morning_f3d2063d.png';
+import NotFound from "@/pages/not-found";
 
 export default function EventDetail() {
-  const eventDate = new Date("2024-12-20T10:00:00");
+  const params = useParams<{ slug: string }>();
+  const slug = params.slug;
+
+  const { data: event, isLoading: eventLoading, error: eventError } = useQuery<Event>({
+    queryKey: ['/api/events', slug],
+    enabled: !!slug,
+  });
+
+  const { data: photos = [] } = useQuery<Photo[]>({
+    queryKey: ['/api/photos', { eventId: event?.id }],
+    enabled: !!event?.id,
+  });
+
+  if (!slug || eventError) {
+    return <NotFound />;
+  }
+
+  if (eventLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Загрузка события...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return <NotFound />;
+  }
+
+  const eventDate = new Date(event.startsAt);
+  const approvedPhotos = photos.filter(p => p.status === 'approved');
   
   return (
     <div className="min-h-screen">
       <div className="relative h-[400px] overflow-hidden">
-        <img
-          src={coverImage}
-          alt="Riverside 10K"
-          className="w-full h-full object-cover grayscale"
-        />
+        {event.coverImageUrl ? (
+          <img
+            src={event.coverImageUrl}
+            alt={event.title}
+            className="w-full h-full object-cover grayscale"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            <Calendar className="h-24 w-24 text-muted-foreground" />
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4">
-              Забег вдоль набережной
+            <div className="flex items-center gap-2 mb-4">
+              <Link href="/events">
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Все события
+                </Button>
+              </Link>
+              {event.eventType && (
+                <Badge variant="outline" className="bg-black/50 text-white border-white/30">
+                  {formatEventType(event.eventType)}
+                </Badge>
+              )}
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4" data-testid="text-event-title">
+              {event.title}
             </h1>
             <div className="flex flex-wrap gap-6 text-sm">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                <span>{eventDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>{formatRussianDate(eventDate, { includeYear: true })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                <span>Набережная, Москва</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                <span>10 км • 50м набор</span>
-              </div>
+              {event.address && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  <span>{event.address}</span>
+                </div>
+              )}
+              {event.distanceKm && (
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  <span>{event.distanceKm} км</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -48,76 +106,69 @@ export default function EventDetail() {
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <section>
-                <h2 className="text-2xl font-bold mb-4">Описание</h2>
-                <div className="prose prose-lg max-w-none text-muted-foreground">
-                  <p>
-                    Присоединяйтесь к нам на живописный забег вдоль набережной! Это идеальный маршрут для бегунов всех уровней подготовки.
-                  </p>
-                  <p>
-                    Маршрут проходит по красивой набережной с видом на реку и городской пейзаж. Покрытие — асфальт, есть несколько плавных подъёмов.
-                  </p>
-                  <p>
-                    После забега — традиционные напитки и общение в баре неподалёку!
-                  </p>
-                </div>
-              </section>
+              {event.description && (
+                <section>
+                  <h2 className="text-2xl font-bold mb-4">Описание</h2>
+                  <div 
+                    className="prose prose-lg max-w-none text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: event.description }}
+                    data-testid="text-event-description"
+                  />
+                </section>
+              )}
 
-              <section>
-                <h2 className="text-2xl font-bold mb-4">Маршрут</h2>
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="aspect-video bg-muted flex items-center justify-center">
-                      <div className="text-center text-muted-foreground">
-                        <MapPin className="h-12 w-12 mx-auto mb-2" />
-                        <p>Карта маршрута</p>
-                        <p className="text-sm">Leaflet + GPX интеграция</p>
+              {event.gpxUrl && (
+                <section>
+                  <h2 className="text-2xl font-bold mb-4">Маршрут</h2>
+                  <Card>
+                    <CardContent className="p-0">
+                      <div className="aspect-video bg-muted flex items-center justify-center">
+                        <div className="text-center text-muted-foreground">
+                          <MapPin className="h-12 w-12 mx-auto mb-2" />
+                          <p>Карта маршрута</p>
+                          <p className="text-sm">GPX: {event.gpxUrl}</p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                <div className="grid grid-cols-3 gap-4 mt-6">
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-primary mb-1">10.0</div>
-                      <div className="text-sm text-muted-foreground">км</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-primary mb-1">50</div>
-                      <div className="text-sm text-muted-foreground">м набор</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-primary mb-1">5:30</div>
-                      <div className="text-sm text-muted-foreground">мин/км</div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold mb-4">Фотогалерея</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <PhotoCard id="1" url={photo1} title="Финиш" />
-                  <PhotoCard id="2" url={photo2} title="Разминка" />
-                  <div className="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
-                    <div className="text-center">
-                      <p className="text-sm">Загрузить фото</p>
+                  {event.distanceKm && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                      <Card>
+                        <CardContent className="p-4 text-center">
+                          <div className="text-2xl font-bold mb-1">{event.distanceKm}</div>
+                          <div className="text-sm text-muted-foreground">км</div>
+                        </CardContent>
+                      </Card>
                     </div>
+                  )}
+                </section>
+              )}
+
+              {approvedPhotos.length > 0 && (
+                <section>
+                  <h2 className="text-2xl font-bold mb-4">Фотогалерея</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {approvedPhotos.map((photo) => (
+                      <div key={photo.id} className="aspect-square overflow-hidden rounded-lg">
+                        <img
+                          src={photo.url}
+                          alt={photo.title || 'Фото события'}
+                          className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all"
+                          data-testid={`img-photo-${photo.id}`}
+                        />
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </section>
+                </section>
+              )}
 
               <section>
                 <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
                 <DisqusComments
-                  shortname={import.meta.env.VITE_DISQUS_SHORTNAME}
-                  identifier="event-riverside-10k"
-                  title="Забег вдоль набережной"
+                  shortname={import.meta.env.VITE_DISQUS_SHORTNAME || 'mikkeller-club'}
+                  identifier={`event-${slug}`}
+                  title={event.title}
                   url={window.location.href}
                 />
               </section>
@@ -130,11 +181,30 @@ export default function EventDetail() {
                     <Calendar className="mr-2 h-4 w-4" />
                     Добавить в календарь
                   </Button>
-                  <Button variant="outline" className="w-full" data-testid="button-download-gpx">
-                    <Download className="mr-2 h-4 w-4" />
-                    Скачать GPX
-                  </Button>
-                  <Button variant="outline" className="w-full" data-testid="button-share">
+                  {event.gpxUrl && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      data-testid="button-download-gpx"
+                      onClick={() => window.open(event.gpxUrl!, '_blank')}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Скачать GPX
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    data-testid="button-share"
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: event.title,
+                          url: window.location.href,
+                        });
+                      }
+                    }}
+                  >
                     <Share2 className="mr-2 h-4 w-4" />
                     Поделиться
                   </Button>
@@ -147,20 +217,28 @@ export default function EventDetail() {
                   <div className="space-y-3 text-sm">
                     <div>
                       <div className="text-muted-foreground mb-1">Дата и время</div>
-                      <div className="font-medium">{eventDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="font-medium">
+                        {formatRussianDate(eventDate, { includeYear: true })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-muted-foreground mb-1">Бар</div>
-                      <div className="font-medium">Набережная, у моста</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground mb-1">Дистанция</div>
-                      <div className="font-medium">10 км</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground mb-1">Сложность</div>
-                      <Badge variant="secondary">Средняя</Badge>
-                    </div>
+                    {event.address && (
+                      <div>
+                        <div className="text-muted-foreground mb-1">Место встречи</div>
+                        <div className="font-medium">{event.address}</div>
+                      </div>
+                    )}
+                    {event.distanceKm && (
+                      <div>
+                        <div className="text-muted-foreground mb-1">Дистанция</div>
+                        <div className="font-medium">{event.distanceKm} км</div>
+                      </div>
+                    )}
+                    {event.eventType && (
+                      <div>
+                        <div className="text-muted-foreground mb-1">Тип забега</div>
+                        <Badge variant="secondary">{formatEventType(event.eventType)}</Badge>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -179,6 +257,21 @@ export default function EventDetail() {
                   </div>
                 </CardContent>
               </Card>
+
+              {event.tags.length > 0 && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold mb-4">Теги</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {event.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>

@@ -4,14 +4,20 @@ import { MapPin, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { Location, Event } from "@shared/schema";
-import { useEffect, useRef } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useRef, useState } from "react";
+
+declare global {
+  interface Window {
+    ymaps: any;
+  }
+}
 
 export default function LocationDetail() {
   const { slug } = useParams();
   const mapRef = useRef<HTMLDivElement>(null);
-  const leafletMapRef = useRef<L.Map | null>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const [isMapLoading, setIsMapLoading] = useState(true);
+  const [hasMapError, setHasMapError] = useState(false);
 
   const { data: location, isLoading: locationLoading } = useQuery<Location>({
     queryKey: ["/api/locations/by-slug", slug],
@@ -23,41 +29,97 @@ export default function LocationDetail() {
   });
 
   useEffect(() => {
-    if (!location?.latitude || !location?.longitude || !mapRef.current) {
+    if (!location?.latitude || !location?.longitude) {
       return;
     }
 
-    if (leafletMapRef.current) {
-      leafletMapRef.current.remove();
-    }
+    const loadYandexMaps = () => {
+      if (window.ymaps) {
+        initMap();
+        return;
+      }
 
-    const map = L.map(mapRef.current).setView([location.latitude, location.longitude], 15);
+      const apiKey = import.meta.env.VITE_YANDEX_MAPS_API_KEY;
+      
+      if (!apiKey) {
+        setHasMapError(true);
+        setIsMapLoading(false);
+        return;
+      }
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+      const script = document.createElement('script');
+      script.src = `https://api-maps.yandex.ru/2.1/?apikey=${apiKey}&lang=ru_RU`;
+      script.async = true;
+      
+      script.onload = () => {
+        try {
+          window.ymaps.ready(() => {
+            try {
+              initMap();
+            } catch (error) {
+              console.error('Yandex Maps error:', error);
+              setHasMapError(true);
+              setIsMapLoading(false);
+            }
+          });
+        } catch (error) {
+          console.error('Yandex Maps error:', error);
+          setHasMapError(true);
+          setIsMapLoading(false);
+        }
+      };
 
-    const customIcon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
+      script.onerror = () => {
+        setHasMapError(true);
+        setIsMapLoading(false);
+      };
 
-    L.marker([location.latitude, location.longitude], { icon: customIcon })
-      .addTo(map)
-      .bindPopup(`<strong>${location.name}</strong><br>${location.address}`)
-      .openPopup();
+      document.head.appendChild(script);
+    };
 
-    leafletMapRef.current = map;
+    const initMap = () => {
+      if (!mapRef.current || mapInstanceRef.current) return;
+
+      try {
+        const map = new window.ymaps.Map(mapRef.current, {
+          center: [location.latitude, location.longitude],
+          zoom: 15,
+          controls: ['zoomControl', 'searchControl'],
+        }, {
+          suppressMapOpenBlock: true,
+        });
+
+        mapInstanceRef.current = map;
+
+        const placemark = new window.ymaps.Placemark([location.latitude, location.longitude], {
+          balloonContent: `<strong>${location.name}</strong><br>${location.address}`,
+          hintContent: location.name,
+        }, {
+          preset: 'islands#redDotIcon',
+        });
+
+        map.geoObjects.add(placemark);
+        placemark.balloon.open();
+
+        setIsMapLoading(false);
+        setHasMapError(false);
+      } catch (error) {
+        console.error('Yandex Maps init error:', error);
+        setHasMapError(true);
+        setIsMapLoading(false);
+      }
+    };
+
+    loadYandexMaps();
 
     return () => {
-      if (leafletMapRef.current) {
-        leafletMapRef.current.remove();
-        leafletMapRef.current = null;
+      if (mapInstanceRef.current) {
+        try {
+          mapInstanceRef.current.destroy();
+          mapInstanceRef.current = null;
+        } catch (error) {
+          console.error('Error destroying map:', error);
+        }
       }
     };
   }, [location]);
@@ -125,11 +187,26 @@ export default function LocationDetail() {
           {location.latitude && location.longitude && (
             <Card className="p-6">
               <h2 className="text-xl font-bold mb-4">Расположение на карте</h2>
-              <div 
-                ref={mapRef}
-                className="w-full h-[400px] rounded-lg grayscale"
-                data-testid="map-container"
-              />
+              {hasMapError ? (
+                <div className="w-full h-[400px] rounded-lg bg-muted flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    <MapPin className="w-12 h-12 mx-auto mb-2" />
+                    <p>Координаты: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}</p>
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  ref={mapRef}
+                  className="w-full h-[400px] rounded-lg grayscale"
+                  data-testid="map-container"
+                >
+                  {isMapLoading && (
+                    <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">
+                      <div className="text-center text-muted-foreground">Загрузка карты...</div>
+                    </div>
+                  )}
+                </div>
+              )}
             </Card>
           )}
 

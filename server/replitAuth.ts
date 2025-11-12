@@ -128,33 +128,8 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    try {
-      const host = req.get('x-forwarded-host') ?? req.get('host');
-      const proto = req.get('x-forwarded-proto') ?? req.protocol;
-      console.log(`[AUTH] Login request - protocol: ${proto}, host: ${host}`);
-      
-      const strategyName = ensureStrategy(req);
-      console.log(`[AUTH] Using strategy: ${strategyName}`);
-      
-      passport.authenticate(strategyName, {
-        scope: ["openid", "email", "profile", "offline_access"],
-        prompt: "consent",
-      }, (err: any, user: any, info: any) => {
-        if (err) {
-          console.error('[AUTH] Authentication error:', err);
-          return res.status(500).json({ error: 'Authentication failed', details: err.message });
-        }
-        if (!user) {
-          console.error('[AUTH] No user returned, info:', info);
-          return res.status(401).json({ error: 'Unauthorized', info });
-        }
-        console.log('[AUTH] User authenticated successfully');
-        return next();
-      })(req, res, next);
-    } catch (error) {
-      console.error('[AUTH] Exception in login route:', error);
-      res.status(500).json({ error: 'Server error', details: String(error) });
-    }
+    const strategyName = ensureStrategy(req);
+    passport.authenticate(strategyName)(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {

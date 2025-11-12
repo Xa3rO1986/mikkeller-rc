@@ -423,7 +423,7 @@ function EventsManagement() {
     setDescription("");
     setStartsAt("");
     setEventType("club");
-    setLocationId("");
+    setLocationId("none");
     setDistanceKm("");
     setStatus("draft");
     setCoverImage(null);
@@ -442,7 +442,7 @@ function EventsManagement() {
     setDescription(event.description || "");
     setStartsAt(new Date(event.startsAt).toISOString().slice(0, 16));
     setEventType(event.eventType || "club");
-    setLocationId(event.locationId || "");
+    setLocationId(event.locationId || "none");
     setDistanceKm(event.distanceKm?.toString() || "");
     setStatus(event.status);
     setCoverImage(null);
@@ -466,7 +466,7 @@ function EventsManagement() {
         description: description.trim() || "<p>Описание скоро появится</p>",
         startsAt: new Date(startsAt).toISOString(),
         eventType,
-        locationId: locationId || null,
+        locationId: locationId && locationId !== "none" ? locationId : null,
         distanceKm: distanceKm ? parseFloat(distanceKm) : null,
         status,
         slug: editingEvent ? editingEvent.slug : title.trim().toLowerCase().replace(/[^a-zа-я0-9]+/g, '-'),
@@ -604,7 +604,7 @@ function EventsManagement() {
                         <SelectValue placeholder="Выберите локацию" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Без локации</SelectItem>
+                        <SelectItem value="none">Без локации</SelectItem>
                         {locations?.map((location) => (
                           <SelectItem key={location.id} value={location.id}>
                             {location.name}

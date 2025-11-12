@@ -509,8 +509,12 @@ function EventsManagement() {
 
       return savedEvent;
     },
-    onSuccess: () => {
+    onSuccess: (savedEvent) => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      // Invalidate cache for specific event detail page
+      if (savedEvent?.slug) {
+        queryClient.invalidateQueries({ queryKey: ["/api/events", savedEvent.slug] });
+      }
       setDialogOpen(false);
       resetForm();
       toast({

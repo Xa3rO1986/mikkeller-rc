@@ -100,6 +100,7 @@ export const products = pgTable("products", {
   description: text("description").notNull(),
   images: text("images").array().default(sql`'{}'::text[]`).notNull(),
   category: text("category").notNull(),
+  basePrice: integer("base_price"),
   active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -140,6 +141,8 @@ export const orders = pgTable("orders", {
   email: text("email").notNull(),
   shippingAddress: jsonb("shipping_address"),
   userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }),
+  stripeSessionId: text("stripe_session_id").unique(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

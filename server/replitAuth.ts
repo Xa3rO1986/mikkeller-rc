@@ -105,42 +105,39 @@ export async function setupAuth(app: Express) {
   // Keep track of registered strategies
   const registeredStrategies = new Set<string>();
 
-  // Helper function to ensure strategy exists for a request
-  const ensureStrategy = (req: any) => {
-    const host = req.get('x-forwarded-host') ?? req.get('host');
-    const proto = req.get('x-forwarded-proto') ?? req.protocol;
-    const callbackURL = `${proto}://${host}/api/callback`;
-    const strategyName = `replitauth:${host}`;
-    
+  // Helper function to ensure strategy exists for a domain
+  const ensureStrategy = (domain: string) => {
+    const strategyName = `replitauth:${domain}`;
     if (!registeredStrategies.has(strategyName)) {
-      console.log(`[AUTH] Registering new strategy: ${strategyName}, callback: ${callbackURL}`);
+      console.log(`[AUTH] Registering strategy: ${strategyName}`);
       const strategy = new Strategy(
         {
           name: strategyName,
           config,
           scope: "openid email profile offline_access",
-          callbackURL,
+          callbackURL: `https://${domain}/api/callback`,
         },
         verify,
       );
       passport.use(strategy);
       registeredStrategies.add(strategyName);
-      console.log(`[AUTH] Strategy registered successfully`);
     }
-    return strategyName;
   };
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    const strategyName = ensureStrategy(req);
-    passport.authenticate(strategyName)(req, res, next);
+    ensureStrategy(req.hostname);
+    passport.authenticate(`replitauth:${req.hostname}`, {
+      prompt: "login consent",
+      scope: ["openid", "email", "profile", "offline_access"],
+    })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    const strategyName = ensureStrategy(req);
-    passport.authenticate(strategyName, {
+    ensureStrategy(req.hostname);
+    passport.authenticate(`replitauth:${req.hostname}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);

@@ -117,7 +117,7 @@ export default function Home() {
                     <img
                       src={nextEvent.coverImageUrl}
                       alt={nextEvent.title}
-                      className="w-full h-full object-cover grayscale"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="text-center text-muted-foreground">

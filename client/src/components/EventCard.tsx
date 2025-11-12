@@ -29,7 +29,7 @@ export default function EventCard({ event }: EventCardProps) {
           <img
             src={event.coverImageUrl}
             alt={event.title}
-            className="w-full h-full object-cover grayscale"
+            className="w-full h-full object-cover"
           />
         ) : (
           <div className="text-center text-muted-foreground">

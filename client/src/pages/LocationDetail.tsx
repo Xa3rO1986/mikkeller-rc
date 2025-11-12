@@ -9,7 +9,7 @@ export default function LocationDetail() {
   const { slug } = useParams();
 
   const { data: location, isLoading: locationLoading } = useQuery<Location>({
-    queryKey: ["/api/locations", slug],
+    queryKey: ["/api/locations/by-slug", slug],
     enabled: !!slug,
   });
 

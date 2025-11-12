@@ -755,8 +755,76 @@ function EventsManagement() {
 
 function ProductsManagement() {
   const { toast } = useToast();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  
   const { data: products } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+  });
+
+  const productFormSchema = z.object({
+    title: z.string().min(1, "Название обязательно"),
+    description: z.string().min(1, "Описание обязательно"),
+    category: z.string().min(1, "Категория обязательна"),
+    basePrice: z.preprocess(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return null;
+        const num = Number(val);
+        return isNaN(num) ? null : num;
+      },
+      z.number().min(0, "Цена должна быть положительной").nullable()
+    ),
+    active: z.boolean().default(true),
+  });
+
+  const productForm = useForm<z.infer<typeof productFormSchema>>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      category: "",
+      basePrice: null,
+      active: true,
+    },
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof productFormSchema>) => {
+      const slug = data.title
+        .toLowerCase()
+        .replace(/[^a-zа-я0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      const productData: any = {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        slug,
+        images: [],
+        active: data.active,
+      };
+
+      if (data.basePrice !== null && data.basePrice !== undefined) {
+        productData.basePrice = data.basePrice;
+      }
+
+      const response = await apiRequest("POST", "/api/products", productData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Товар создан",
+      });
+      productForm.reset();
+      setIsCreateDialogOpen(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка создания товара",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteProductMutation = useMutation({
@@ -774,10 +842,134 @@ function ProductsManagement() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Управление товарами</CardTitle>
-        <CardDescription>
-          Каталог мерча клуба. Создание товаров доступно через API
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Управление товарами</CardTitle>
+            <CardDescription>
+              Каталог мерча клуба
+            </CardDescription>
+          </div>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button data-testid="button-create-product">
+                <Plus className="h-4 w-4 mr-2" />
+                Добавить товар
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Создать товар</DialogTitle>
+                <DialogDescription>
+                  Добавьте новый товар в каталог мерча
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...productForm}>
+                <form onSubmit={productForm.handleSubmit((data) => createProductMutation.mutate(data))} className="space-y-4">
+                  <FormField
+                    control={productForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Название *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Футболка MRC" {...field} data-testid="input-product-title" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={productForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Описание *</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Описание товара..." {...field} data-testid="input-product-description" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={productForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Категория *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Одежда" {...field} data-testid="input-product-category" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={productForm.control}
+                    name="basePrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Базовая цена (₽)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="1500"
+                            {...field}
+                            value={field.value ?? ""}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            data-testid="input-product-price"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={productForm.control}
+                    name="active"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Активный</FormLabel>
+                          <FormDescription>
+                            Товар будет отображаться в каталоге
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="w-4 h-4"
+                            data-testid="checkbox-product-active"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={createProductMutation.isPending} data-testid="button-submit-product">
+                      {createProductMutation.isPending ? "Создание..." : "Создать товар"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsCreateDialogOpen(false)}
+                      data-testid="button-cancel-product"
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         {products && products.length > 0 ? (
@@ -820,6 +1012,70 @@ function PhotosManagement() {
     queryKey: ["/api/photos"],
   });
 
+  const { data: events } = useQuery<Event[]>({
+    queryKey: ["/api/events?status=published"],
+  });
+
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+
+  const uploadPhotoSchema = z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    eventId: z.string().optional(),
+  });
+
+  const uploadForm = useForm<z.infer<typeof uploadPhotoSchema>>({
+    resolver: zodResolver(uploadPhotoSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      eventId: "none",
+    },
+  });
+
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof uploadPhotoSchema>) => {
+      if (!uploadFile) {
+        throw new Error("No file selected");
+      }
+
+      const formData = new FormData();
+      formData.append("photo", uploadFile);
+      if (data.title) formData.append("title", data.title);
+      if (data.description) formData.append("description", data.description);
+      if (data.eventId && data.eventId !== "none") formData.append("eventId", data.eventId);
+
+      const response = await fetch("/api/photos", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to upload photo");
+      }
+
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/photos"] });
+      toast({
+        title: "Фото загружено",
+        description: "Фото добавлено и ожидает модерации",
+      });
+      uploadForm.reset();
+      setUploadFile(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка загрузки",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const updatePhotoMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const response = await apiRequest("PATCH", `/api/photos/${id}`, { status });
@@ -853,7 +1109,86 @@ function PhotosManagement() {
           Галерея фотографий с забегов. Одобряйте или отклоняйте загруженные фото
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
+        <Card className="bg-muted/50">
+          <CardHeader>
+            <CardTitle className="text-lg">Загрузить фотографию</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...uploadForm}>
+              <form onSubmit={uploadForm.handleSubmit((data) => uploadPhotoMutation.mutate(data))} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="photo-file" data-testid="label-photo-file">Фотография *</Label>
+                  <Input
+                    id="photo-file"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                    data-testid="input-photo-file"
+                  />
+                </div>
+
+                <FormField
+                  control={uploadForm.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Название (опционально)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Финиш забега" {...field} data-testid="input-photo-title" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={uploadForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Описание (опционально)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Описание фотографии..." {...field} data-testid="input-photo-description" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={uploadForm.control}
+                  name="eventId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Событие (опционально)</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-photo-event">
+                            <SelectValue placeholder="Выберите событие" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">Без события</SelectItem>
+                          {events?.map((event) => (
+                            <SelectItem key={event.id} value={event.id}>
+                              {event.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" disabled={!uploadFile || uploadPhotoMutation.isPending} data-testid="button-upload-photo">
+                  {uploadPhotoMutation.isPending ? "Загрузка..." : "Загрузить фото"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
         {photos && photos.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {photos.map((photo) => (

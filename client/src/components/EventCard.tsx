@@ -5,6 +5,7 @@ import { Calendar, MapPin, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import type { Event } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
+import { formatEventType } from "@shared/constants/eventTypes";
 
 interface EventCardProps {
   event: Event;
@@ -28,14 +29,17 @@ export default function EventCard({ event }: EventCardProps) {
             <p className="text-sm px-4">Изображение скоро появится</p>
           </div>
         )}
-        <div className="absolute top-4 right-4 bg-black text-white rounded-md px-4 py-2 flex flex-col items-center justify-center font-bold">
-          <span className="text-2xl">{eventDate.getDate()}</span>
-          <span className="text-xs">{formatRussianMonth(eventDate)} {eventDate.getFullYear()}</span>
-        </div>
       </div>
 
       <CardContent className="p-6">
-        <h3 className="font-bold text-xl mb-3">{event.title}</h3>
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <h3 className="font-bold text-xl flex-1">{event.title}</h3>
+          {event.eventType && (
+            <Badge variant="outline" className="text-xs whitespace-nowrap" data-testid={`badge-event-type-${event.slug}`}>
+              {formatEventType(event.eventType)}
+            </Badge>
+          )}
+        </div>
 
         <div className="space-y-2 mb-4 text-sm">
           <div className="flex items-center gap-2">

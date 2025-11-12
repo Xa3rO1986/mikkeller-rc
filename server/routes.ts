@@ -770,7 +770,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: req.body.description || null,
         url: photoUrl,
         thumbUrl: photoUrl,
-        status: 'approved' as const,
+        status: 'pending' as const,
       };
 
       const validationResult = insertPhotoSchema.safeParse(photoData);

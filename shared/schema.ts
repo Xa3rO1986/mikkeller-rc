@@ -130,7 +130,9 @@ export const products = pgTable("products", {
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
-});
+}).merge(z.object({
+  basePrice: z.number().min(0).nullable().optional(),
+}));
 
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;

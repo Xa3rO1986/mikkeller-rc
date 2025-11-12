@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import Events from "@/pages/Events";
 import EventDetail from "@/pages/EventDetail";
+import Locations from "@/pages/Locations";
 import Gallery from "@/pages/Gallery";
 import Shop from "@/pages/Shop";
 import ProductDetail from "@/pages/ProductDetail";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
       <Route path="/events/:slug" component={EventDetail} />
+      <Route path="/locations" component={Locations} />
       <Route path="/gallery" component={Gallery} />
       <Route path="/shop" component={Shop} />
       <Route path="/shop/:slug" component={ProductDetail} />

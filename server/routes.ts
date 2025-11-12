@@ -93,6 +93,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
 
   // Auth routes
+  app.get('/api/user', async (req: any, res) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.json(null);
+      }
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.json(null);
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.json(null);
+    }
+  });
+
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

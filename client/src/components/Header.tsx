@@ -1,16 +1,24 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, Moon, Sun, User, Settings } from "lucide-react";
+import { Menu, Moon, Sun, User, Settings, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { User as UserType } from "@shared/schema";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const [location] = useLocation();
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const { data: currentUser } = useQuery<UserType>({
+  const { data: currentUser } = useQuery<UserType | null>({
     queryKey: ['/api/user'],
   });
 
@@ -79,12 +87,35 @@ export default function Header() {
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="icon" data-testid="button-user">
-              <User className="h-5 w-5" />
-            </Button>
-            <Button variant="default" className="hidden md:inline-flex" data-testid="button-join">
-              Присоединиться
-            </Button>
+            
+            {currentUser ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" data-testid="button-user">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {currentUser.firstName || currentUser.email}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <a href="/api/logout" className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Выйти
+                    </a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <a href="/api/login">
+                <Button variant="default" className="hidden md:inline-flex" data-testid="button-join">
+                  Войти
+                </Button>
+              </a>
+            )}
+
             <Button
               size="icon"
               variant="ghost"

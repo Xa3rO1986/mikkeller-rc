@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Calendar, Package, Image as ImageIcon, ShoppingCart } from "lucide-react";
 import type { User } from "@shared/schema";
-import { useLocation } from "wouter";
+import { Link } from "wouter";
 
 export default function Admin() {
-  const [, setLocation] = useLocation();
-  
-  const { data: currentUser, isLoading } = useQuery<User>({
+  const { data: currentUser, isLoading } = useQuery<User | null>({
     queryKey: ['/api/user'],
   });
 
@@ -20,20 +19,21 @@ export default function Admin() {
     );
   }
 
-  if (!currentUser) {
-    setLocation('/');
-    return null;
-  }
-
-  if (currentUser.role !== 'ADMIN' && currentUser.role !== 'EDITOR') {
+  if (!currentUser || (currentUser.role !== 'ADMIN' && currentUser.role !== 'EDITOR')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="p-8 text-center">
             <h1 className="text-2xl font-bold mb-2">Доступ запрещён</h1>
             <p className="text-muted-foreground mb-4">
-              У вас нет прав для доступа к административной панели
+              {!currentUser 
+                ? "Необходимо войти в систему для доступа к административной панели"
+                : "У вас нет прав для доступа к административной панели"
+              }
             </p>
+            <Link href="/">
+              <Button data-testid="button-back-home">На главную</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

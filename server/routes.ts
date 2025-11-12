@@ -418,6 +418,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Orders routes
+  app.get('/api/orders', isAuthenticated, async (req, res) => {
+    try {
+      const { status } = req.query;
+      const filters: { status?: string } = {};
+      
+      if (typeof status === 'string') {
+        filters.status = status;
+      }
+      
+      const orders = await storage.getOrders(filters);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
   // Photos routes
   app.get('/api/photos', async (req, res) => {
     try {

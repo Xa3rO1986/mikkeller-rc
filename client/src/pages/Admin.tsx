@@ -25,7 +25,7 @@ export default function Admin() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("/api/admin/logout", { method: "POST" });
+      await apiRequest("POST", "/api/admin/logout");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/current"] });
@@ -196,17 +196,14 @@ function AdminsManagement() {
 
   const createAdminMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest<Admin>("/api/admins", {
-        method: "POST",
-        body: JSON.stringify({
-          username,
-          passwordHash: password,
-          firstName,
-          lastName,
-          email,
-        }),
-        headers: { "Content-Type": "application/json" },
+      const response = await apiRequest("POST", "/api/admins", {
+        username,
+        passwordHash: password,
+        firstName,
+        lastName,
+        email,
       });
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admins"] });
@@ -231,7 +228,7 @@ function AdminsManagement() {
 
   const deleteAdminMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest(`/api/admins/${id}`, { method: "DELETE" });
+      await apiRequest("DELETE", `/api/admins/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admins"] });

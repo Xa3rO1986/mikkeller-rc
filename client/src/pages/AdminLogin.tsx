@@ -17,12 +17,8 @@ export default function AdminLogin() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest<Admin>("/api/admin/login", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-        headers: { "Content-Type": "application/json" },
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/admin/login", { username, password });
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/current"] });

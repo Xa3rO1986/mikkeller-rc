@@ -102,7 +102,7 @@ export const photos = pgTable("photos", {
   description: text("description"),
   url: text("url").notNull(),
   thumbUrl: text("thumb_url").notNull(),
-  status: photoStatusEnum("status").default("approved").notNull(),
+  status: photoStatusEnum("status").default("pending").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

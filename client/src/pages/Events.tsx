@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import EventCard from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
-import type { Event } from "@shared/schema";
+import type { Event, Location } from "@shared/schema";
+import { formatEventType } from "@shared/constants/eventTypes";
 
 export default function Events() {
-  const [distanceFilter, setDistanceFilter] = useState<string>("all");
+  const [eventTypeFilter, setEventTypeFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
 
   const { data: upcomingEvents = [], isLoading: upcomingLoading } = useQuery<Event[]>({
@@ -18,7 +19,27 @@ export default function Events() {
     queryKey: ['/api/events'],
   });
 
+  const { data: locations = [] } = useQuery<Location[]>({
+    queryKey: ['/api/locations'],
+  });
+
   const pastEvents = allEvents.filter(event => new Date(event.startsAt) < new Date());
+
+  const filteredUpcomingEvents = useMemo(() => {
+    return upcomingEvents.filter(event => {
+      const matchesEventType = eventTypeFilter === "all" || event.eventType === eventTypeFilter;
+      const matchesLocation = locationFilter === "all" || event.locationId === locationFilter;
+      return matchesEventType && matchesLocation;
+    });
+  }, [upcomingEvents, eventTypeFilter, locationFilter]);
+
+  const filteredPastEvents = useMemo(() => {
+    return pastEvents.filter(event => {
+      const matchesEventType = eventTypeFilter === "all" || event.eventType === eventTypeFilter;
+      const matchesLocation = locationFilter === "all" || event.locationId === locationFilter;
+      return matchesEventType && matchesLocation;
+    });
+  }, [pastEvents, eventTypeFilter, locationFilter]);
 
   return (
     <div className="min-h-screen py-12">
@@ -38,34 +59,37 @@ export default function Events() {
 
           <div className="mt-6 mb-8">
             <div className="flex flex-wrap gap-4">
-              <Select value={distanceFilter} onValueChange={setDistanceFilter}>
-                <SelectTrigger className="w-[180px]" data-testid="select-distance">
-                  <SelectValue placeholder="Дистанция" />
+              <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
+                <SelectTrigger className="w-[180px]" data-testid="select-event-type">
+                  <SelectValue placeholder="Тип события" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Все дистанции</SelectItem>
-                  <SelectItem value="5">5 км</SelectItem>
-                  <SelectItem value="10">10 км</SelectItem>
-                  <SelectItem value="15">15+ км</SelectItem>
+                  <SelectItem value="all">Все типы</SelectItem>
+                  <SelectItem value="club">{formatEventType("club")}</SelectItem>
+                  <SelectItem value="irregular">{formatEventType("irregular")}</SelectItem>
+                  <SelectItem value="city">{formatEventType("city")}</SelectItem>
+                  <SelectItem value="out_of_town">{formatEventType("out_of_town")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={locationFilter} onValueChange={setLocationFilter}>
-                <SelectTrigger className="w-[180px]" data-testid="select-location">
+                <SelectTrigger className="w-[200px]" data-testid="select-location">
                   <SelectValue placeholder="Локация" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Все локации</SelectItem>
-                  <SelectItem value="park">Парки</SelectItem>
-                  <SelectItem value="river">Набережные</SelectItem>
-                  <SelectItem value="trail">Трейлы</SelectItem>
+                  {locations.map((location) => (
+                    <SelectItem key={location.id} value={location.id}>
+                      {location.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
               <Button
                 variant="outline"
                 onClick={() => {
-                  setDistanceFilter("all");
+                  setEventTypeFilter("all");
                   setLocationFilter("all");
                 }}
                 data-testid="button-reset-filters"
@@ -80,15 +104,19 @@ export default function Events() {
               <div className="text-center py-12">
                 <p className="text-lg text-muted-foreground">Загрузка событий...</p>
               </div>
-            ) : upcomingEvents.length > 0 ? (
+            ) : filteredUpcomingEvents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {upcomingEvents.map((event) => (
+                {filteredUpcomingEvents.map((event) => (
                   <EventCard key={event.slug} event={event} />
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-lg text-muted-foreground">Предстоящие забеги скоро появятся</p>
+                <p className="text-lg text-muted-foreground">
+                  {eventTypeFilter === "all" && locationFilter === "all" 
+                    ? "Предстоящие забеги скоро появятся" 
+                    : "Нет событий, соответствующих выбранным фильтрам"}
+                </p>
               </div>
             )}
           </TabsContent>
@@ -98,15 +126,19 @@ export default function Events() {
               <div className="text-center py-12">
                 <p className="text-lg text-muted-foreground">Загрузка событий...</p>
               </div>
-            ) : pastEvents.length > 0 ? (
+            ) : filteredPastEvents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pastEvents.map((event) => (
+                {filteredPastEvents.map((event) => (
                   <EventCard key={event.slug} event={event} />
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-lg text-muted-foreground">Прошедших забегов пока нет</p>
+                <p className="text-lg text-muted-foreground">
+                  {eventTypeFilter === "all" && locationFilter === "all" 
+                    ? "Прошедших забегов пока нет" 
+                    : "Нет событий, соответствующих выбранным фильтрам"}
+                </p>
               </div>
             )}
           </TabsContent>

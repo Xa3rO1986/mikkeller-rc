@@ -14,6 +14,8 @@ import photo2 from '@assets/generated_images/Runner_stretching_morning_f3d2063d.
 import photo3 from '@assets/generated_images/Runners_at_starting_line_dd1d8745.png';
 
 export default function Home() {
+  const upcomingDate = new Date("2024-12-20T10:00:00");
+  
   return (
     <div className="min-h-screen">
       <section className="relative min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
@@ -21,7 +23,7 @@ export default function Home() {
           <img
             src={heroImage}
             alt="Mikkeller Running Club"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/30" />
         </div>
@@ -65,28 +67,28 @@ export default function Home() {
             </Link>
           </div>
 
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden border-2 border-black">
             <div className="grid md:grid-cols-2 gap-0">
               <div className="relative h-64 md:h-auto">
                 <img
                   src={event1}
                   alt="Riverside 10K"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover grayscale"
                 />
               </div>
               <CardContent className="p-8 flex flex-col justify-center">
                 <div className="mb-4">
-                  <div className="inline-block bg-primary text-primary-foreground px-4 py-2 rounded-full font-bold text-sm mb-4">
-                    20 ДЕК
+                  <div className="inline-block bg-black text-white px-4 py-2 rounded-md font-bold text-sm mb-4">
+                    {upcomingDate.getDate()} {upcomingDate.toLocaleDateString('ru', { month: 'long' }).toUpperCase()}
                   </div>
                 </div>
                 <h3 className="text-2xl lg:text-3xl font-bold mb-4">
                   Забег вдоль набережной
                 </h3>
-                <div className="space-y-3 mb-6 text-muted-foreground">
+                <div className="space-y-3 mb-6">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5" />
-                    <span>Пятница, 20 декабря 2024, 10:00</span>
+                    <span>{upcomingDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {upcomingDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-5 w-5" />
@@ -99,7 +101,7 @@ export default function Home() {
                 </div>
                 <Link href="/events/riverside-10k">
                   <Button size="lg" className="w-full md:w-auto" data-testid="button-upcoming-event">
-                    Подробнее и регистрация
+                    Подробнее
                   </Button>
                 </Link>
               </CardContent>

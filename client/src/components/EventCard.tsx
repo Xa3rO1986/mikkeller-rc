@@ -27,44 +27,29 @@ export default function EventCard({
   status,
   tags,
 }: EventCardProps) {
-  const statusColors = {
-    open: "bg-primary text-primary-foreground",
-    closed: "bg-muted text-muted-foreground",
-    upcoming: "bg-accent text-accent-foreground",
-  };
-
-  const statusLabels = {
-    open: "Регистрация открыта",
-    closed: "Регистрация закрыта",
-    upcoming: "Скоро",
-  };
-
+  const eventDate = new Date(date);
+  
   return (
-    <Card className="overflow-hidden hover:-translate-y-1 transition-transform" data-testid={`card-event-${slug}`}>
+    <Card className="overflow-hidden hover:-translate-y-1 transition-transform border-2 border-black" data-testid={`card-event-${slug}`}>
       <div className="relative h-48 overflow-hidden">
         <img
           src={coverImage}
           alt={title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover grayscale"
         />
-        <div className="absolute top-4 left-4">
-          <Badge className={statusColors[status]}>
-            {statusLabels[status]}
-          </Badge>
-        </div>
-        <div className="absolute top-4 right-4 bg-primary text-primary-foreground rounded-full w-16 h-16 flex flex-col items-center justify-center font-bold">
-          <span className="text-2xl">{new Date(date).getDate()}</span>
-          <span className="text-xs">{new Date(date).toLocaleDateString('ru', { month: 'short' })}</span>
+        <div className="absolute top-4 right-4 bg-black text-white rounded-md px-4 py-2 flex flex-col items-center justify-center font-bold">
+          <span className="text-2xl">{eventDate.getDate()}</span>
+          <span className="text-xs">{eventDate.toLocaleDateString('ru', { month: 'long', year: 'numeric' })}</span>
         </div>
       </div>
 
       <CardContent className="p-6">
         <h3 className="font-bold text-xl mb-3">{title}</h3>
 
-        <div className="space-y-2 mb-4 text-sm text-muted-foreground">
+        <div className="space-y-2 mb-4 text-sm">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{new Date(date).toLocaleDateString('ru', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <span>{eventDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />

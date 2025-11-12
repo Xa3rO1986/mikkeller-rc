@@ -27,11 +27,11 @@ export default function About() {
                 </p>
               </div>
             </div>
-            <div className="rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden border-2 border-black">
               <img
                 src={heroImage}
                 alt="MRC Community"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover grayscale"
               />
             </div>
           </div>
@@ -53,9 +53,9 @@ export default function About() {
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
-                <Globe className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <div className="text-4xl font-bold mb-2">50+</div>
-                <div className="text-sm text-muted-foreground">Городов по всему миру</div>
+                <Globe className="h-12 w-12 mx-auto mb-4" />
+                <div className="text-4xl font-bold mb-2">25+</div>
+                <div className="text-sm text-muted-foreground">Баров-партнеров</div>
               </CardContent>
             </Card>
             <Card>
@@ -98,7 +98,7 @@ export default function About() {
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Выберите забег</h3>
                 <p className="text-sm text-muted-foreground">
-                  Посмотрите расписание предстоящих забегов и выберите удобное время и место.
+                  Посмотрите расписание предстоящих забегов и выберите удобное время и бар.
                 </p>
               </CardContent>
             </Card>

@@ -9,27 +9,26 @@ import photo1 from '@assets/generated_images/Runners_celebrating_finish_969c4387
 import photo2 from '@assets/generated_images/Runner_stretching_morning_f3d2063d.png';
 
 export default function EventDetail() {
+  const eventDate = new Date("2024-12-20T10:00:00");
+  
   return (
     <div className="min-h-screen">
       <div className="relative h-[400px] overflow-hidden">
         <img
           src={coverImage}
           alt="Riverside 10K"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover grayscale"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
           <div className="max-w-7xl mx-auto">
-            <Badge className="bg-primary text-primary-foreground mb-4">
-              Регистрация открыта
-            </Badge>
             <h1 className="text-4xl lg:text-5xl font-bold mb-4">
               Забег вдоль набережной
             </h1>
             <div className="flex flex-wrap gap-6 text-sm">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                <span>Пятница, 20 декабря 2024, 10:00</span>
+                <span>{eventDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
@@ -38,10 +37,6 @@ export default function EventDetail() {
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
                 <span>10 км • 50м набор</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span>45 участников</span>
               </div>
             </div>
           </div>
@@ -130,9 +125,6 @@ export default function EventDetail() {
             <div className="space-y-6">
               <Card>
                 <CardContent className="p-6 space-y-4">
-                  <Button className="w-full" size="lg" data-testid="button-register">
-                    Зарегистрироваться
-                  </Button>
                   <Button variant="outline" className="w-full" data-testid="button-add-calendar">
                     <Calendar className="mr-2 h-4 w-4" />
                     Добавить в календарь
@@ -154,10 +146,10 @@ export default function EventDetail() {
                   <div className="space-y-3 text-sm">
                     <div>
                       <div className="text-muted-foreground mb-1">Дата и время</div>
-                      <div className="font-medium">20 декабря 2024, 10:00</div>
+                      <div className="font-medium">{eventDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground mb-1">Место старта</div>
+                      <div className="text-muted-foreground mb-1">Бар</div>
                       <div className="font-medium">Набережная, у моста</div>
                     </div>
                     <div>

@@ -484,19 +484,27 @@ function EventsManagement() {
       if (coverImage && savedEvent?.id) {
         const formData = new FormData();
         formData.append('cover', coverImage);
-        await fetch(`/api/events/${savedEvent.id}/cover`, {
+        const coverResponse = await fetch(`/api/events/${savedEvent.id}/cover`, {
           method: 'POST',
           body: formData,
         });
+        if (!coverResponse.ok) {
+          const error = await coverResponse.json();
+          throw new Error(error.message || 'Ошибка загрузки обложки');
+        }
       }
 
       if (gpxFile && savedEvent?.id) {
         const formData = new FormData();
         formData.append('gpx', gpxFile);
-        await fetch(`/api/events/${savedEvent.id}/gpx`, {
+        const gpxResponse = await fetch(`/api/events/${savedEvent.id}/gpx`, {
           method: 'POST',
           body: formData,
         });
+        if (!gpxResponse.ok) {
+          const error = await gpxResponse.json();
+          throw new Error(error.message || 'Ошибка загрузки GPX файла');
+        }
       }
 
       return savedEvent;

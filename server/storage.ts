@@ -1,4 +1,4 @@
-import { eq, desc, and, sql, gte, lte } from "drizzle-orm";
+import { eq, desc, asc, and, sql, gte, lte } from "drizzle-orm";
 import { db } from "./db";
 import {
   admins,
@@ -115,7 +115,7 @@ export class DatabaseStorage implements IStorage {
       query = query.where(and(...conditions)) as any;
     }
 
-    const result = await query.orderBy(desc(events.startsAt));
+    const result = await query.orderBy(asc(events.startsAt));
     return result;
   }
 

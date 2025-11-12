@@ -73,6 +73,7 @@ export interface IStorage {
   // Home Settings
   getHomeSettings(): Promise<HomeSettings | undefined>;
   updateHomeSettings(settings: Partial<InsertHomeSettings>): Promise<HomeSettings>;
+  initializeHomeSettings(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -306,19 +307,27 @@ export class DatabaseStorage implements IStorage {
   async updateHomeSettings(settings: Partial<InsertHomeSettings>): Promise<HomeSettings> {
     const existing = await this.getHomeSettings();
     
-    if (existing) {
-      const [updated] = await db
-        .update(homeSettings)
-        .set({ ...settings, updatedAt: new Date() })
-        .where(eq(homeSettings.id, "singleton"))
-        .returning();
-      return updated;
-    } else {
-      const [created] = await db
+    if (!existing) {
+      throw new Error("Home settings not initialized");
+    }
+
+    const [updated] = await db
+      .update(homeSettings)
+      .set({ ...settings, updatedAt: new Date() })
+      .where(eq(homeSettings.id, "singleton"))
+      .returning();
+    return updated;
+  }
+
+  async initializeHomeSettings(): Promise<void> {
+    const existing = await this.getHomeSettings();
+    
+    if (!existing) {
+      await db
         .insert(homeSettings)
-        .values({ id: "singleton", ...settings })
-        .returning();
-      return created;
+        .values({ id: "singleton" })
+        .execute();
+      console.log("Home settings initialized with default values");
     }
   }
 }

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2, Upload } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -888,6 +892,20 @@ function PhotosManagement() {
   );
 }
 
+const homeSettingsFormSchema = z.object({
+  heroTitle: z.string().min(1, "Заголовок обязателен"),
+  heroSubtitle: z.string().min(1, "Подзаголовок обязателен"),
+  aboutTitle: z.string().min(1, "Заголовок обязателен"),
+  aboutText1: z.string().min(1, "Текст обязателен"),
+  aboutText2: z.string().min(1, "Текст обязателен"),
+  statsParticipants: z.string().min(1, "Значение обязательно"),
+  statsCities: z.string().min(1, "Значение обязательно"),
+  statsRuns: z.string().min(1, "Значение обязательно"),
+  statsKilometers: z.string().min(1, "Значение обязательно"),
+});
+
+type HomeSettingsFormValues = z.infer<typeof homeSettingsFormSchema>;
+
 function HomeSettingsManagement() {
   const { toast } = useToast();
   const { data: settings, isLoading } = useQuery<{
@@ -907,33 +925,41 @@ function HomeSettingsManagement() {
     queryKey: ["/api/home-settings"],
   });
 
-  const [heroTitle, setHeroTitle] = useState("");
-  const [heroSubtitle, setHeroSubtitle] = useState("");
-  const [aboutTitle, setAboutTitle] = useState("");
-  const [aboutText1, setAboutText1] = useState("");
-  const [aboutText2, setAboutText2] = useState("");
-  const [statsParticipants, setStatsParticipants] = useState("");
-  const [statsCities, setStatsCities] = useState("");
-  const [statsRuns, setStatsRuns] = useState("");
-  const [statsKilometers, setStatsKilometers] = useState("");
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+
+  const form = useForm<HomeSettingsFormValues>({
+    resolver: zodResolver(homeSettingsFormSchema),
+    defaultValues: {
+      heroTitle: "",
+      heroSubtitle: "",
+      aboutTitle: "",
+      aboutText1: "",
+      aboutText2: "",
+      statsParticipants: "",
+      statsCities: "",
+      statsRuns: "",
+      statsKilometers: "",
+    },
+  });
 
   useEffect(() => {
     if (settings) {
-      setHeroTitle(settings.heroTitle || "");
-      setHeroSubtitle(settings.heroSubtitle || "");
-      setAboutTitle(settings.aboutTitle || "");
-      setAboutText1(settings.aboutText1 || "");
-      setAboutText2(settings.aboutText2 || "");
-      setStatsParticipants(settings.statsParticipants || "");
-      setStatsCities(settings.statsCities || "");
-      setStatsRuns(settings.statsRuns || "");
-      setStatsKilometers(settings.statsKilometers || "");
+      form.reset({
+        heroTitle: settings.heroTitle || "",
+        heroSubtitle: settings.heroSubtitle || "",
+        aboutTitle: settings.aboutTitle || "",
+        aboutText1: settings.aboutText1 || "",
+        aboutText2: settings.aboutText2 || "",
+        statsParticipants: settings.statsParticipants || "",
+        statsCities: settings.statsCities || "",
+        statsRuns: settings.statsRuns || "",
+        statsKilometers: settings.statsKilometers || "",
+      });
     }
-  }, [settings]);
+  }, [settings, form]);
 
   const updateSettingsMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: HomeSettingsFormValues) => {
       const response = await fetch("/api/home-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -941,7 +967,8 @@ function HomeSettingsManagement() {
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error("Failed to update settings");
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update settings");
       }
       return response.json();
     },
@@ -949,8 +976,12 @@ function HomeSettingsManagement() {
       queryClient.invalidateQueries({ queryKey: ["/api/home-settings"] });
       toast({ title: "Настройки обновлены" });
     },
-    onError: () => {
-      toast({ title: "Ошибка обновления настроек", variant: "destructive" });
+    onError: (error: Error) => {
+      toast({ 
+        title: "Ошибка обновления настроек", 
+        description: error.message,
+        variant: "destructive" 
+      });
     },
   });
 
@@ -978,18 +1009,8 @@ function HomeSettingsManagement() {
     },
   });
 
-  const handleSave = () => {
-    updateSettingsMutation.mutate({
-      heroTitle,
-      heroSubtitle,
-      aboutTitle,
-      aboutText1,
-      aboutText2,
-      statsParticipants,
-      statsCities,
-      statsRuns,
-      statsKilometers,
-    });
+  const onSubmit = (data: HomeSettingsFormValues) => {
+    updateSettingsMutation.mutate(data);
   };
 
   const handleHeroImageUpload = () => {
@@ -1042,120 +1063,192 @@ function HomeSettingsManagement() {
               </Button>
             </div>
           </div>
-
-          <div>
-            <Label htmlFor="heroTitle">Заголовок Hero блока</Label>
-            <Input
-              id="heroTitle"
-              value={heroTitle}
-              onChange={(e) => setHeroTitle(e.target.value)}
-              placeholder="Mikkeller Running Club"
-              data-testid="input-hero-title"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="heroSubtitle">Подзаголовок Hero блока</Label>
-            <Input
-              id="heroSubtitle"
-              value={heroSubtitle}
-              onChange={(e) => setHeroSubtitle(e.target.value)}
-              placeholder="Мы бегаем. Мы пьём пиво. Мы друзья."
-              data-testid="input-hero-subtitle"
-            />
-          </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Блок "О клубе"</h3>
-          
-          <div>
-            <Label htmlFor="aboutTitle">Заголовок</Label>
-            <Input
-              id="aboutTitle"
-              value={aboutTitle}
-              onChange={(e) => setAboutTitle(e.target.value)}
-              placeholder="О клубе"
-              data-testid="input-about-title"
-            />
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="heroTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Заголовок Hero блока</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Mikkeller Running Club" 
+                        data-testid="input-hero-title"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div>
-            <Label htmlFor="aboutText1">Первый параграф</Label>
-            <Textarea
-              id="aboutText1"
-              value={aboutText1}
-              onChange={(e) => setAboutText1(e.target.value)}
-              rows={3}
-              data-testid="input-about-text1"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="aboutText2">Второй параграф</Label>
-            <Textarea
-              id="aboutText2"
-              value={aboutText2}
-              onChange={(e) => setAboutText2(e.target.value)}
-              rows={3}
-              data-testid="input-about-text2"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Статистика</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="statsParticipants">Участники</Label>
-              <Input
-                id="statsParticipants"
-                value={statsParticipants}
-                onChange={(e) => setStatsParticipants(e.target.value)}
-                placeholder="1200+"
-                data-testid="input-stats-participants"
+              <FormField
+                control={form.control}
+                name="heroSubtitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Подзаголовок Hero блока</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Мы бегаем. Мы пьём пиво. Мы друзья." 
+                        data-testid="input-hero-subtitle"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div>
-              <Label htmlFor="statsCities">Города</Label>
-              <Input
-                id="statsCities"
-                value={statsCities}
-                onChange={(e) => setStatsCities(e.target.value)}
-                placeholder="50+"
-                data-testid="input-stats-cities"
-              />
-            </div>
-            <div>
-              <Label htmlFor="statsRuns">Забеги</Label>
-              <Input
-                id="statsRuns"
-                value={statsRuns}
-                onChange={(e) => setStatsRuns(e.target.value)}
-                placeholder="500+"
-                data-testid="input-stats-runs"
-              />
-            </div>
-            <div>
-              <Label htmlFor="statsKilometers">Километры</Label>
-              <Input
-                id="statsKilometers"
-                value={statsKilometers}
-                onChange={(e) => setStatsKilometers(e.target.value)}
-                placeholder="15K"
-                data-testid="input-stats-kilometers"
-              />
-            </div>
-          </div>
-        </div>
 
-        <Button
-          onClick={handleSave}
-          disabled={updateSettingsMutation.isPending}
-          data-testid="button-save-home-settings"
-        >
-          {updateSettingsMutation.isPending ? "Сохранение..." : "Сохранить изменения"}
-        </Button>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Блок "О клубе"</h3>
+              
+              <FormField
+                control={form.control}
+                name="aboutTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Заголовок</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="О клубе" 
+                        data-testid="input-about-title"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="aboutText1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Первый параграф</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        rows={3}
+                        data-testid="input-about-text1"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="aboutText2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Второй параграф</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        rows={3}
+                        data-testid="input-about-text2"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Статистика</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="statsParticipants"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Участники</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="1200+" 
+                          data-testid="input-stats-participants"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsCities"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Города</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="50+" 
+                          data-testid="input-stats-cities"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsRuns"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Забеги</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="500+" 
+                          data-testid="input-stats-runs"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsKilometers"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Километры</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="15K" 
+                          data-testid="input-stats-kilometers"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={updateSettingsMutation.isPending}
+              data-testid="button-save-home-settings"
+            >
+              {updateSettingsMutation.isPending ? "Сохранение..." : "Сохранить изменения"}
+            </Button>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

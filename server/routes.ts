@@ -550,10 +550,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Home settings routes
   app.get('/api/home-settings', async (req, res) => {
     try {
-      let settings = await storage.getHomeSettings();
+      const settings = await storage.getHomeSettings();
       
       if (!settings) {
-        settings = await storage.updateHomeSettings({});
+        return res.status(404).json({ message: "Home settings not initialized" });
       }
       
       res.json(settings);

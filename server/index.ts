@@ -49,6 +49,10 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Initialize home settings with default values if not exists
+  const { storage } = await import("./storage");
+  await storage.initializeHomeSettings();
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

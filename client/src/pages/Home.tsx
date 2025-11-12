@@ -45,6 +45,9 @@ export default function Home() {
             src={homeSettings?.heroImageUrl || heroImage}
             alt="Mikkeller Running Club"
             className="w-full h-full object-cover grayscale"
+            onError={(e) => {
+              e.currentTarget.src = heroImage;
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/30" />
         </div>

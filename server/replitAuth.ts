@@ -123,11 +123,24 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    ensureStrategy(req.hostname);
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
+    try {
+      console.log("Login attempt - hostname:", req.hostname);
+      ensureStrategy(req.hostname);
+      console.log("Strategy ensured for:", req.hostname);
+      
+      const auth = passport.authenticate(`replitauth:${req.hostname}`, {
+        session: false,
+        prompt: "login consent",
+        scope: ["openid", "email", "profile", "offline_access"],
+        failureMessage: true,
+      });
+      
+      console.log("Calling passport.authenticate");
+      auth(req, res, next);
+    } catch (error) {
+      console.error("Login error caught:", error);
+      res.status(500).json({ message: "Login failed", error: String(error) });
+    }
   });
 
   app.get("/api/callback", (req, res, next) => {

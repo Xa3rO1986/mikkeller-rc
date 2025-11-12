@@ -56,10 +56,12 @@ Preferred communication style: Simple, everyday language.
 **Schema Design**:
 - `admins`: User authentication and admin management
 - `events`: Running events with geolocation, GPX routes, cover images, and rich-text descriptions
-  - `coverImageUrl`: Cover photo for event display
-  - `gpxUrl`: GPX track file for route visualization
+  - `eventType`: Event type enum (club, irregular, out_of_town, city) displayed as Клубный, Внештатный, Выездной, Городской
+  - `coverImageUrl`: Cover photo for event display (shown at content width on detail page, not full-screen)
+  - `gpxUrl`: GPX track file for route visualization (displayed in event cards with icon)
   - `distanceKm`: Auto-calculated from GPX or manually entered (read-only when GPX present)
   - `description`: Rich-text HTML content (sanitized server-side)
+  - `slug`: URL-friendly identifier for dynamic routing
 - `photos`: Event photography with approval workflow (pending/approved/rejected)
 - `products` & `variants`: E-commerce product catalog with size/color variations
 - `orders`: Order tracking with payment status

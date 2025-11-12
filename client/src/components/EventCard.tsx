@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, TrendingUp } from "lucide-react";
+import { Calendar, MapPin, TrendingUp, Route } from "lucide-react";
 import { Link } from "wouter";
 import type { Event } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
@@ -54,6 +54,12 @@ export default function EventCard({ event }: EventCardProps) {
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               <span>{event.distanceKm} км</span>
+            </div>
+          )}
+          {event.gpxUrl && (
+            <div className="flex items-center gap-2">
+              <Route className="h-4 w-4" />
+              <span>GPX маршрут доступен</span>
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 export const EVENT_TYPE_LABELS: Record<string, string> = {
   club: "Клубный",
-  irregular: "Нерегулярный",
-  out_of_town: "Загородный",
+  irregular: "Внештатный",
+  out_of_town: "Выездной",
   city: "Городской",
 };
 

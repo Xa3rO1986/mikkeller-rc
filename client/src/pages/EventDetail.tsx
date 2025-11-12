@@ -49,54 +49,56 @@ export default function EventDetail() {
   
   return (
     <div className="min-h-screen">
-      <div className="relative h-[400px] overflow-hidden">
-        {event.coverImageUrl ? (
-          <img
-            src={event.coverImageUrl}
-            alt={event.title}
-            className="w-full h-full object-cover grayscale"
-          />
-        ) : (
-          <div className="w-full h-full bg-muted flex items-center justify-center">
-            <Calendar className="h-24 w-24 text-muted-foreground" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <Link href="/events">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Все события
-                </Button>
-              </Link>
-              {event.eventType && (
-                <Badge variant="outline" className="bg-black/50 text-white border-white/30">
-                  {formatEventType(event.eventType)}
-                </Badge>
-              )}
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4" data-testid="text-event-title">
-              {event.title}
-            </h1>
-            <div className="flex flex-wrap gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                <span>{formatRussianDate(eventDate, { includeYear: true })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="relative h-[400px] overflow-hidden rounded-lg">
+            {event.coverImageUrl ? (
+              <img
+                src={event.coverImageUrl}
+                alt={event.title}
+                className="w-full h-full object-cover grayscale"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <Calendar className="h-24 w-24 text-muted-foreground" />
               </div>
-              {event.address && (
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+              <div className="flex items-center gap-2 mb-4">
+                <Link href="/events">
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Все события
+                  </Button>
+                </Link>
+                {event.eventType && (
+                  <Badge variant="outline" className="bg-black/50 text-white border-white/30">
+                    {formatEventType(event.eventType)}
+                  </Badge>
+                )}
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-bold mb-4" data-testid="text-event-title">
+                {event.title}
+              </h1>
+              <div className="flex flex-wrap gap-6 text-sm">
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  <span>{event.address}</span>
+                  <Calendar className="h-5 w-5" />
+                  <span>{formatRussianDate(eventDate, { includeYear: true })} в {eventDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
-              )}
-              {event.distanceKm && (
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  <span>{event.distanceKm} км</span>
-                </div>
-              )}
+                {event.address && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    <span>{event.address}</span>
+                  </div>
+                )}
+                {event.distanceKm && (
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    <span>{event.distanceKm} км</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

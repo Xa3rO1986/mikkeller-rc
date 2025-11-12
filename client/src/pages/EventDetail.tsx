@@ -18,6 +18,8 @@ export default function EventDetail() {
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery<Event>({
     queryKey: ['/api/events', slug],
     enabled: !!slug,
+    staleTime: 0, // Always refetch on mount
+    refetchOnMount: true,
   });
 
   const { data: photos = [] } = useQuery<Photo[]>({

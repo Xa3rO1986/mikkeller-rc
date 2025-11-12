@@ -6,9 +6,10 @@ interface PhotoCardProps {
   title?: string;
   eventTitle?: string;
   onClick?: () => void;
+  grayscale?: boolean;
 }
 
-export default function PhotoCard({ id, url, title, eventTitle, onClick }: PhotoCardProps) {
+export default function PhotoCard({ id, url, title, eventTitle, onClick, grayscale = false }: PhotoCardProps) {
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -20,7 +21,7 @@ export default function PhotoCard({ id, url, title, eventTitle, onClick }: Photo
       <img
         src={url}
         alt={title || 'Event photo'}
-        className={`w-full h-full object-cover transition-opacity ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full object-cover transition-opacity ${grayscale ? 'grayscale' : ''} ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setLoaded(true)}
       />
       {!loaded && (

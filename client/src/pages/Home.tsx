@@ -87,7 +87,7 @@ export default function Home() {
             <img 
               src={logo} 
               alt="Mikkeller Running Club Logo" 
-              className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-white p-2"
+              className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-white p-2 grayscale"
             />
           </div>
           <h1 className="text-5xl lg:text-6xl font-bold mb-6">
@@ -140,7 +140,7 @@ export default function Home() {
                     <img
                       src={nextEvent.coverImageUrl}
                       alt={nextEvent.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover grayscale"
                     />
                   ) : (
                     <div className="text-center text-muted-foreground">
@@ -216,6 +216,7 @@ export default function Home() {
                   title={photo.title || 'Фото забега'}
                   eventTitle={photo.eventId ? 'Забег' : undefined}
                   onClick={() => openLightbox(index)}
+                  grayscale={true}
                 />
               ))}
             </div>

@@ -12,6 +12,7 @@ import { nanoid } from "nanoid";
 import YooKassa from "yookassa";
 import gpxParser from "gpxparser";
 import * as fs from "fs/promises";
+import sanitizeHtml from "sanitize-html";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -54,6 +55,36 @@ const photoUpload = multer({
   }
 });
 
+// Configure multer for cover image uploads
+const coverStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'covers'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    const extension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${extension}`);
+  }
+});
+
+const coverUpload = multer({
+  storage: coverStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extension = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = allowedTypes.test(file.mimetype);
+    
+    if (extension && mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 // Configure multer for GPX uploads
 const gpxStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
@@ -74,7 +105,8 @@ const gpxUpload = multer({
     const extension = path.extname(file.originalname).toLowerCase() === '.gpx';
     const mimeType = file.mimetype === 'application/gpx+xml' || 
                      file.mimetype === 'application/xml' || 
-                     file.mimetype === 'text/xml';
+                     file.mimetype === 'text/xml' ||
+                     file.mimetype === 'application/octet-stream';
     
     if (extension || mimeType) {
       cb(null, true);
@@ -90,6 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve uploaded files
   app.use('/uploads/photos', express.static(path.join(__dirname, 'uploads', 'photos')));
+  app.use('/uploads/covers', express.static(path.join(__dirname, 'uploads', 'covers')));
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
 
   // Admin authentication routes
@@ -240,7 +273,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: validationError.toString() 
         });
       }
-      const event = await storage.createEvent(validationResult.data);
+      
+      const sanitizedData = {
+        ...validationResult.data,
+        description: sanitizeHtml(validationResult.data.description, {
+          allowedTags: ['p', 'br', 'strong', 'em', 'b', 'i', 'h2', 'h3', 'ul', 'ol', 'li'],
+          allowedAttributes: {},
+        }),
+      };
+      
+      const event = await storage.createEvent(sanitizedData);
       res.status(201).json(event);
     } catch (error) {
       console.error("Error creating event:", error);
@@ -259,7 +301,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: validationError.toString() 
         });
       }
-      const event = await storage.updateEvent(id, validationResult.data);
+      
+      const sanitizedData = {
+        ...validationResult.data,
+        ...(validationResult.data.description && {
+          description: sanitizeHtml(validationResult.data.description, {
+            allowedTags: ['p', 'br', 'strong', 'em', 'b', 'i', 'h2', 'h3', 'ul', 'ol', 'li'],
+            allowedAttributes: {},
+          }),
+        }),
+      };
+      
+      const event = await storage.updateEvent(id, sanitizedData);
       if (!event) {
         return res.status(404).json({ message: "Event not found" });
       }
@@ -284,7 +337,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/events/:id/gpx', isAuthenticated, gpxUpload.single('gpx'), async (req, res) => {
+  app.post('/api/events/:id/cover', isAuthenticated, coverUpload.single('cover'), async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "Cover image is required" });
+      }
+
+      const event = await storage.getEvent(id);
+      if (!event) {
+        await fs.unlink(req.file.path);
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      const coverImageUrl = `/uploads/covers/${path.basename(req.file.path)}`;
+      
+      const updatedEvent = await storage.updateEvent(id, {
+        coverImageUrl,
+      });
+
+      res.json(updatedEvent);
+    } catch (error) {
+      console.error("Error uploading cover image:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload cover image" });
+    }
+  });
+
+  app.post('/api/events/:id/gpx', isAuthenticated, gpxUpload.single('gpx'), async (req: any, res) => {
     try {
       const { id } = req.params;
       
@@ -309,14 +392,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const track = gpx.tracks[0];
       const distanceMeters = track.distance.total;
-      const elevationGainMeters = track.elevation.pos;
 
       const gpxUrl = `/uploads/gpx/${path.basename(req.file.path)}`;
 
       const updatedEvent = await storage.updateEvent(id, {
         gpxUrl,
         distanceKm: Math.round(distanceMeters) / 1000,
-        elevationGain: Math.round(elevationGainMeters),
       });
 
       res.json(updatedEvent);

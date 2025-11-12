@@ -9,16 +9,18 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2 } from "lucide-react";
+import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2, Upload } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Admin, Event, Product, Photo, Order } from "@shared/schema";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 export default function Admin() {
   const [_, setLocation] = useLocation();
   const { admin, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("events");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -70,7 +72,11 @@ export default function Admin() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card 
+            className="cursor-pointer hover-elevate transition-colors"
+            onClick={() => setActiveTab("events")}
+            data-testid="card-events"
+          >
             <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">События</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -83,7 +89,11 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover-elevate transition-colors"
+            onClick={() => setActiveTab("products")}
+            data-testid="card-products"
+          >
             <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Товары</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
@@ -96,7 +106,11 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover-elevate transition-colors"
+            onClick={() => setActiveTab("photos")}
+            data-testid="card-photos"
+          >
             <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Фотографии</CardTitle>
               <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -109,7 +123,11 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card 
+            className="cursor-pointer hover-elevate transition-colors"
+            onClick={() => setActiveTab("orders")}
+            data-testid="card-orders"
+          >
             <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Заказы</CardTitle>
               <ShoppingCart className="h-4 w-4 text-muted-foreground" />
@@ -123,7 +141,7 @@ export default function Admin() {
           </Card>
         </div>
 
-        <Tabs defaultValue="events" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
             <TabsTrigger value="events">События</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
@@ -380,8 +398,9 @@ function EventsManagement() {
   const [latitude, setLatitude] = useState("55.751244");
   const [longitude, setLongitude] = useState("37.618423");
   const [distanceKm, setDistanceKm] = useState("");
-  const [elevationGain, setElevationGain] = useState("");
   const [status, setStatus] = useState("draft");
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [gpxFile, setGpxFile] = useState<File | null>(null);
 
   const { data: events } = useQuery<Event[]>({
     queryKey: ["/api/events"],
@@ -395,8 +414,9 @@ function EventsManagement() {
     setLatitude("55.751244");
     setLongitude("37.618423");
     setDistanceKm("");
-    setElevationGain("");
     setStatus("draft");
+    setCoverImage(null);
+    setGpxFile(null);
     setEditingEvent(null);
   };
 
@@ -414,8 +434,9 @@ function EventsManagement() {
     setLatitude(event.latitude?.toString() || "55.751244");
     setLongitude(event.longitude?.toString() || "37.618423");
     setDistanceKm(event.distanceKm?.toString() || "");
-    setElevationGain(event.elevationGain?.toString() || "");
     setStatus(event.status);
+    setCoverImage(null);
+    setGpxFile(null);
     setDialogOpen(true);
   };
 
@@ -432,24 +453,44 @@ function EventsManagement() {
 
       const eventData = {
         title: title.trim(),
-        description: description.trim() || "Описание скоро появится",
+        description: description.trim() || "<p>Описание скоро появится</p>",
         startsAt: new Date(startsAt).toISOString(),
         address: address.trim(),
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         distanceKm: distanceKm ? parseFloat(distanceKm) : null,
-        elevationGain: elevationGain ? parseInt(elevationGain) : null,
         status,
         slug: editingEvent ? editingEvent.slug : title.trim().toLowerCase().replace(/[^a-zа-я0-9]+/g, '-'),
       };
 
+      let savedEvent;
       if (editingEvent) {
         const response = await apiRequest("PATCH", `/api/events/${editingEvent.id}`, eventData);
-        return await response.json();
+        savedEvent = await response.json();
       } else {
         const response = await apiRequest("POST", "/api/events", eventData);
-        return await response.json();
+        savedEvent = await response.json();
       }
+
+      if (coverImage && savedEvent?.id) {
+        const formData = new FormData();
+        formData.append('cover', coverImage);
+        await fetch(`/api/events/${savedEvent.id}/cover`, {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      if (gpxFile && savedEvent?.id) {
+        const formData = new FormData();
+        formData.append('gpx', gpxFile);
+        await fetch(`/api/events/${savedEvent.id}/gpx`, {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      return savedEvent;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
@@ -515,13 +556,11 @@ function EventsManagement() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="description">Описание</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                  <Label>Описание</Label>
+                  <RichTextEditor
+                    content={description}
+                    onChange={setDescription}
                     placeholder="Подробное описание забега..."
-                    data-testid="input-event-description"
                   />
                 </div>
                 <div>
@@ -544,29 +583,57 @@ function EventsManagement() {
                     data-testid="input-event-address"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="distanceKm">Дистанция (км)</Label>
+                <div>
+                  <Label htmlFor="distanceKm">
+                    Дистанция (км) {editingEvent?.gpxUrl && "(из GPX)"}
+                  </Label>
+                  <Input
+                    id="distanceKm"
+                    type="number"
+                    step="0.1"
+                    value={distanceKm}
+                    onChange={(e) => setDistanceKm(e.target.value)}
+                    placeholder="5.5"
+                    readOnly={!!editingEvent?.gpxUrl}
+                    className={editingEvent?.gpxUrl ? "bg-muted" : ""}
+                    data-testid="input-event-distance"
+                  />
+                  {editingEvent?.gpxUrl && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Дистанция рассчитывается автоматически из GPX файла
+                    </p>
+                  )}
+                </div>
+                
+                <div>
+                  <Label htmlFor="coverImage">Обложка события</Label>
+                  <div className="flex gap-2 items-center">
                     <Input
-                      id="distanceKm"
-                      type="number"
-                      step="0.1"
-                      value={distanceKm}
-                      onChange={(e) => setDistanceKm(e.target.value)}
-                      placeholder="5.5"
-                      data-testid="input-event-distance"
+                      id="coverImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
+                      data-testid="input-event-cover"
                     />
+                    {coverImage && (
+                      <span className="text-sm text-muted-foreground">{coverImage.name}</span>
+                    )}
                   </div>
-                  <div>
-                    <Label htmlFor="elevationGain">Набор высоты (м)</Label>
+                </div>
+                
+                <div>
+                  <Label htmlFor="gpxFile">GPX файл маршрута</Label>
+                  <div className="flex gap-2 items-center">
                     <Input
-                      id="elevationGain"
-                      type="number"
-                      value={elevationGain}
-                      onChange={(e) => setElevationGain(e.target.value)}
-                      placeholder="50"
-                      data-testid="input-event-elevation"
+                      id="gpxFile"
+                      type="file"
+                      accept=".gpx"
+                      onChange={(e) => setGpxFile(e.target.files?.[0] || null)}
+                      data-testid="input-event-gpx"
                     />
+                    {gpxFile && (
+                      <span className="text-sm text-muted-foreground">{gpxFile.name}</span>
+                    )}
                   </div>
                 </div>
                 <div>

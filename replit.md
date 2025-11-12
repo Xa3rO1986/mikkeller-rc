@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a production-ready website for the Mikkeller Running Club, a running community that combines weekly runs with social gatherings at partner bars. The application features event management, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
+This is a production-ready website for the Mikkeller Running Club, a running community that combines weekly runs with social gatherings at partner bars. The application features event management with location catalog, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
 
 ## User Preferences
 
@@ -26,7 +26,13 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
 
-**Admin Dashboard**: Interactive summary cards that switch between management tabs (Events, Products, Photos, Orders) on click
+**Admin Dashboard**: Interactive summary cards that switch between management tabs (Events, Locations, Products, Photos, Orders) on click
+
+**Location Management**: LocationPicker component with Yandex Maps integration for coordinate selection:
+- Interactive map for visual location selection via click or marker drag
+- Fallback to manual coordinate input if Maps API unavailable
+- Graceful error handling for invalid/missing API keys
+- Displays latitude/longitude with 6 decimal precision
 
 ### Backend Architecture
 
@@ -55,8 +61,15 @@ Preferred communication style: Simple, everyday language.
 
 **Schema Design**:
 - `admins`: User authentication and admin management
+- `locations`: Venue catalog for events with Yandex Maps integration
+  - `slug`: URL-friendly identifier
+  - `name`: Location name (e.g., "Бар Mikkeller Москва")
+  - `address`: Physical address
+  - `latitude` / `longitude`: Geographic coordinates for map display
+  - `description`: Optional location description
 - `events`: Running events with geolocation, GPX routes, cover images, and rich-text descriptions
   - `eventType`: Event type enum (club, irregular, out_of_town, city) displayed as Клубный, Внештатный, Выездной, Городской
+  - `locationId`: Foreign key reference to locations table (optional)
   - `coverImageUrl`: Cover photo for event display (shown at content width on detail page, not full-screen)
   - `gpxUrl`: GPX track file for route visualization (displayed in event cards with icon)
   - `distanceKm`: Auto-calculated from GPX or manually entered (read-only when GPX present)
@@ -105,6 +118,7 @@ Preferred communication style: Simple, everyday language.
 **Environment Variables**:
 - `DATABASE_URL`: PostgreSQL connection string (required)
 - `SESSION_SECRET`: Session encryption key (required)
+- `VITE_YANDEX_MAPS_API_KEY`: Yandex Maps API key for location picker (optional - uses manual coordinate input if not provided)
 - `YOOKASSA_SHOP_ID` & `YOOKASSA_SECRET_KEY`: Payment gateway credentials (optional)
 - `DISQUS_SHORTNAME`: Comments integration (optional)
 

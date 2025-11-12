@@ -22,7 +22,11 @@ Preferred communication style: Simple, everyday language.
 
 **Form Handling**: react-hook-form with Zod schema validation for type-safe form validation
 
+**Rich Text Editing**: TipTap WYSIWYG editor for event descriptions with formatting toolbar (bold, italic, headings, lists). HTML output is sanitized server-side before storage.
+
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
+
+**Admin Dashboard**: Interactive summary cards that switch between management tabs (Events, Products, Photos, Orders) on click
 
 ### Backend Architecture
 
@@ -32,11 +36,16 @@ Preferred communication style: Simple, everyday language.
 
 **Authentication**: Session-based authentication using express-session with PostgreSQL session store (connect-pg-simple). Admin users have password hashing via bcrypt.
 
-**File Uploads**: Multer middleware for handling photo uploads with size limits (10MB) and file type validation. Files stored locally in `server/uploads/photos` directory.
+**File Uploads**: Multer middleware for handling multiple file types with size limits and validation:
+- Photo uploads (10MB limit) → `server/uploads/photos` directory
+- Cover images (10MB limit) → `server/uploads/covers` directory  
+- GPX route files → `server/uploads/gpx` directory
 
 **Route Organization**: Single routes file (`server/routes.ts`) containing all API endpoints for events, photos, products, orders, and admin operations
 
 **Data Access Layer**: Storage abstraction layer (`server/storage.ts`) provides interface-based data access, separating business logic from database operations
+
+**Content Security**: HTML sanitization via sanitize-html library on event descriptions to prevent XSS attacks. Allowed tags: p, br, strong, em, b, i, h2, h3, ul, ol, li
 
 ### Data Storage
 
@@ -46,7 +55,11 @@ Preferred communication style: Simple, everyday language.
 
 **Schema Design**:
 - `admins`: User authentication and admin management
-- `events`: Running events with geolocation, distance, elevation data
+- `events`: Running events with geolocation, GPX routes, cover images, and rich-text descriptions
+  - `coverImageUrl`: Cover photo for event display
+  - `gpxUrl`: GPX track file for route visualization
+  - `distanceKm`: Auto-calculated from GPX or manually entered (read-only when GPX present)
+  - `description`: Rich-text HTML content (sanitized server-side)
 - `photos`: Event photography with approval workflow (pending/approved/rejected)
 - `products` & `variants`: E-commerce product catalog with size/color variations
 - `orders`: Order tracking with payment status
@@ -68,7 +81,9 @@ Preferred communication style: Simple, everyday language.
 
 **Payment Processing**: YooKassa (Russian payment gateway) integration for merchandise checkout with webhook support for payment confirmation
 
-**Map Visualization**: Leaflet.js planned for displaying GPX route data on OpenStreetMap tiles
+**Map Visualization**: Leaflet.js library installed for future GPX route visualization on public event pages
+
+**GPX Processing**: gpxparser library automatically extracts distance from uploaded GPX files and locks manual distance editing to maintain data integrity
 
 **Comments System**: Disqus integration via embed script, configured with environment variable for shortname. Component dynamically loads Disqus script and handles cleanup.
 

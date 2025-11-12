@@ -310,6 +310,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           allowedTags: ['p', 'br', 'strong', 'em', 'b', 'i', 'h2', 'h3', 'ul', 'ol', 'li'],
           allowedAttributes: {},
         }),
+        startsAt: typeof validationResult.data.startsAt === 'string' 
+          ? new Date(validationResult.data.startsAt) 
+          : validationResult.data.startsAt,
+        endsAt: validationResult.data.endsAt 
+          ? (typeof validationResult.data.endsAt === 'string' 
+              ? new Date(validationResult.data.endsAt) 
+              : validationResult.data.endsAt)
+          : undefined,
       };
       
       const event = await storage.createEvent(sanitizedData);
@@ -339,6 +347,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             allowedTags: ['p', 'br', 'strong', 'em', 'b', 'i', 'h2', 'h3', 'ul', 'ol', 'li'],
             allowedAttributes: {},
           }),
+        }),
+        ...(validationResult.data.startsAt && {
+          startsAt: typeof validationResult.data.startsAt === 'string' 
+            ? new Date(validationResult.data.startsAt) 
+            : validationResult.data.startsAt,
+        }),
+        ...(validationResult.data.endsAt && {
+          endsAt: typeof validationResult.data.endsAt === 'string' 
+            ? new Date(validationResult.data.endsAt) 
+            : validationResult.data.endsAt,
         }),
       };
       

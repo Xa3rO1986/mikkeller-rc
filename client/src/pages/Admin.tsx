@@ -6,7 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -366,31 +369,274 @@ function AdminsManagement() {
   );
 }
 function EventsManagement() {
+  const { toast } = useToast();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startsAt, setStartsAt] = useState("");
+  const [address, setAddress] = useState("");
+  const [latitude, setLatitude] = useState("55.751244");
+  const [longitude, setLongitude] = useState("37.618423");
+  const [distanceKm, setDistanceKm] = useState("");
+  const [elevationGain, setElevationGain] = useState("");
+  const [status, setStatus] = useState("draft");
+
   const { data: events } = useQuery<Event[]>({
     queryKey: ["/api/events"],
+  });
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setStartsAt("");
+    setAddress("");
+    setLatitude("55.751244");
+    setLongitude("37.618423");
+    setDistanceKm("");
+    setElevationGain("");
+    setStatus("draft");
+    setEditingEvent(null);
+  };
+
+  const openCreateDialog = () => {
+    resetForm();
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (event: Event) => {
+    setEditingEvent(event);
+    setTitle(event.title);
+    setDescription(event.description || "");
+    setStartsAt(new Date(event.startsAt).toISOString().slice(0, 16));
+    setAddress(event.address);
+    setLatitude(event.latitude?.toString() || "55.751244");
+    setLongitude(event.longitude?.toString() || "37.618423");
+    setDistanceKm(event.distanceKm?.toString() || "");
+    setElevationGain(event.elevationGain?.toString() || "");
+    setStatus(event.status);
+    setDialogOpen(true);
+  };
+
+  const saveEventMutation = useMutation({
+    mutationFn: async () => {
+      if (!title.trim() || !startsAt || !address.trim()) {
+        toast({
+          title: "Ошибка",
+          description: "Заполните все обязательные поля",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const eventData = {
+        title: title.trim(),
+        description: description.trim() || "Описание скоро появится",
+        startsAt: new Date(startsAt).toISOString(),
+        address: address.trim(),
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        distanceKm: distanceKm ? parseFloat(distanceKm) : null,
+        elevationGain: elevationGain ? parseInt(elevationGain) : null,
+        status,
+        slug: editingEvent ? editingEvent.slug : title.trim().toLowerCase().replace(/[^a-zа-я0-9]+/g, '-'),
+      };
+
+      if (editingEvent) {
+        const response = await apiRequest("PATCH", `/api/events/${editingEvent.id}`, eventData);
+        return await response.json();
+      } else {
+        const response = await apiRequest("POST", "/api/events", eventData);
+        return await response.json();
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      setDialogOpen(false);
+      resetForm();
+      toast({
+        title: editingEvent ? "Событие обновлено" : "Событие создано",
+        description: editingEvent ? "Изменения сохранены" : "Новое событие добавлено",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteEventMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/events/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      toast({
+        title: "Событие удалено",
+      });
+    },
   });
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Управление событиями</CardTitle>
-        <CardDescription>
-          Список всех забегов клуба
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Управление событиями</CardTitle>
+            <CardDescription>Список всех забегов клуба</CardDescription>
+          </div>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={openCreateDialog} data-testid="button-create-event">
+                <Plus className="h-4 w-4 mr-2" />
+                Создать событие
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{editingEvent ? "Редактировать событие" : "Создать событие"}</DialogTitle>
+                <DialogDescription>
+                  {editingEvent ? "Измените данные забега" : "Добавьте новый забег"}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Название *</Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Забег у Пушкина"
+                    data-testid="input-event-title"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Описание</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Подробное описание забега..."
+                    data-testid="input-event-description"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="startsAt">Дата и время *</Label>
+                  <Input
+                    id="startsAt"
+                    type="datetime-local"
+                    value={startsAt}
+                    onChange={(e) => setStartsAt(e.target.value)}
+                    data-testid="input-event-starts-at"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="address">Адрес *</Label>
+                  <Input
+                    id="address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Пушкинская площадь, Москва"
+                    data-testid="input-event-address"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="distanceKm">Дистанция (км)</Label>
+                    <Input
+                      id="distanceKm"
+                      type="number"
+                      step="0.1"
+                      value={distanceKm}
+                      onChange={(e) => setDistanceKm(e.target.value)}
+                      placeholder="5.5"
+                      data-testid="input-event-distance"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="elevationGain">Набор высоты (м)</Label>
+                    <Input
+                      id="elevationGain"
+                      type="number"
+                      value={elevationGain}
+                      onChange={(e) => setElevationGain(e.target.value)}
+                      placeholder="50"
+                      data-testid="input-event-elevation"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="status">Статус</Label>
+                  <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger data-testid="select-event-status">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Черновик</SelectItem>
+                      <SelectItem value="published">Опубликовано</SelectItem>
+                      <SelectItem value="archived">Архив</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={() => setDialogOpen(false)} data-testid="button-cancel-event">
+                    Отмена
+                  </Button>
+                  <Button 
+                    onClick={() => saveEventMutation.mutate()}
+                    disabled={!title || !startsAt || !address || saveEventMutation.isPending}
+                    data-testid="button-save-event"
+                  >
+                    {saveEventMutation.isPending ? "Сохранение..." : editingEvent ? "Обновить" : "Создать"}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         {events && events.length > 0 ? (
           <div className="space-y-4">
-            {events.map((event: any) => (
+            {events.map((event) => (
               <div
                 key={event.id}
                 className="flex items-center justify-between p-4 border rounded-lg"
+                data-testid={`event-item-${event.id}`}
               >
-                <div>
+                <div className="flex-1">
                   <p className="font-medium">{event.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(event.startsAt).toLocaleDateString('ru-RU')}
+                    {new Date(event.startsAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })} • {event.address}
                   </p>
+                  <p className="text-sm text-muted-foreground">
+                    {event.status === 'draft' && 'Черновик'}
+                    {event.status === 'published' && 'Опубликовано'}
+                    {event.status === 'archived' && 'Архив'}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openEditDialog(event)}
+                    data-testid={`button-edit-event-${event.id}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => deleteEventMutation.mutate(event.id)}
+                    disabled={deleteEventMutation.isPending}
+                    data-testid={`button-delete-event-${event.id}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -404,8 +650,21 @@ function EventsManagement() {
 }
 
 function ProductsManagement() {
+  const { toast } = useToast();
   const { data: products } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+  });
+
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/products/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Товар удалён",
+      });
+    },
   });
 
   return (
@@ -413,23 +672,33 @@ function ProductsManagement() {
       <CardHeader>
         <CardTitle>Управление товарами</CardTitle>
         <CardDescription>
-          Каталог мерча клуба
+          Каталог мерча клуба. Создание товаров доступно через API
         </CardDescription>
       </CardHeader>
       <CardContent>
         {products && products.length > 0 ? (
           <div className="space-y-4">
-            {products.map((product: any) => (
+            {products.map((product) => (
               <div
                 key={product.id}
                 className="flex items-center justify-between p-4 border rounded-lg"
+                data-testid={`product-item-${product.id}`}
               >
-                <div>
+                <div className="flex-1">
                   <p className="font-medium">{product.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {product.category}
+                    {product.category} • {product.basePrice ? `${product.basePrice} ₽` : 'Цена не указана'}
                   </p>
                 </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => deleteProductMutation.mutate(product.id)}
+                  disabled={deleteProductMutation.isPending}
+                  data-testid={`button-delete-product-${product.id}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>
@@ -442,8 +711,34 @@ function ProductsManagement() {
 }
 
 function PhotosManagement() {
+  const { toast } = useToast();
   const { data: photos } = useQuery<Photo[]>({
     queryKey: ["/api/photos"],
+  });
+
+  const updatePhotoMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await apiRequest("PATCH", `/api/photos/${id}`, { status });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/photos"] });
+      toast({
+        title: "Статус фото обновлён",
+      });
+    },
+  });
+
+  const deletePhotoMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/photos/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/photos"] });
+      toast({
+        title: "Фото удалено",
+      });
+    },
   });
 
   return (
@@ -451,18 +746,65 @@ function PhotosManagement() {
       <CardHeader>
         <CardTitle>Модерация фотографий</CardTitle>
         <CardDescription>
-          Галерея фотографий с забегов
+          Галерея фотографий с забегов. Одобряйте или отклоняйте загруженные фото
         </CardDescription>
       </CardHeader>
       <CardContent>
         {photos && photos.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {photos.map((photo: any) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {photos.map((photo) => (
               <div
                 key={photo.id}
                 className="border rounded-lg overflow-hidden"
+                data-testid={`photo-item-${photo.id}`}
               >
-                <img src={photo.url} alt={photo.title || "Photo"} className="w-full h-48 object-cover" />
+                <img 
+                  src={photo.url} 
+                  alt={photo.title || "Photo"} 
+                  className="w-full h-48 object-cover grayscale" 
+                />
+                <div className="p-3 space-y-2">
+                  <p className="text-sm font-medium truncate">{photo.title || 'Без названия'}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Статус: {photo.status === 'pending' && 'На модерации'}
+                    {photo.status === 'approved' && 'Одобрено'}
+                    {photo.status === 'rejected' && 'Отклонено'}
+                  </p>
+                  <div className="flex gap-2">
+                    {photo.status === 'pending' && (
+                      <>
+                        <Button
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => updatePhotoMutation.mutate({ id: photo.id, status: 'approved' })}
+                          disabled={updatePhotoMutation.isPending}
+                          data-testid={`button-approve-photo-${photo.id}`}
+                        >
+                          Одобрить
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => updatePhotoMutation.mutate({ id: photo.id, status: 'rejected' })}
+                          disabled={updatePhotoMutation.isPending}
+                          data-testid={`button-reject-photo-${photo.id}`}
+                        >
+                          Отклонить
+                        </Button>
+                      </>
+                    )}
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deletePhotoMutation.mutate(photo.id)}
+                      disabled={deletePhotoMutation.isPending}
+                      data-testid={`button-delete-photo-${photo.id}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -512,14 +854,16 @@ function OrdersManagement() {
                 <div>
                   <p className="font-medium">Заказ #{order.id.slice(0, 8)}</p>
                   <p className="text-sm text-muted-foreground">
-                    {order.email} • {order.totalPrice} ₽
+                    {order.email} • {order.amountTotal} ₽
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Статус: {order.paymentStatus}
+                    Статус: {order.status === 'created' && 'Создан'}
+                    {order.status === 'paid' && 'Оплачен'}
+                    {order.status === 'failed' && 'Ошибка'}
                   </p>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {formatDate(order.createdAt)}
+                  {formatDate(order.createdAt.toString())}
                 </div>
               </div>
             ))}

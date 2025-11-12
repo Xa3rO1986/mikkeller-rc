@@ -161,7 +161,7 @@ export function GPXMap({ gpxUrl }: GPXMapProps) {
       )}
       <div 
         ref={mapRef} 
-        className="w-full h-full"
+        className="w-full h-full grayscale"
         data-testid="map-gpx"
       />
     </div>

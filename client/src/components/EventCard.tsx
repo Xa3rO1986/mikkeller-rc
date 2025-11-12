@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import type { Event } from "@shared/schema";
+import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 
 interface EventCardProps {
   event: Event;
@@ -29,7 +30,7 @@ export default function EventCard({ event }: EventCardProps) {
         )}
         <div className="absolute top-4 right-4 bg-black text-white rounded-md px-4 py-2 flex flex-col items-center justify-center font-bold">
           <span className="text-2xl">{eventDate.getDate()}</span>
-          <span className="text-xs">{eventDate.toLocaleDateString('ru', { month: 'long', year: 'numeric' })}</span>
+          <span className="text-xs">{formatRussianMonth(eventDate)} {eventDate.getFullYear()}</span>
         </div>
       </div>
 
@@ -39,7 +40,7 @@ export default function EventCard({ event }: EventCardProps) {
         <div className="space-y-2 mb-4 text-sm">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{eventDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <span>{formatRussianDate(eventDate, { includeYear: true })}</span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />

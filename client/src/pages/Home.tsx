@@ -6,6 +6,7 @@ import EventCard from "@/components/EventCard";
 import PhotoCard from "@/components/PhotoCard";
 import { useQuery } from "@tanstack/react-query";
 import type { Event, Photo } from "@shared/schema";
+import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
 
@@ -95,7 +96,7 @@ export default function Home() {
                 <CardContent className="p-8 flex flex-col justify-center">
                   <div className="mb-4">
                     <div className="inline-block bg-black text-white px-4 py-2 rounded-md font-bold text-sm mb-4">
-                      {new Date(nextEvent.startsAt).getDate()} {new Date(nextEvent.startsAt).toLocaleDateString('ru', { month: 'long' }).toUpperCase()}
+                      {new Date(nextEvent.startsAt).getDate()} {formatRussianMonth(nextEvent.startsAt, true)} {new Date(nextEvent.startsAt).getFullYear()}
                     </div>
                   </div>
                   <h3 className="text-2xl lg:text-3xl font-bold mb-4">
@@ -104,7 +105,7 @@ export default function Home() {
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center gap-3">
                       <Calendar className="h-5 w-5" />
-                      <span>{new Date(nextEvent.startsAt).toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {new Date(nextEvent.startsAt).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span>{formatRussianDate(nextEvent.startsAt, { includeYear: true, includeTime: true })}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <MapPin className="h-5 w-5" />

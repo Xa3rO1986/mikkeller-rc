@@ -5,6 +5,7 @@ import { z } from "zod";
 
 // Enums
 export const eventStatusEnum = pgEnum("event_status", ["draft", "published", "archived"]);
+export const eventTypeEnum = pgEnum("event_type", ["club", "irregular", "out_of_town", "city"]);
 export const photoStatusEnum = pgEnum("photo_status", ["pending", "approved", "rejected"]);
 export const orderStatusEnum = pgEnum("order_status", ["created", "paid", "failed"]);
 
@@ -38,6 +39,26 @@ export const insertAdminSchema = createInsertSchema(admins).omit({
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type Admin = typeof admins.$inferSelect;
 
+// Locations table
+export const locations = pgTable("locations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  address: text("address").notNull(),
+  latitude: real("latitude").notNull(),
+  longitude: real("longitude").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertLocationSchema = createInsertSchema(locations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertLocation = z.infer<typeof insertLocationSchema>;
+export type Location = typeof locations.$inferSelect;
+
 // Events table
 export const events = pgTable("events", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -46,11 +67,12 @@ export const events = pgTable("events", {
   description: text("description").notNull(),
   startsAt: timestamp("starts_at").notNull(),
   endsAt: timestamp("ends_at"),
-  latitude: real("latitude").notNull(),
-  longitude: real("longitude").notNull(),
-  address: text("address").notNull(),
+  eventType: eventTypeEnum("event_type").default("club"),
+  locationId: varchar("location_id").references(() => locations.id, { onDelete: "set null" }),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  address: text("address"),
   distanceKm: real("distance_km"),
-  elevationGain: real("elevation_gain"),
   gpxUrl: text("gpx_url"),
   polyline: text("polyline"),
   coverImageUrl: text("cover_image_url"),

@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, hashPassword, verifyPassword } from "./auth";
-import { insertEventSchema, insertPhotoSchema, insertAdminSchema, insertProductSchema } from "@shared/schema";
+import { insertEventSchema, insertLocationSchema, insertPhotoSchema, insertAdminSchema, insertProductSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import path from "path";
@@ -437,6 +437,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await fs.unlink(req.file.path).catch(() => {});
       }
       res.status(500).json({ message: "Failed to upload GPX file" });
+    }
+  });
+
+  // Locations routes
+  app.get('/api/locations', async (req, res) => {
+    try {
+      const locations = await storage.getLocations();
+      res.json(locations);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      res.status(500).json({ message: "Failed to fetch locations" });
+    }
+  });
+
+  app.get('/api/locations/by-slug/:slug', async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const location = await storage.getLocationBySlug(slug);
+      if (!location) {
+        return res.status(404).json({ message: "Location not found" });
+      }
+      res.json(location);
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      res.status(500).json({ message: "Failed to fetch location" });
+    }
+  });
+
+  app.get('/api/locations/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const location = await storage.getLocation(id);
+      if (!location) {
+        return res.status(404).json({ message: "Location not found" });
+      }
+      res.json(location);
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      res.status(500).json({ message: "Failed to fetch location" });
+    }
+  });
+
+  app.get('/api/locations/:id/events-count', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const year = req.query.year ? parseInt(req.query.year as string) : new Date().getFullYear();
+      
+      const count = await storage.getLocationEventCount(id, year);
+      res.json({ count, year });
+    } catch (error) {
+      console.error("Error fetching location event count:", error);
+      res.status(500).json({ message: "Failed to fetch location event count" });
+    }
+  });
+
+  app.post('/api/locations', isAuthenticated, async (req, res) => {
+    try {
+      const validationResult = insertLocationSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      
+      const location = await storage.createLocation(validationResult.data);
+      res.status(201).json(location);
+    } catch (error) {
+      console.error("Error creating location:", error);
+      res.status(500).json({ message: "Failed to create location" });
+    }
+  });
+
+  app.patch('/api/locations/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validationResult = insertLocationSchema.partial().safeParse(req.body);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      
+      const location = await storage.updateLocation(id, validationResult.data);
+      if (!location) {
+        return res.status(404).json({ message: "Location not found" });
+      }
+      
+      res.json(location);
+    } catch (error) {
+      console.error("Error updating location:", error);
+      res.status(500).json({ message: "Failed to update location" });
+    }
+  });
+
+  app.delete('/api/locations/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteLocation(id);
+      if (!success) {
+        return res.status(404).json({ message: "Location not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting location:", error);
+      res.status(500).json({ message: "Failed to delete location" });
     }
   });
 

@@ -17,7 +17,7 @@ import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plu
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Admin, Event, Product, Photo, Order } from "@shared/schema";
+import type { Admin, Event, Location, Product, Photo, Order } from "@shared/schema";
 import { RichTextEditor } from "@/components/RichTextEditor";
 
 export default function Admin() {
@@ -403,9 +403,8 @@ function EventsManagement() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startsAt, setStartsAt] = useState("");
-  const [address, setAddress] = useState("");
-  const [latitude, setLatitude] = useState("55.751244");
-  const [longitude, setLongitude] = useState("37.618423");
+  const [eventType, setEventType] = useState("club");
+  const [locationId, setLocationId] = useState("");
   const [distanceKm, setDistanceKm] = useState("");
   const [status, setStatus] = useState("draft");
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -415,13 +414,16 @@ function EventsManagement() {
     queryKey: ["/api/events"],
   });
 
+  const { data: locations } = useQuery<Location[]>({
+    queryKey: ["/api/locations"],
+  });
+
   const resetForm = () => {
     setTitle("");
     setDescription("");
     setStartsAt("");
-    setAddress("");
-    setLatitude("55.751244");
-    setLongitude("37.618423");
+    setEventType("club");
+    setLocationId("");
     setDistanceKm("");
     setStatus("draft");
     setCoverImage(null);
@@ -439,9 +441,8 @@ function EventsManagement() {
     setTitle(event.title);
     setDescription(event.description || "");
     setStartsAt(new Date(event.startsAt).toISOString().slice(0, 16));
-    setAddress(event.address);
-    setLatitude(event.latitude?.toString() || "55.751244");
-    setLongitude(event.longitude?.toString() || "37.618423");
+    setEventType(event.eventType || "club");
+    setLocationId(event.locationId || "");
     setDistanceKm(event.distanceKm?.toString() || "");
     setStatus(event.status);
     setCoverImage(null);
@@ -451,7 +452,7 @@ function EventsManagement() {
 
   const saveEventMutation = useMutation({
     mutationFn: async () => {
-      if (!title.trim() || !startsAt || !address.trim()) {
+      if (!title.trim() || !startsAt) {
         toast({
           title: "Ошибка",
           description: "Заполните все обязательные поля",
@@ -464,9 +465,8 @@ function EventsManagement() {
         title: title.trim(),
         description: description.trim() || "<p>Описание скоро появится</p>",
         startsAt: new Date(startsAt).toISOString(),
-        address: address.trim(),
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
+        eventType,
+        locationId: locationId || null,
         distanceKm: distanceKm ? parseFloat(distanceKm) : null,
         status,
         slug: editingEvent ? editingEvent.slug : title.trim().toLowerCase().replace(/[^a-zа-я0-9]+/g, '-'),
@@ -582,15 +582,37 @@ function EventsManagement() {
                     data-testid="input-event-starts-at"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="address">Адрес *</Label>
-                  <Input
-                    id="address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Пушкинская площадь, Москва"
-                    data-testid="input-event-address"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="eventType">Тип события</Label>
+                    <Select value={eventType} onValueChange={setEventType}>
+                      <SelectTrigger id="eventType" data-testid="select-event-type">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="club">Клубный</SelectItem>
+                        <SelectItem value="irregular">Внештатный</SelectItem>
+                        <SelectItem value="out_of_town">Выездной</SelectItem>
+                        <SelectItem value="city">Городской</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="locationId">Локация</Label>
+                    <Select value={locationId} onValueChange={setLocationId}>
+                      <SelectTrigger id="locationId" data-testid="select-location">
+                        <SelectValue placeholder="Выберите локацию" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Без локации</SelectItem>
+                        {locations?.map((location) => (
+                          <SelectItem key={location.id} value={location.id}>
+                            {location.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="distanceKm">
@@ -664,7 +686,7 @@ function EventsManagement() {
                   </Button>
                   <Button 
                     onClick={() => saveEventMutation.mutate()}
-                    disabled={!title || !startsAt || !address || saveEventMutation.isPending}
+                    disabled={!title || !startsAt || saveEventMutation.isPending}
                     data-testid="button-save-event"
                   >
                     {saveEventMutation.isPending ? "Сохранение..." : editingEvent ? "Обновить" : "Создать"}
@@ -687,9 +709,15 @@ function EventsManagement() {
                 <div className="flex-1">
                   <p className="font-medium">{event.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(event.startsAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })} • {event.address}
+                    {new Date(event.startsAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })} 
+                    {event.locationId && ` • ${locations?.find(l => l.id === event.locationId)?.name || 'Локация'}`}
                   </p>
                   <p className="text-sm text-muted-foreground">
+                    {event.eventType === 'club' && 'Клубный'}
+                    {event.eventType === 'irregular' && 'Внештатный'}
+                    {event.eventType === 'out_of_town' && 'Выездной'}
+                    {event.eventType === 'city' && 'Городской'}
+                    {' • '}
                     {event.status === 'draft' && 'Черновик'}
                     {event.status === 'published' && 'Опубликовано'}
                     {event.status === 'archived' && 'Архив'}

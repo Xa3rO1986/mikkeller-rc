@@ -3,6 +3,7 @@ import { db } from "./db";
 import {
   admins,
   events,
+  locations,
   photos,
   products,
   variants,
@@ -12,6 +13,8 @@ import {
   type InsertAdmin,
   type Event,
   type InsertEvent,
+  type Location,
+  type InsertLocation,
   type Photo,
   type InsertPhoto,
   type Product,
@@ -40,6 +43,15 @@ export interface IStorage {
   createEvent(event: InsertEvent): Promise<Event>;
   updateEvent(id: string, event: Partial<InsertEvent>): Promise<Event | undefined>;
   deleteEvent(id: string): Promise<boolean>;
+
+  // Locations
+  getLocations(): Promise<Location[]>;
+  getLocation(id: string): Promise<Location | undefined>;
+  getLocationBySlug(slug: string): Promise<Location | undefined>;
+  getLocationEventCount(locationId: string, year: number): Promise<number>;
+  createLocation(location: InsertLocation): Promise<Location>;
+  updateLocation(id: string, location: Partial<InsertLocation>): Promise<Location | undefined>;
+  deleteLocation(id: string): Promise<boolean>;
 
   // Photos
   getPhotos(filters?: { eventId?: string; status?: string }): Promise<Photo[]>;
@@ -149,6 +161,54 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEvent(id: string): Promise<boolean> {
     const result = await db.delete(events).where(eq(events.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Locations
+  async getLocations(): Promise<Location[]> {
+    return await db.select().from(locations).orderBy(asc(locations.name));
+  }
+
+  async getLocation(id: string): Promise<Location | undefined> {
+    const [location] = await db.select().from(locations).where(eq(locations.id, id)).limit(1);
+    return location;
+  }
+
+  async getLocationBySlug(slug: string): Promise<Location | undefined> {
+    const [location] = await db.select().from(locations).where(eq(locations.slug, slug)).limit(1);
+    return location;
+  }
+
+  async getLocationEventCount(locationId: string, year: number): Promise<number> {
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year + 1, 0, 1);
+    
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(events)
+      .where(
+        and(
+          eq(events.locationId, locationId),
+          gte(events.startsAt, startOfYear),
+          lte(events.startsAt, endOfYear)
+        )
+      );
+    
+    return result?.count || 0;
+  }
+
+  async createLocation(location: InsertLocation): Promise<Location> {
+    const [newLocation] = await db.insert(locations).values(location).returning();
+    return newLocation;
+  }
+
+  async updateLocation(id: string, location: Partial<InsertLocation>): Promise<Location | undefined> {
+    const [updated] = await db.update(locations).set(location).where(eq(locations.id, id)).returning();
+    return updated;
+  }
+
+  async deleteLocation(id: string): Promise<boolean> {
+    const result = await db.delete(locations).where(eq(locations.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
 

@@ -46,6 +46,8 @@ export default function Home() {
     statsKilometers: string;
   }>({
     queryKey: ['/api/home-settings'],
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const nextEventLocationText = nextEventLocation?.name || nextEvent?.address || 'Место уточняется';

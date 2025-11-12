@@ -9,6 +9,7 @@ import {
   orders,
   type User,
   type InsertUser,
+  type UpsertUser,
   type Event,
   type InsertEvent,
   type Photo,
@@ -27,6 +28,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
 
   // Events
   getEvents(filters?: { status?: string; upcoming?: boolean }): Promise<Event[]>;
@@ -85,6 +87,21 @@ export class DatabaseStorage implements IStorage {
   async updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined> {
     const [updated] = await db.update(users).set(user).where(eq(users.id, id)).returning();
     return updated;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 
   // Events

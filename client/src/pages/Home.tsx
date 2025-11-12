@@ -9,6 +9,7 @@ import type { Event, Photo } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
+import logo from '@assets/PulK8qcN_1762970447644.jpg';
 
 export default function Home() {
   const { data: upcomingEvents = [], isLoading: eventsLoading } = useQuery<Event[]>({
@@ -34,6 +35,13 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 text-center px-4 text-white max-w-4xl mx-auto">
+          <div className="mb-8 flex justify-center">
+            <img 
+              src={logo} 
+              alt="Mikkeller Running Club Logo" 
+              className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-white p-2"
+            />
+          </div>
           <h1 className="text-5xl lg:text-6xl font-bold mb-6">
             Mikkeller Running Club
           </h1>

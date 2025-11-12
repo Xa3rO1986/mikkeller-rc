@@ -30,7 +30,7 @@ export default function Header() {
             className="flex items-center gap-2 font-bold text-xl hover-elevate px-2 py-1 rounded-md" 
             data-testid="link-home"
           >
-            <span className="text-primary">MRC</span>
+            <span>MRC SPB</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">

@@ -10,6 +10,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { nanoid } from "nanoid";
 import Stripe from "stripe";
+import gpxParser from "gpxparser";
+import * as fs from "fs/promises";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -51,12 +53,43 @@ const photoUpload = multer({
   }
 });
 
+// Configure multer for GPX uploads
+const gpxStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'gpx'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    cb(null, `${uniqueId}.gpx`);
+  }
+});
+
+const gpxUpload = multer({
+  storage: gpxStorage,
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB limit for GPX files
+  },
+  fileFilter: (_req, file, cb) => {
+    const extension = path.extname(file.originalname).toLowerCase() === '.gpx';
+    const mimeType = file.mimetype === 'application/gpx+xml' || 
+                     file.mimetype === 'application/xml' || 
+                     file.mimetype === 'text/xml';
+    
+    if (extension || mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only GPX files are allowed'));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware from Replit Auth blueprint
   await setupAuth(app);
   
-  // Serve uploaded photos
+  // Serve uploaded files
   app.use('/uploads/photos', express.static(path.join(__dirname, 'uploads', 'photos')));
+  app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
@@ -166,6 +199,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting event:", error);
       res.status(500).json({ message: "Failed to delete event" });
+    }
+  });
+
+  app.post('/api/events/:id/gpx', isAdminOrEditor, gpxUpload.single('gpx'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "GPX file is required" });
+      }
+
+      const event = await storage.getEvent(id);
+      if (!event) {
+        await fs.unlink(req.file.path);
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      const gpxContent = await fs.readFile(req.file.path, 'utf-8');
+      const gpx = new gpxParser();
+      gpx.parse(gpxContent);
+
+      if (!gpx.tracks || gpx.tracks.length === 0) {
+        await fs.unlink(req.file.path);
+        return res.status(400).json({ message: "Invalid GPX file: no tracks found" });
+      }
+
+      const track = gpx.tracks[0];
+      const distanceMeters = track.distance.total;
+      const elevationGainMeters = track.elevation.pos;
+
+      const gpxUrl = `/uploads/gpx/${path.basename(req.file.path)}`;
+
+      const updatedEvent = await storage.updateEvent(id, {
+        gpxUrl,
+        distanceKm: Math.round(distanceMeters) / 1000,
+        elevationGain: Math.round(elevationGainMeters),
+      });
+
+      res.json(updatedEvent);
+    } catch (error) {
+      console.error("Error uploading GPX file:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload GPX file" });
     }
   });
 

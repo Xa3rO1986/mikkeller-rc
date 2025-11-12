@@ -10,7 +10,7 @@ import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut } fr
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Admin, Event, Product, Photo } from "@shared/schema";
+import type { Admin, Event, Product, Photo, Order } from "@shared/schema";
 
 export default function Admin() {
   const [_, setLocation] = useLocation();
@@ -162,7 +162,7 @@ function AdminsManagement() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
 
-  const { data: admins, isLoading } = useQuery<Admin[]>({
+  const { data: admins, isLoading } = useQuery<Omit<Admin, "passwordHash">[]>({
     queryKey: ["/api/admins"],
   });
 
@@ -475,6 +475,19 @@ function PhotosManagement() {
 }
 
 function OrdersManagement() {
+  const { data: orders, isLoading, isError } = useQuery<Order[]>({
+    queryKey: ["/api/orders"],
+  });
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ru-RU', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -484,9 +497,36 @@ function OrdersManagement() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground">
-          Здесь будет список заказов
-        </p>
+        {isLoading ? (
+          <p className="text-muted-foreground">Загрузка заказов...</p>
+        ) : isError ? (
+          <p className="text-destructive">Ошибка загрузки заказов</p>
+        ) : orders && orders.length > 0 ? (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+                data-testid={`order-item-${order.id}`}
+              >
+                <div>
+                  <p className="font-medium">Заказ #{order.id.slice(0, 8)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {order.email} • {order.totalPrice} ₽
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Статус: {order.paymentStatus}
+                  </p>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {formatDate(order.createdAt)}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">Нет заказов</p>
+        )}
       </CardContent>
     </Card>
   );

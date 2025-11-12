@@ -240,9 +240,11 @@ export default function EventDetail() {
                       <div className="flex items-start gap-2">
                         <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                         <div>
-                          <div className="font-medium" data-testid="text-location-name">
-                            {location.name}
-                          </div>
+                          <Link href={`/locations/${location.slug}`}>
+                            <div className="font-medium hover:underline cursor-pointer" data-testid="link-location-name">
+                              {location.name}
+                            </div>
+                          </Link>
                           <div className="text-sm text-muted-foreground" data-testid="text-location-address">
                             {location.address}
                           </div>

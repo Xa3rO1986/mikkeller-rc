@@ -101,51 +101,43 @@ export async function setupAuth(app: Express) {
   // Keep track of registered strategies
   const registeredStrategies = new Set<string>();
 
-  // Helper function to ensure strategy exists for a domain
-  const ensureStrategy = (domain: string) => {
-    const strategyName = `replitauth:${domain}`;
+  // Helper function to ensure strategy exists for a request
+  const ensureStrategy = (req: any) => {
+    const host = req.get('x-forwarded-host') ?? req.get('host');
+    const proto = req.get('x-forwarded-proto') ?? req.protocol;
+    const callbackURL = `${proto}://${host}/api/callback`;
+    const strategyName = `replitauth:${host}`;
+    
     if (!registeredStrategies.has(strategyName)) {
       const strategy = new Strategy(
         {
           name: strategyName,
           config,
           scope: "openid email profile offline_access",
-          callbackURL: `https://${domain}/api/callback`,
+          callbackURL,
         },
         verify,
       );
       passport.use(strategy);
       registeredStrategies.add(strategyName);
     }
+    return strategyName;
   };
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    try {
-      console.log("Login attempt - hostname:", req.hostname);
-      ensureStrategy(req.hostname);
-      console.log("Strategy ensured for:", req.hostname);
-      
-      const auth = passport.authenticate(`replitauth:${req.hostname}`, {
-        session: false,
-        prompt: "login consent",
-        scope: ["openid", "email", "profile", "offline_access"],
-        failureMessage: true,
-      });
-      
-      console.log("Calling passport.authenticate");
-      auth(req, res, next);
-    } catch (error) {
-      console.error("Login error caught:", error);
-      res.status(500).json({ message: "Login failed", error: String(error) });
-    }
+    const strategyName = ensureStrategy(req);
+    passport.authenticate(strategyName, {
+      scope: ["openid", "email", "profile", "offline_access"],
+      prompt: "consent",
+    })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    ensureStrategy(req.hostname);
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    const strategyName = ensureStrategy(req);
+    passport.authenticate(strategyName, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);

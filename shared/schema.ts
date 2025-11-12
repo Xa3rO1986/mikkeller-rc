@@ -141,8 +141,7 @@ export const orders = pgTable("orders", {
   email: text("email").notNull(),
   shippingAddress: jsonb("shipping_address"),
   userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }),
-  stripeSessionId: text("stripe_session_id").unique(),
-  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  yookassaPaymentId: text("yookassa_payment_id").unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

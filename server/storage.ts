@@ -63,7 +63,7 @@ export interface IStorage {
   // Orders
   getOrders(filters?: { userId?: string; status?: string }): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
-  getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined>;
+  getOrderByYookassaPaymentId(paymentId: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, order: Partial<InsertOrder>): Promise<Order | undefined>;
 }
@@ -285,8 +285,8 @@ export class DatabaseStorage implements IStorage {
     return order;
   }
 
-  async getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.stripeSessionId, sessionId)).limit(1);
+  async getOrderByYookassaPaymentId(paymentId: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.yookassaPaymentId, paymentId)).limit(1);
     return order;
   }
 

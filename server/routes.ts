@@ -433,19 +433,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const gpx = new gpxParser();
       gpx.parse(gpxContent);
 
-      if (!gpx.tracks || gpx.tracks.length === 0) {
-        await fs.unlink(req.file.path);
-        return res.status(400).json({ message: "Invalid GPX file: no tracks found" });
-      }
+      let distanceMeters = 0;
 
-      const track = gpx.tracks[0];
-      const distanceMeters = track.distance.total;
+      // Try to get distance from tracks first
+      if (gpx.tracks && gpx.tracks.length > 0) {
+        const track = gpx.tracks[0];
+        distanceMeters = track.distance?.total || 0;
+      } 
+      // If no tracks, try routes
+      else if (gpx.routes && gpx.routes.length > 0) {
+        const route = gpx.routes[0];
+        distanceMeters = route.distance?.total || 0;
+      }
+      // If neither tracks nor routes found
+      else {
+        await fs.unlink(req.file.path);
+        return res.status(400).json({ 
+          message: "Invalid GPX file: no tracks or routes found. Please upload a valid GPX file with track or route data." 
+        });
+      }
 
       const gpxUrl = `/uploads/gpx/${path.basename(req.file.path)}`;
 
       const updatedEvent = await storage.updateEvent(id, {
         gpxUrl,
-        distanceKm: Math.round(distanceMeters) / 1000,
+        distanceKm: distanceMeters > 0 ? Math.round(distanceMeters) / 1000 : null,
       });
 
       res.json(updatedEvent);

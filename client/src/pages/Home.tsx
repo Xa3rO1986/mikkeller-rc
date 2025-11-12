@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MapPin, TrendingUp, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Calendar, MapPin, TrendingUp, ArrowRight, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import EventCard from "@/components/EventCard";
 import PhotoCard from "@/components/PhotoCard";
@@ -12,12 +15,15 @@ import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a
 import logo from '@assets/PulK8qcN_1762970447644.jpg';
 
 export default function Home() {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+
   const { data: upcomingEvents = [], isLoading: eventsLoading } = useQuery<Event[]>({
     queryKey: ['/api/events?upcoming=true'],
   });
 
   const { data: photos = [], isLoading: photosLoading } = useQuery<Photo[]>({
-    queryKey: ['/api/photos'],
+    queryKey: ['/api/photos?status=approved'],
   });
 
   const nextEvent = upcomingEvents[0];
@@ -43,6 +49,21 @@ export default function Home() {
   });
 
   const nextEventLocationText = nextEventLocation?.name || nextEvent?.address || 'Место уточняется';
+
+  const openLightbox = (index: number) => {
+    setCurrentPhotoIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const nextPhoto = () => {
+    const displayedPhotos = photos.slice(0, 3);
+    setCurrentPhotoIndex((prev) => (prev + 1) % displayedPhotos.length);
+  };
+
+  const prevPhoto = () => {
+    const displayedPhotos = photos.slice(0, 3);
+    setCurrentPhotoIndex((prev) => (prev - 1 + displayedPhotos.length) % displayedPhotos.length);
+  };
   
   return (
     <div className="min-h-screen">
@@ -185,13 +206,14 @@ export default function Home() {
             </div>
           ) : photos.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {photos.slice(0, 3).map((photo) => (
+              {photos.slice(0, 3).map((photo, index) => (
                 <PhotoCard
                   key={photo.id}
                   id={photo.id}
                   url={photo.url}
                   title={photo.title || 'Фото забега'}
                   eventTitle={photo.eventId ? 'Забег' : undefined}
+                  onClick={() => openLightbox(index)}
                 />
               ))}
             </div>
@@ -280,6 +302,60 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-0">
+          <VisuallyHidden>
+            <DialogTitle>Просмотр фотографии</DialogTitle>
+            <DialogDescription>Увеличенное изображение фотографии</DialogDescription>
+          </VisuallyHidden>
+          <div className="relative w-full h-[95vh] flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-50 text-white hover:bg-white/10"
+              onClick={() => setLightboxOpen(false)}
+              data-testid="button-close-lightbox"
+            >
+              <X className="h-6 w-6" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:bg-white/10"
+              onClick={prevPhoto}
+              data-testid="button-prev-photo"
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </Button>
+
+            {photos.slice(0, 3)[currentPhotoIndex] && (
+              <>
+                <img
+                  src={photos.slice(0, 3)[currentPhotoIndex].url}
+                  alt={photos.slice(0, 3)[currentPhotoIndex].title || 'Фото'}
+                  className="max-w-full max-h-full object-contain"
+                />
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:bg-white/10"
+                  onClick={nextPhoto}
+                  data-testid="button-next-photo"
+                >
+                  <ChevronRight className="h-8 w-8" />
+                </Button>
+
+                <div className="absolute bottom-4 left-0 right-0 text-center text-white">
+                  <p className="text-lg font-medium">{photos.slice(0, 3)[currentPhotoIndex].title || 'Без названия'}</p>
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

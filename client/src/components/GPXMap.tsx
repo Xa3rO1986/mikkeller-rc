@@ -100,7 +100,14 @@ export function GPXMap({ gpxUrl }: GPXMapProps) {
             const endPlacemark = new window.ymaps.Placemark(trackPoints[trackPoints.length - 1], {
               hintContent: 'Финиш',
             }, {
-              preset: 'islands#darkRedCircleDotIcon',
+              iconLayout: 'default#image',
+              iconImageHref: 'data:image/svg+xml;base64,' + btoa(`
+                <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="8" fill="#DC2626" stroke="#fff" stroke-width="2"/>
+                </svg>
+              `),
+              iconImageSize: [20, 20],
+              iconImageOffset: [-10, -10],
             });
             map.geoObjects.add(endPlacemark);
 

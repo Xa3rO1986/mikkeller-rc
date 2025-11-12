@@ -85,6 +85,35 @@ const coverUpload = multer({
   }
 });
 
+const heroStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'hero'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    const extension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${extension}`);
+  }
+});
+
+const heroUpload = multer({
+  storage: heroStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extension = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = allowedTypes.test(file.mimetype);
+    
+    if (extension && mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 // Configure multer for GPX uploads
 const gpxStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
@@ -124,6 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads/photos', express.static(path.join(__dirname, 'uploads', 'photos')));
   app.use('/uploads/covers', express.static(path.join(__dirname, 'uploads', 'covers')));
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
+  app.use('/uploads/hero', express.static(path.join(__dirname, 'uploads', 'hero')));
 
   // Admin authentication routes
   app.post('/api/admin/login', async (req, res) => {
@@ -514,6 +544,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching orders:", error);
       res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Home settings routes
+  app.get('/api/home-settings', async (req, res) => {
+    try {
+      let settings = await storage.getHomeSettings();
+      
+      if (!settings) {
+        settings = await storage.updateHomeSettings({});
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching home settings:", error);
+      res.status(500).json({ message: "Failed to fetch home settings" });
+    }
+  });
+
+  app.patch('/api/home-settings', isAuthenticated, async (req, res) => {
+    try {
+      const { insertHomeSettingsSchema } = await import("@shared/schema");
+      const validationResult = insertHomeSettingsSchema.partial().safeParse(req.body);
+      
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      
+      const settings = await storage.updateHomeSettings(validationResult.data);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error updating home settings:", error);
+      res.status(500).json({ message: "Failed to update home settings" });
+    }
+  });
+
+  app.post('/api/home-settings/hero-image', isAuthenticated, heroUpload.single('hero'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Hero image is required" });
+      }
+
+      const heroImageUrl = `/uploads/hero/${path.basename(req.file.path)}`;
+      
+      const settings = await storage.updateHomeSettings({
+        heroImageUrl,
+      });
+
+      res.json(settings);
+    } catch (error) {
+      console.error("Error uploading hero image:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload hero image" });
     }
   });
 

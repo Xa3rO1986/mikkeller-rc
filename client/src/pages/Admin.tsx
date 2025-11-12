@@ -147,6 +147,7 @@ export default function Admin() {
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="photos">Фотографии</TabsTrigger>
             <TabsTrigger value="orders">Заказы</TabsTrigger>
+            <TabsTrigger value="home">Главная страница</TabsTrigger>
             <TabsTrigger value="admins">Администраторы</TabsTrigger>
           </TabsList>
 
@@ -164,6 +165,10 @@ export default function Admin() {
 
           <TabsContent value="orders">
             <OrdersManagement />
+          </TabsContent>
+
+          <TabsContent value="home">
+            <HomeSettingsManagement />
           </TabsContent>
 
           <TabsContent value="admins">
@@ -878,6 +883,279 @@ function PhotosManagement() {
         ) : (
           <p className="text-muted-foreground">Нет фотографий</p>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function HomeSettingsManagement() {
+  const { toast } = useToast();
+  const { data: settings, isLoading } = useQuery<{
+    id: string;
+    heroImageUrl: string | null;
+    heroTitle: string;
+    heroSubtitle: string;
+    aboutTitle: string;
+    aboutText1: string;
+    aboutText2: string;
+    statsParticipants: string;
+    statsCities: string;
+    statsRuns: string;
+    statsKilometers: string;
+    updatedAt: Date;
+  }>({
+    queryKey: ["/api/home-settings"],
+  });
+
+  const [heroTitle, setHeroTitle] = useState("");
+  const [heroSubtitle, setHeroSubtitle] = useState("");
+  const [aboutTitle, setAboutTitle] = useState("");
+  const [aboutText1, setAboutText1] = useState("");
+  const [aboutText2, setAboutText2] = useState("");
+  const [statsParticipants, setStatsParticipants] = useState("");
+  const [statsCities, setStatsCities] = useState("");
+  const [statsRuns, setStatsRuns] = useState("");
+  const [statsKilometers, setStatsKilometers] = useState("");
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (settings) {
+      setHeroTitle(settings.heroTitle || "");
+      setHeroSubtitle(settings.heroSubtitle || "");
+      setAboutTitle(settings.aboutTitle || "");
+      setAboutText1(settings.aboutText1 || "");
+      setAboutText2(settings.aboutText2 || "");
+      setStatsParticipants(settings.statsParticipants || "");
+      setStatsCities(settings.statsCities || "");
+      setStatsRuns(settings.statsRuns || "");
+      setStatsKilometers(settings.statsKilometers || "");
+    }
+  }, [settings]);
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch("/api/home-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update settings");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home-settings"] });
+      toast({ title: "Настройки обновлены" });
+    },
+    onError: () => {
+      toast({ title: "Ошибка обновления настроек", variant: "destructive" });
+    },
+  });
+
+  const uploadHeroImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("hero", file);
+      const response = await fetch("/api/home-settings/hero-image", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Failed to upload hero image");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home-settings"] });
+      setHeroImageFile(null);
+      toast({ title: "Hero изображение загружено" });
+    },
+    onError: () => {
+      toast({ title: "Ошибка загрузки изображения", variant: "destructive" });
+    },
+  });
+
+  const handleSave = () => {
+    updateSettingsMutation.mutate({
+      heroTitle,
+      heroSubtitle,
+      aboutTitle,
+      aboutText1,
+      aboutText2,
+      statsParticipants,
+      statsCities,
+      statsRuns,
+      statsKilometers,
+    });
+  };
+
+  const handleHeroImageUpload = () => {
+    if (heroImageFile) {
+      uploadHeroImageMutation.mutate(heroImageFile);
+    }
+  };
+
+  if (isLoading) {
+    return <p className="text-muted-foreground">Загрузка настроек...</p>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Настройки главной страницы</CardTitle>
+        <CardDescription>
+          Редактирование блоков на главной странице
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Hero блок</h3>
+          
+          <div>
+            <Label htmlFor="heroImage">Hero изображение</Label>
+            {settings?.heroImageUrl && (
+              <div className="mb-2">
+                <img
+                  src={settings.heroImageUrl}
+                  alt="Hero"
+                  className="w-full max-w-md h-48 object-cover grayscale rounded-md"
+                />
+              </div>
+            )}
+            <div className="flex gap-2 items-center">
+              <Input
+                id="heroImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setHeroImageFile(e.target.files?.[0] || null)}
+                data-testid="input-hero-image"
+              />
+              <Button
+                onClick={handleHeroImageUpload}
+                disabled={!heroImageFile || uploadHeroImageMutation.isPending}
+                data-testid="button-upload-hero-image"
+              >
+                {uploadHeroImageMutation.isPending ? "Загрузка..." : "Загрузить"}
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="heroTitle">Заголовок Hero блока</Label>
+            <Input
+              id="heroTitle"
+              value={heroTitle}
+              onChange={(e) => setHeroTitle(e.target.value)}
+              placeholder="Mikkeller Running Club"
+              data-testid="input-hero-title"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="heroSubtitle">Подзаголовок Hero блока</Label>
+            <Input
+              id="heroSubtitle"
+              value={heroSubtitle}
+              onChange={(e) => setHeroSubtitle(e.target.value)}
+              placeholder="Мы бегаем. Мы пьём пиво. Мы друзья."
+              data-testid="input-hero-subtitle"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Блок "О клубе"</h3>
+          
+          <div>
+            <Label htmlFor="aboutTitle">Заголовок</Label>
+            <Input
+              id="aboutTitle"
+              value={aboutTitle}
+              onChange={(e) => setAboutTitle(e.target.value)}
+              placeholder="О клубе"
+              data-testid="input-about-title"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="aboutText1">Первый параграф</Label>
+            <Textarea
+              id="aboutText1"
+              value={aboutText1}
+              onChange={(e) => setAboutText1(e.target.value)}
+              rows={3}
+              data-testid="input-about-text1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="aboutText2">Второй параграф</Label>
+            <Textarea
+              id="aboutText2"
+              value={aboutText2}
+              onChange={(e) => setAboutText2(e.target.value)}
+              rows={3}
+              data-testid="input-about-text2"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Статистика</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="statsParticipants">Участники</Label>
+              <Input
+                id="statsParticipants"
+                value={statsParticipants}
+                onChange={(e) => setStatsParticipants(e.target.value)}
+                placeholder="1200+"
+                data-testid="input-stats-participants"
+              />
+            </div>
+            <div>
+              <Label htmlFor="statsCities">Города</Label>
+              <Input
+                id="statsCities"
+                value={statsCities}
+                onChange={(e) => setStatsCities(e.target.value)}
+                placeholder="50+"
+                data-testid="input-stats-cities"
+              />
+            </div>
+            <div>
+              <Label htmlFor="statsRuns">Забеги</Label>
+              <Input
+                id="statsRuns"
+                value={statsRuns}
+                onChange={(e) => setStatsRuns(e.target.value)}
+                placeholder="500+"
+                data-testid="input-stats-runs"
+              />
+            </div>
+            <div>
+              <Label htmlFor="statsKilometers">Километры</Label>
+              <Input
+                id="statsKilometers"
+                value={statsKilometers}
+                onChange={(e) => setStatsKilometers(e.target.value)}
+                placeholder="15K"
+                data-testid="input-stats-kilometers"
+              />
+            </div>
+          </div>
+        </div>
+
+        <Button
+          onClick={handleSave}
+          disabled={updateSettingsMutation.isPending}
+          data-testid="button-save-home-settings"
+        >
+          {updateSettingsMutation.isPending ? "Сохранение..." : "Сохранить изменения"}
+        </Button>
       </CardContent>
     </Card>
   );

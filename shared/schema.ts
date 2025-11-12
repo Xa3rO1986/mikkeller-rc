@@ -147,3 +147,27 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
+
+// Home settings table (singleton)
+export const homeSettings = pgTable("home_settings", {
+  id: varchar("id").primaryKey().default("singleton"),
+  heroImageUrl: text("hero_image_url"),
+  heroTitle: text("hero_title").notNull().default("Mikkeller Running Club"),
+  heroSubtitle: text("hero_subtitle").notNull().default("Мы бегаем. Мы пьём пиво. Мы друзья."),
+  aboutTitle: text("about_title").notNull().default("О клубе"),
+  aboutText1: text("about_text_1").notNull().default("Mikkeller Running Club — это международное сообщество бегунов, которые встречаются каждую неделю, чтобы вместе бегать и наслаждаться компанией друг друга."),
+  aboutText2: text("about_text_2").notNull().default("Мы бегаем в более чем 50 городах по всему миру. Наши забеги подходят для всех уровней подготовки — от новичков до опытных марафонцев."),
+  statsParticipants: text("stats_participants").notNull().default("1200+"),
+  statsCities: text("stats_cities").notNull().default("50+"),
+  statsRuns: text("stats_runs").notNull().default("500+"),
+  statsKilometers: text("stats_kilometers").notNull().default("15K"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertHomeSettingsSchema = createInsertSchema(homeSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertHomeSettings = z.infer<typeof insertHomeSettingsSchema>;
+export type HomeSettings = typeof homeSettings.$inferSelect;

@@ -20,6 +20,21 @@ export default function Home() {
     queryKey: ['/api/photos'],
   });
 
+  const { data: homeSettings } = useQuery<{
+    heroImageUrl: string | null;
+    heroTitle: string;
+    heroSubtitle: string;
+    aboutTitle: string;
+    aboutText1: string;
+    aboutText2: string;
+    statsParticipants: string;
+    statsCities: string;
+    statsRuns: string;
+    statsKilometers: string;
+  }>({
+    queryKey: ['/api/home-settings'],
+  });
+
   const nextEvent = upcomingEvents[0];
   
   return (
@@ -27,7 +42,7 @@ export default function Home() {
       <section className="relative min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src={heroImage}
+            src={homeSettings?.heroImageUrl || heroImage}
             alt="Mikkeller Running Club"
             className="w-full h-full object-cover grayscale"
           />
@@ -43,10 +58,10 @@ export default function Home() {
             />
           </div>
           <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-            Mikkeller Running Club
+            {homeSettings?.heroTitle || "Mikkeller Running Club"}
           </h1>
           <p className="text-xl lg:text-2xl mb-8 font-medium">
-            Мы бегаем. Мы пьём пиво. Мы друзья.
+            {homeSettings?.heroSubtitle || "Мы бегаем. Мы пьём пиво. Мы друзья."}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link href="/join">
@@ -186,12 +201,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-6">О клубе</h2>
+              <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+                {homeSettings?.aboutTitle || "О клубе"}
+              </h2>
               <p className="text-lg text-muted-foreground mb-4">
-                Mikkeller Running Club — это международное сообщество бегунов, которые встречаются каждую неделю, чтобы вместе бегать и наслаждаться компанией друг друга.
+                {homeSettings?.aboutText1 || "Mikkeller Running Club — это международное сообщество бегунов, которые встречаются каждую неделю, чтобы вместе бегать и наслаждаться компанией друг друга."}
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Мы бегаем в более чем 50 городах по всему миру. Наши забеги подходят для всех уровней подготовки — от новичков до опытных марафонцев.
+                {homeSettings?.aboutText2 || "Мы бегаем в более чем 50 городах по всему миру. Наши забеги подходят для всех уровней подготовки — от новичков до опытных марафонцев."}
               </p>
               <Link href="/about">
                 <Button size="lg" data-testid="button-about">
@@ -202,25 +219,33 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-6">
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">1200+</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {homeSettings?.statsParticipants || "1200+"}
+                  </div>
                   <div className="text-sm text-muted-foreground">Участников</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">50+</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {homeSettings?.statsCities || "50+"}
+                  </div>
                   <div className="text-sm text-muted-foreground">Городов</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">500+</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {homeSettings?.statsRuns || "500+"}
+                  </div>
                   <div className="text-sm text-muted-foreground">Забегов</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">15K</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {homeSettings?.statsKilometers || "15K"}
+                  </div>
                   <div className="text-sm text-muted-foreground">Километров</div>
                 </CardContent>
               </Card>

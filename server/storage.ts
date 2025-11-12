@@ -7,6 +7,7 @@ import {
   products,
   variants,
   orders,
+  homeSettings,
   type Admin,
   type InsertAdmin,
   type Event,
@@ -19,6 +20,8 @@ import {
   type InsertVariant,
   type Order,
   type InsertOrder,
+  type HomeSettings,
+  type InsertHomeSettings,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -66,6 +69,10 @@ export interface IStorage {
   getOrderByYookassaPaymentId(paymentId: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, order: Partial<InsertOrder>): Promise<Order | undefined>;
+
+  // Home Settings
+  getHomeSettings(): Promise<HomeSettings | undefined>;
+  updateHomeSettings(settings: Partial<InsertHomeSettings>): Promise<HomeSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -289,6 +296,30 @@ export class DatabaseStorage implements IStorage {
   async updateOrder(id: string, order: Partial<InsertOrder>): Promise<Order | undefined> {
     const [updated] = await db.update(orders).set(order).where(eq(orders.id, id)).returning();
     return updated;
+  }
+
+  async getHomeSettings(): Promise<HomeSettings | undefined> {
+    const [settings] = await db.select().from(homeSettings).where(eq(homeSettings.id, "singleton")).limit(1);
+    return settings;
+  }
+
+  async updateHomeSettings(settings: Partial<InsertHomeSettings>): Promise<HomeSettings> {
+    const existing = await this.getHomeSettings();
+    
+    if (existing) {
+      const [updated] = await db
+        .update(homeSettings)
+        .set({ ...settings, updatedAt: new Date() })
+        .where(eq(homeSettings.id, "singleton"))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(homeSettings)
+        .values({ id: "singleton", ...settings })
+        .returning();
+      return created;
+    }
   }
 }
 

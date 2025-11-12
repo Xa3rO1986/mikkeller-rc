@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Share2, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -20,7 +21,12 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12">
+        <Breadcrumbs items={[
+          { label: "Магазин", href: "/shop" },
+          { label: "Беговая футболка MRC" }
+        ]} />
+        
+        <div className="grid lg:grid-cols-2 gap-12 mt-8">
           <div>
             <div className="relative aspect-square bg-muted rounded-lg overflow-hidden mb-4">
               <img

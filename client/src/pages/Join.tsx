@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { useState } from "react";
 
 export default function Join() {
@@ -23,6 +24,8 @@ export default function Join() {
   return (
     <div className="min-h-screen py-12 bg-muted/30">
       <div className="max-w-2xl mx-auto px-4 lg:px-8">
+        <Breadcrumbs items={[{ label: "Присоединиться" }]} />
+        
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">
             Присоединяйтесь к MRC

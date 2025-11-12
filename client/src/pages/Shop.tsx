@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
@@ -77,6 +78,8 @@ export default function Shop() {
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <Breadcrumbs items={[{ label: "Магазин" }]} />
+        
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Магазин</h1>
           <p className="text-lg text-muted-foreground">

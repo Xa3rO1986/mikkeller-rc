@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { MapPin } from "lucide-react";
 import { Link } from "wouter";
 import type { Location } from "@shared/schema";
@@ -12,6 +13,8 @@ export default function Locations() {
   return (
     <div className="min-h-screen py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <Breadcrumbs items={[{ label: "Локации" }]} />
+        
         <div className="mb-12 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Локации забегов</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

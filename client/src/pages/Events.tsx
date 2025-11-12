@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import EventCard from "@/components/EventCard";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,6 +45,8 @@ export default function Events() {
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <Breadcrumbs items={[{ label: "Забеги" }]} />
+        
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Забеги</h1>
           <p className="text-lg text-muted-foreground">

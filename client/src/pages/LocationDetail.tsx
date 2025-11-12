@@ -3,6 +3,7 @@ import { useParams, Link } from "wouter";
 import { MapPin, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import type { Location, Event } from "@shared/schema";
 import { useEffect, useRef, useState } from "react";
 
@@ -156,15 +157,12 @@ export default function LocationDetail() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-6">
-          <Link href="/">
-            <Button variant="ghost" size="sm" data-testid="button-back">
-              ← Назад
-            </Button>
-          </Link>
-        </div>
+        <Breadcrumbs items={[
+          { label: "Локации", href: "/locations" },
+          { label: location.name }
+        ]} />
 
-        <div className="space-y-8">
+        <div className="space-y-8 mt-8">
           <div>
             <h1 className="text-4xl font-bold mb-4" data-testid="text-location-name">
               {location.name}

@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { MapPin, Users, Calendar, Globe } from "lucide-react";
 import { Link } from "wouter";
 
@@ -10,7 +11,9 @@ export default function About() {
     <div className="min-h-screen">
       <section className="py-16 lg:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <Breadcrumbs items={[{ label: "О клубе" }]} />
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-center mt-8">
             <div>
               <h1 className="text-4xl lg:text-5xl font-bold mb-6">
                 О Mikkeller Running Club

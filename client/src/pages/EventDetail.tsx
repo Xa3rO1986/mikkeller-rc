@@ -1,5 +1,6 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,7 +60,12 @@ export default function EventDetail() {
     <div className="min-h-screen">
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <div className="relative h-[400px] overflow-hidden rounded-lg">
+          <Breadcrumbs items={[
+            { label: "Забеги", href: "/events" },
+            { label: event.title }
+          ]} />
+          
+          <div className="relative h-[400px] overflow-hidden rounded-lg mt-4">
             {event.coverImageUrl ? (
               <img
                 src={event.coverImageUrl}

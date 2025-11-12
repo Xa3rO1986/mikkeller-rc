@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import PhotoCard from "@/components/PhotoCard";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -59,6 +60,8 @@ export default function Gallery() {
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <Breadcrumbs items={[{ label: "Галерея" }]} />
+        
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Галерея</h1>
           <p className="text-lg text-muted-foreground">

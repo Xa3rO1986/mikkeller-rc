@@ -56,7 +56,7 @@ export default function EventDetail() {
               <img
                 src={event.coverImageUrl}
                 alt={event.title}
-                className="w-full h-full object-cover grayscale"
+                className="w-full h-full object-cover object-top grayscale"
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">

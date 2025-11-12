@@ -13,6 +13,7 @@ import Shop from "@/pages/Shop";
 import ProductDetail from "@/pages/ProductDetail";
 import About from "@/pages/About";
 import Join from "@/pages/Join";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/shop/:slug" component={ProductDetail} />
       <Route path="/about" component={About} />
       <Route path="/join" component={Join} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

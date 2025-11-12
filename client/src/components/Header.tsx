@@ -1,17 +1,25 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, Moon, Sun, User } from "lucide-react";
+import { Menu, Moon, Sun, User, Settings } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import type { User as UserType } from "@shared/schema";
 
 export default function Header() {
   const [location] = useLocation();
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const { data: currentUser } = useQuery<UserType>({
+    queryKey: ['/api/user'],
+  });
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle("dark");
   };
+
+  const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'EDITOR';
 
   const navLinks = [
     { href: "/", label: "Главная" },
@@ -51,6 +59,18 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link href="/admin">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  data-testid="button-admin"
+                  title="Админ-панель"
+                >
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
             <Button
               size="icon"
               variant="ghost"

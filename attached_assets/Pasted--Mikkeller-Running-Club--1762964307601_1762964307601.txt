@@ -1,0 +1,484 @@
+Создай продакшн-готовый веб-сайт для бегового клуба Mikkeller Running Club со следующим ТЗ. Используй современные, широко поддерживаемые технологии, зафиксированные ниже. Сразу выдай рабочий проект со скриптами запуска, миграциями БД, сид-данными и инструкцией в README.
+Техстек (обязателен)
+Next.js 14 (App Router) + TypeScript
+
+
+Tailwind CSS + shadcn/ui (карточки, кнопки, формы, модалки)
+
+
+Prisma ORM + PostgreSQL (через Supabase или локально)
+
+
+Supabase: Auth (email/oauth), Storage (фото), Postgres (данные)
+
+
+Stripe для оплаты мерча (Checkout + Webhooks)
+
+
+Карты и маршруты: Leaflet + leaflet-gpx (просмотр .gpx на карте), тайлы OpenStreetMap
+
+
+Комментарии: подключаемый виджет Disqus или Hyvor Talk или Remark42 (выбери Disqus по умолчанию; ключи — через .env)
+
+
+Загрузка фото: через Supabase Storage (с превью и ресайзом на клиенте)
+
+
+Валидация форм: Zod + react-hook-form
+
+
+Локализация RU/EN через next-intl (RU по умолчанию)
+
+
+Аналитика: Plausible или Vercel Analytics (переключается env-флагом)
+
+
+Разделы сайта (страницы)
+Главная (/)
+
+
+Герой-блок (логотип, девиз, CTA “Присоединиться”)
+
+
+Ближайший забег (карточка с датой, киломатражем, кнопкой “Подробнее”)
+
+
+Фотогалерея последних забегов (3–6 фото, ссылка “Смотреть всё”)
+
+
+Секция “О клубе”: кто мы, где бегаем, как вступить
+
+
+Лента новостей (3 последних поста)
+
+
+Забеги / Events (/events)
+
+
+Список событий с фильтрами: дата (будущие/прошедшие), локация, дистанция
+
+
+Карточки: дата, название, место, краткое описание, теги, статус (регистрация открыта/закрыта)
+
+
+Страница события (/events/[slug])
+
+
+Полное описание, дата/время, место (карта с маркером), дистанции
+
+
+Кнопка “Добавить в календарь” (iCal/Google)
+
+
+GPX:
+
+
+Кнопка “Скачать .gpx”
+
+
+Встроенная Leaflet-карта с трассой из GPX (polyline, старт/финиш)
+
+
+Блок метрик маршрута (дистанция, набор высоты, темп-рекомендации)
+
+
+Галерея фотографий события (карточки с лайтбоксом)
+
+
+Комментарии через подключенный сервис (Disqus по умолчанию)
+
+
+Кнопка “Загрузить фото” (для участников, после логина)
+
+
+Галерея (/gallery)
+
+
+Сетка фото по событиям/датам, фильтры и поиск; страница открытия фото с EXIF/источником
+
+
+Магазин / Merch (/shop)
+
+
+Каталог: футболки, майки, худи, носки, шапки, бутылки и пр.
+
+
+Фильтры: размер, цвет, тип товара; пагинация
+
+
+Страница товара: фото-карусель, описание, состав, таблица размеров, вариации (размер/цвет), наличие, цена
+
+
+Кнопка “Купить” → Stripe Checkout
+
+
+О клубе (/about)
+
+
+История Mikkeller Running Club, города/члены, как присоединиться
+
+
+Вступить / Sign up (/join)
+
+
+Форма регистрации участника (имя, e-mail, город, согласия)
+
+
+Админка (/admin – доступ только для ролей admin/editor)
+
+
+CRUD для событий, постов, товаров, заказов, пользователей
+
+
+Загрузка GPX (парсинг, геометрия, автоподсчёт метрик)
+
+
+Модерация фото (approve/deny, привязка к событию)
+
+
+Настройки интеграций (Disqus shortname, Stripe keys, Plausible domain и т.д.)
+
+
+Ключевые функции (детализация)
+События/забеги
+
+
+Модель: Event { id, slug, title, description, startsAt, endsAt, location { lat, lng, address }, distanceKm, elevationGain, gpxUrl, coverImageUrl, status, tags[] }
+
+
+Автогенерация slug; серверный подсчёт distance/elevation из GPX (используй пакет для парсинга GPX)
+
+
+Кнопка экспорта .ics (iCal) и линк “Add to Google Calendar”
+
+
+Комментарии к событиям
+
+
+Компонент с встройкой Disqus (по slug), конфиг из .env (DISQUS_SHORTNAME)
+
+
+Возможность легко переключить на Hyvor/Remark42 переменной окружения
+
+
+Фото
+
+
+Загрузка авторизованными пользователями, drag-and-drop, прогресс
+
+
+Сохранение в Supabase Storage, генерация превью (client-side)
+
+
+Модель: Photo { id, eventId?, userId, title?, description?, url, thumbUrl, createdAt, status: 'pending'|'approved' }
+
+
+Лайтбокс, пагинация, фильтры (по событию/дате/автору)
+
+
+GPX
+
+
+Хранение оригинала в Storage, публичная ссылка для скачивания
+
+
+Просмотр на Leaflet через leaflet-gpx, показ ключевых точек (waypoints)
+
+
+Серверное извлечение метрик; сохранение polyline (для fast render)
+
+
+Магазин
+
+
+Модель: Product { id, slug, title, description, images[], category, variants[], price, currency, stock, active }
+
+
+Variant { id, productId, size, color, sku, stock, priceOverride? }
+
+
+Корзина на клиенте (state), оформление через Юкасса или T-банк
+
+
+Вебхук Stripe для подтверждения заказа → создание Order
+
+
+Модель заказа: Order { id, items[], amountTotal, currency, status, email, shippingAddress, createdAt }
+
+
+Аутентификация/Роли
+
+
+Supabase Auth; роли user, editor, admin
+
+
+Страницы/операции админки защищены (middleware + RLS при необходимости)
+
+
+SEO/соц-карты
+
+
+Метаданные OpenGraph/Twitter для страниц событий и товаров
+
+
+Карточки превью с датой/местом/ценой
+
+
+Производительность/UX
+
+
+Оптимизация изображений (Next Image), ленивые загрузки
+
+
+Инкрементальная статическая генерация (ISR) для публичных страниц
+
+
+Темная/светлая темы, доступность (ARIA, контраст)
+
+
+i18n
+
+
+RU/EN переключатель; контентные поля в БД — нейтральные, интерфейс локализован
+
+
+Безопасность
+
+
+Загрузка файлов: тип/размер-чек, валидация на клиенте и сервере
+
+
+Rate-limit на формы (логин, комменты-прокси если потребуется)
+
+
+Логи/аналитика
+
+
+Plausible/Vercel Analytics; серверные логи важный действий админов
+
+
+API-эндпойнты (Next.js Route Handlers)
+POST /api/events (admin/editor) — создать/обновить событие
+
+
+POST /api/events/[id]/gpx — загрузить GPX, распарсить, посчитать метрики, обновить событие
+
+
+POST /api/photos — загрузка фото (multipart → Supabase Storage), статус pending
+
+
+POST /api/photos/[id]/approve (admin) — модерация
+
+
+GET /api/events (пагинация, фильтры)
+
+
+GET /api/events/[slug]
+
+
+GET /api/gallery (пагинация/фильтры)
+
+
+POST /api/checkout — создание Stripe Checkout Session
+
+
+POST /api/stripe/webhook — обработка платежей, создание Order
+
+
+GET /api/products / GET /api/products/[slug]
+
+
+БД-схема (Prisma, кратко)
+model User {
+  id        String @id @default(cuid())
+  email     String @unique
+  name      String?
+  role      Role   @default(USER)
+  photos    Photo[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+enum Role { USER EDITOR ADMIN }
+
+model Event {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String
+  startsAt     DateTime
+  endsAt       DateTime?
+  latitude     Float
+  longitude    Float
+  address      String
+  distanceKm   Float?
+  elevationGain Float?
+  gpxUrl       String?
+  polyline     String? // упрощённая линия для быстрой отрисовки
+  coverImageUrl String?
+  status       String   // draft|published|archived
+  tags         String[]
+  photos       Photo[]
+  createdAt    DateTime @default(now())
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  event     Event?   @relation(fields: [eventId], references: [id])
+  eventId   String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String?
+  description String?
+  url       String
+  thumbUrl  String
+  status    String   // pending|approved|rejected
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  title     String
+  description String
+  images    String[]
+  category  String
+  active    Boolean @default(true)
+  variants  Variant[]
+  createdAt DateTime @default(now())
+}
+
+model Variant {
+  id        String  @id @default(cuid())
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  size      String?
+  color     String?
+  sku       String  @unique
+  stock     Int     @default(0)
+  price     Int     // в минимальных единицах (копейки/центы)
+}
+
+model Order {
+  id          String  @id @default(cuid())
+  items       Json
+  amountTotal Int
+  currency    String
+  status      String // created|paid|failed
+  email       String
+  shippingAddress Json?
+  user        User?  @relation(fields: [userId], references: [id])
+  userId      String?
+  createdAt   DateTime @default(now())
+}
+
+UI-детали
+Палитра: чёрный/белый, акцент — жёлтый Mikkeller (#FFD200) и вторичный — тёмно-бирюзовый
+
+
+Компоненты shadcn/ui: Card, Button, Badge, Input, Select, Dialog, Tabs, Toaster
+
+
+Карточка события: бейдж статуса, теги, мини-карта (static), дата в крупном формате
+
+
+Галерея: Masonry-сетка, лайтбокс, клавиши ←/→
+
+
+Формы: маски на даты/время, подсказки, ошибки через Zod
+
+
+Админка
+Вкладки: Events, Photos (moderation), Products, Orders, Settings
+
+
+Импорт/экспорт CSV для товаров
+
+
+Предпросмотр GPX на стадии загрузки
+
+
+Тоггл “Опубликовать/Снять с публикации”
+
+
+Настройки окружения (.env пример, с мок-значениями)
+NEXT_PUBLIC_SITE_NAME="Mikkeller Running Club"
+NEXT_PUBLIC_DEFAULT_LOCALE="ru"
+DISQUS_SHORTNAME="mikkeller-club"
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN="mrc.example"
+SUPABASE_URL="https://...supabase.co"
+SUPABASE_ANON_KEY="..."
+DATABASE_URL="postgresql://user:pass@host:5432/db"
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+Скрипты
+npm run dev — локальная разработка
+
+
+npm run db:push и npm run db:seed — миграции и сиды
+
+
+npm run build / npm start
+
+
+npm run lint / npm run typecheck
+
+
+Сид-данные
+3 будущих события с GPX-файлами (короткая петля 5к, 10к на набережной, трейл 15к)
+
+
+8–12 фото (часть “approved”, часть “pending”)
+
+
+6 товаров мерча (футболки — S–XL, носки — размеры, разные цвета), тестовые остатки
+
+
+2 пользователя: admin (роль ADMIN), editor (роль EDITOR)
+
+
+Тесты и качество
+Юнит-тесты ключевой логики (парсинг GPX, расчёт метрик)
+
+
+E2E на критичные флоу (создать событие, загрузить GPX, оформить заказ)
+
+
+ESLint + Prettier, строгий TS
+
+
+Готовность к деплою
+Документированный README с шагами: настройки Supabase, Stripe, env-переменные, запуск миграций, запуск в Replit/Vercel
+
+
+Обработчик Stripe webhook зарегистрирован и описан
+
+
+Публичные страницы рендерятся без ошибок без авторизации
+
+
+404/500 страницы, редирект с /events?id= на /events/[slug]
+
+
+Критерии приёмки
+Я могу создать событие, загрузить GPX, увидеть маршрут на карте, скачать исходный .gpx
+
+
+Я могу загрузить фото к событию (после логина), а админ — одобрить
+
+
+На странице события виден блок комментариев Disqus и он работает
+
+
+В магазине товары отображаются, вариации выбираются, оплата через Stripe завершается, в админке вижу заказ paid
+
+
+Lighthouse ≥ 90 (Performance/Accessibility/Best Practices/SEO) на главной и странице события
+
+
+Переключение RU/EN меняет тексты интерфейса
+
+
+Собери проект полностью и выведи мне структуру папок, инструкции и любые дополнительные шаги, если понадобятся.
+

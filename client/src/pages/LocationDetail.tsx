@@ -4,9 +4,14 @@ import { MapPin, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { Location, Event } from "@shared/schema";
+import { useEffect, useRef } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 export default function LocationDetail() {
   const { slug } = useParams();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const leafletMapRef = useRef<L.Map | null>(null);
 
   const { data: location, isLoading: locationLoading } = useQuery<Location>({
     queryKey: ["/api/locations/by-slug", slug],
@@ -16,6 +21,46 @@ export default function LocationDetail() {
   const { data: events = [], isLoading: eventsLoading } = useQuery<Event[]>({
     queryKey: ["/api/events"],
   });
+
+  useEffect(() => {
+    if (!location?.latitude || !location?.longitude || !mapRef.current) {
+      return;
+    }
+
+    if (leafletMapRef.current) {
+      leafletMapRef.current.remove();
+    }
+
+    const map = L.map(mapRef.current).setView([location.latitude, location.longitude], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const customIcon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    L.marker([location.latitude, location.longitude], { icon: customIcon })
+      .addTo(map)
+      .bindPopup(`<strong>${location.name}</strong><br>${location.address}`)
+      .openPopup();
+
+    leafletMapRef.current = map;
+
+    return () => {
+      if (leafletMapRef.current) {
+        leafletMapRef.current.remove();
+        leafletMapRef.current = null;
+      }
+    };
+  }, [location]);
 
   if (locationLoading) {
     return (
@@ -81,14 +126,10 @@ export default function LocationDetail() {
             <Card className="p-6">
               <h2 className="text-xl font-bold mb-4">Расположение на карте</h2>
               <div 
-                className="w-full h-[400px] bg-muted rounded-lg flex items-center justify-center"
+                ref={mapRef}
+                className="w-full h-[400px] rounded-lg grayscale"
                 data-testid="map-container"
-              >
-                <div className="text-center text-muted-foreground">
-                  <MapPin className="w-12 h-12 mx-auto mb-2" />
-                  <p>Координаты: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}</p>
-                </div>
-              </div>
+              />
             </Card>
           )}
 

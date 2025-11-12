@@ -4,12 +4,11 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Enums
-export const roleEnum = pgEnum("role", ["USER", "EDITOR", "ADMIN"]);
 export const eventStatusEnum = pgEnum("event_status", ["draft", "published", "archived"]);
 export const photoStatusEnum = pgEnum("photo_status", ["pending", "approved", "rejected"]);
 export const orderStatusEnum = pgEnum("order_status", ["created", "paid", "failed"]);
 
-// Session storage table for Replit Auth
+// Session storage table
 export const sessions = pgTable(
   "sessions",
   {
@@ -20,27 +19,24 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// Users table
-export const users = pgTable("users", {
+// Administrators table
+export const admins = pgTable("admins", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
+  username: varchar("username").unique().notNull(),
+  passwordHash: text("password_hash").notNull(),
+  email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  role: roleEnum("role").default("USER").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({
+export const insertAdminSchema = createInsertSchema(admins).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type UpsertUser = typeof users.$inferInsert;
-export type User = typeof users.$inferSelect;
+export type InsertAdmin = z.infer<typeof insertAdminSchema>;
+export type Admin = typeof admins.$inferSelect;
 
 // Events table
 export const events = pgTable("events", {
@@ -75,12 +71,12 @@ export type Event = typeof events.$inferSelect;
 export const photos = pgTable("photos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   eventId: varchar("event_id").references(() => events.id, { onDelete: "set null" }),
-  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  adminId: varchar("admin_id").references(() => admins.id, { onDelete: "cascade" }),
   title: text("title"),
   description: text("description"),
   url: text("url").notNull(),
   thumbUrl: text("thumb_url").notNull(),
-  status: photoStatusEnum("status").default("pending").notNull(),
+  status: photoStatusEnum("status").default("approved").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -140,7 +136,6 @@ export const orders = pgTable("orders", {
   status: orderStatusEnum("status").default("created").notNull(),
   email: text("email").notNull(),
   shippingAddress: jsonb("shipping_address"),
-  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }),
   yookassaPaymentId: text("yookassa_payment_id").unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

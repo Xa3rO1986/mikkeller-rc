@@ -2,8 +2,8 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertEventSchema, insertPhotoSchema } from "@shared/schema";
+import { setupAuth, isAuthenticated, hashPassword, verifyPassword } from "./auth";
+import { insertEventSchema, insertPhotoSchema, insertAdminSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import path from "path";
@@ -85,42 +85,119 @@ const gpxUpload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware from Replit Auth blueprint
+  // Auth middleware
   await setupAuth(app);
   
   // Serve uploaded files
   app.use('/uploads/photos', express.static(path.join(__dirname, 'uploads', 'photos')));
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
 
-  // Auth routes
-  app.get('/api/user', async (req: any, res) => {
+  // Admin authentication routes
+  app.post('/api/admin/login', async (req, res) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        return res.json(null);
+      const { username, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
       }
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.json(null);
+
+      const admin = await storage.getAdminByUsername(username);
+      if (!admin) {
+        return res.status(401).json({ message: "Invalid credentials" });
       }
-      res.json(user);
+
+      const isValid = await verifyPassword(password, admin.passwordHash);
+      if (!isValid) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      req.session.adminId = admin.id;
+      const { passwordHash, ...adminData } = admin;
+      res.json(adminData);
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error logging in:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post('/api/admin/logout', (req, res) => {
+    req.session.destroy(() => {
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get('/api/admin/current', async (req, res) => {
+    try {
+      if (!req.session.adminId) {
+        return res.json(null);
+      }
+      
+      const admin = await storage.getAdmin(req.session.adminId);
+      if (!admin) {
+        req.session.destroy(() => {});
+        return res.json(null);
+      }
+
+      const { passwordHash, ...adminData } = admin;
+      res.json(adminData);
+    } catch (error) {
+      console.error("Error fetching current admin:", error);
       res.json(null);
     }
   });
 
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Admin management routes (protected)
+  app.get('/api/admins', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(user);
+      const admins = await storage.getAdmins();
+      const adminsWithoutPasswords = admins.map(({ passwordHash, ...admin }) => admin);
+      res.json(adminsWithoutPasswords);
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("Error fetching admins:", error);
+      res.status(500).json({ message: "Failed to fetch admins" });
+    }
+  });
+
+  app.post('/api/admins', isAuthenticated, async (req, res) => {
+    try {
+      const result = insertAdminSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: fromZodError(result.error).message });
+      }
+
+      const passwordHash = await hashPassword(result.data.passwordHash);
+      const admin = await storage.createAdmin({
+        ...result.data,
+        passwordHash,
+      });
+
+      const { passwordHash: _, ...adminData } = admin;
+      res.json(adminData);
+    } catch (error: any) {
+      console.error("Error creating admin:", error);
+      if (error.code === '23505') {
+        return res.status(409).json({ message: "Username already exists" });
+      }
+      res.status(500).json({ message: "Failed to create admin" });
+    }
+  });
+
+  app.delete('/api/admins/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (req.session.adminId === id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      const deleted = await storage.deleteAdmin(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+
+      res.json({ message: "Admin deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting admin:", error);
+      res.status(500).json({ message: "Failed to delete admin" });
     }
   });
 

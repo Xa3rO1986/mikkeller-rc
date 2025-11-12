@@ -1,15 +1,14 @@
 import { eq, desc, and, sql, gte, lte } from "drizzle-orm";
 import { db } from "./db";
 import {
-  users,
+  admins,
   events,
   photos,
   products,
   variants,
   orders,
-  type User,
-  type InsertUser,
-  type UpsertUser,
+  type Admin,
+  type InsertAdmin,
   type Event,
   type InsertEvent,
   type Photo,
@@ -23,12 +22,13 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
-  // Users
-  getUser(id: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  // Admins
+  getAdmin(id: string): Promise<Admin | undefined>;
+  getAdminByUsername(username: string): Promise<Admin | undefined>;
+  getAdmins(): Promise<Admin[]>;
+  createAdmin(admin: InsertAdmin): Promise<Admin>;
+  updateAdmin(id: string, admin: Partial<InsertAdmin>): Promise<Admin | undefined>;
+  deleteAdmin(id: string): Promise<boolean>;
 
   // Events
   getEvents(filters?: { status?: string; upcoming?: boolean }): Promise<Event[]>;
@@ -69,40 +69,34 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // Users
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    return user;
+  // Admins
+  async getAdmin(id: string): Promise<Admin | undefined> {
+    const [admin] = await db.select().from(admins).where(eq(admins.id, id)).limit(1);
+    return admin;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    return user;
+  async getAdminByUsername(username: string): Promise<Admin | undefined> {
+    const [admin] = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
+    return admin;
   }
 
-  async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db.insert(users).values(user).returning();
-    return newUser;
+  async getAdmins(): Promise<Admin[]> {
+    return await db.select().from(admins).orderBy(desc(admins.createdAt));
   }
 
-  async updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined> {
-    const [updated] = await db.update(users).set(user).where(eq(users.id, id)).returning();
+  async createAdmin(admin: InsertAdmin): Promise<Admin> {
+    const [newAdmin] = await db.insert(admins).values(admin).returning();
+    return newAdmin;
+  }
+
+  async updateAdmin(id: string, admin: Partial<InsertAdmin>): Promise<Admin | undefined> {
+    const [updated] = await db.update(admins).set(admin).where(eq(admins.id, id)).returning();
     return updated;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+  async deleteAdmin(id: string): Promise<boolean> {
+    const result = await db.delete(admins).where(eq(admins.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   // Events
@@ -261,13 +255,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Orders
-  async getOrders(filters?: { userId?: string; status?: string }): Promise<Order[]> {
+  async getOrders(filters?: { status?: string }): Promise<Order[]> {
     let query = db.select().from(orders);
     
     const conditions = [];
-    if (filters?.userId) {
-      conditions.push(eq(orders.userId, filters.userId));
-    }
     if (filters?.status) {
       conditions.push(eq(orders.status, filters.status as any));
     }

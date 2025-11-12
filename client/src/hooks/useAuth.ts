@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import type { Admin } from "@shared/schema";
 
 export function useAuth() {
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["/api/auth/user"],
+  const { data: admin, isLoading } = useQuery<Admin | null>({
+    queryKey: ["/api/admin/current"],
     retry: false,
   });
 
   return {
-    user,
+    admin,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!admin,
   };
 }

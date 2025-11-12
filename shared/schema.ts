@@ -86,6 +86,8 @@ export const insertEventSchema = createInsertSchema(events).omit({
   createdAt: true,
 }).extend({
   tags: z.array(z.string()).default([]),
+  startsAt: z.string().or(z.date()),
+  endsAt: z.string().or(z.date()).optional(),
 });
 
 export type InsertEvent = z.infer<typeof insertEventSchema>;

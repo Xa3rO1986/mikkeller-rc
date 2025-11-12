@@ -126,17 +126,6 @@ export default function EventDetail() {
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Маршрут</h2>
                   <GPXMap gpxUrl={event.gpxUrl} />
-
-                  {event.distanceKm && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                      <Card>
-                        <CardContent className="p-4 text-center">
-                          <div className="text-2xl font-bold mb-1">{event.distanceKm}</div>
-                          <div className="text-sm text-muted-foreground">км</div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  )}
                 </section>
               )}
 

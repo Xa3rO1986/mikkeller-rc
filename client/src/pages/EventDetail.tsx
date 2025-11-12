@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, TrendingUp, Download, Share2, Users } from "lucide-react";
 import PhotoCard from "@/components/PhotoCard";
+import { DisqusComments } from "@/components/DisqusComments";
 
 import coverImage from '@assets/generated_images/Riverside_10k_route_cover_17dba083.png';
 import photo1 from '@assets/generated_images/Runners_celebrating_finish_969c4387.png';
@@ -113,12 +114,12 @@ export default function EventDetail() {
 
               <section>
                 <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
-                <Card>
-                  <CardContent className="p-8 text-center text-muted-foreground">
-                    <p>Система комментариев Disqus</p>
-                    <p className="text-sm mt-2">Интеграция будет добавлена</p>
-                  </CardContent>
-                </Card>
+                <DisqusComments
+                  shortname={import.meta.env.VITE_DISQUS_SHORTNAME}
+                  identifier="event-riverside-10k"
+                  title="Забег вдоль набережной"
+                  url={window.location.href}
+                />
               </section>
             </div>
 

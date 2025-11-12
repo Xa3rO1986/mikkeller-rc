@@ -16,10 +16,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Навигация</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/events"><a className="text-muted-foreground hover:text-foreground">Забеги</a></Link></li>
-              <li><Link href="/gallery"><a className="text-muted-foreground hover:text-foreground">Галерея</a></Link></li>
-              <li><Link href="/shop"><a className="text-muted-foreground hover:text-foreground">Магазин</a></Link></li>
-              <li><Link href="/about"><a className="text-muted-foreground hover:text-foreground">О клубе</a></Link></li>
+              <li><Link href="/events" className="text-muted-foreground hover:text-foreground">Забеги</Link></li>
+              <li><Link href="/gallery" className="text-muted-foreground hover:text-foreground">Галерея</Link></li>
+              <li><Link href="/shop" className="text-muted-foreground hover:text-foreground">Магазин</Link></li>
+              <li><Link href="/about" className="text-muted-foreground hover:text-foreground">О клубе</Link></li>
             </ul>
           </div>
 

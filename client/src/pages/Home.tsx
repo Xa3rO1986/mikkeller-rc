@@ -4,17 +4,21 @@ import { Calendar, MapPin, TrendingUp, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import EventCard from "@/components/EventCard";
 import PhotoCard from "@/components/PhotoCard";
+import { useQuery } from "@tanstack/react-query";
+import type { Event, Photo } from "@shared/schema";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
-import event1 from '@assets/generated_images/Riverside_10k_route_cover_17dba083.png';
-import event2 from '@assets/generated_images/Forest_trail_15k_cover_f2cdae95.png';
-import event3 from '@assets/generated_images/Urban_park_5k_cover_f65fbe07.png';
-import photo1 from '@assets/generated_images/Runners_celebrating_finish_969c4387.png';
-import photo2 from '@assets/generated_images/Runner_stretching_morning_f3d2063d.png';
-import photo3 from '@assets/generated_images/Runners_at_starting_line_dd1d8745.png';
 
 export default function Home() {
-  const upcomingDate = new Date("2024-12-20T10:00:00");
+  const { data: upcomingEvents = [], isLoading: eventsLoading } = useQuery<Event[]>({
+    queryKey: ['/api/events?upcoming=true'],
+  });
+
+  const { data: photos = [], isLoading: photosLoading } = useQuery<Photo[]>({
+    queryKey: ['/api/photos'],
+  });
+
+  const nextEvent = upcomingEvents[0];
   
   return (
     <div className="min-h-screen">
@@ -67,46 +71,69 @@ export default function Home() {
             </Link>
           </div>
 
-          <Card className="overflow-hidden border-2 border-black">
-            <div className="grid md:grid-cols-2 gap-0">
-              <div className="relative h-64 md:h-auto">
-                <img
-                  src={event1}
-                  alt="Riverside 10K"
-                  className="w-full h-full object-cover grayscale"
-                />
-              </div>
-              <CardContent className="p-8 flex flex-col justify-center">
-                <div className="mb-4">
-                  <div className="inline-block bg-black text-white px-4 py-2 rounded-md font-bold text-sm mb-4">
-                    {upcomingDate.getDate()} {upcomingDate.toLocaleDateString('ru', { month: 'long' }).toUpperCase()}
-                  </div>
-                </div>
-                <h3 className="text-2xl lg:text-3xl font-bold mb-4">
-                  Забег вдоль набережной
-                </h3>
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5" />
-                    <span>{upcomingDate.toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {upcomingDate.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5" />
-                    <span>Набережная, Москва</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>10 км • 50м набор высоты</span>
-                  </div>
-                </div>
-                <Link href="/events/riverside-10k">
-                  <Button size="lg" className="w-full md:w-auto" data-testid="button-upcoming-event">
-                    Подробнее
-                  </Button>
-                </Link>
-              </CardContent>
+          {eventsLoading ? (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">Загрузка событий...</p>
             </div>
-          </Card>
+          ) : nextEvent ? (
+            <Card className="overflow-hidden border-2 border-black">
+              <div className="grid md:grid-cols-2 gap-0">
+                <div className="relative h-64 md:h-auto bg-muted flex items-center justify-center">
+                  {nextEvent.coverImageUrl ? (
+                    <img
+                      src={nextEvent.coverImageUrl}
+                      alt={nextEvent.title}
+                      className="w-full h-full object-cover grayscale"
+                    />
+                  ) : (
+                    <div className="text-center text-muted-foreground">
+                      <Calendar className="h-12 w-12 mx-auto mb-2" />
+                      <p className="text-sm">Изображение скоро появится</p>
+                    </div>
+                  )}
+                </div>
+                <CardContent className="p-8 flex flex-col justify-center">
+                  <div className="mb-4">
+                    <div className="inline-block bg-black text-white px-4 py-2 rounded-md font-bold text-sm mb-4">
+                      {new Date(nextEvent.startsAt).getDate()} {new Date(nextEvent.startsAt).toLocaleDateString('ru', { month: 'long' }).toUpperCase()}
+                    </div>
+                  </div>
+                  <h3 className="text-2xl lg:text-3xl font-bold mb-4">
+                    {nextEvent.title}
+                  </h3>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5" />
+                      <span>{new Date(nextEvent.startsAt).toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })} в {new Date(nextEvent.startsAt).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-5 w-5" />
+                      <span>{nextEvent.address}</span>
+                    </div>
+                    {(nextEvent.distanceKm || nextEvent.elevationGain) && (
+                      <div className="flex items-center gap-3">
+                        <TrendingUp className="h-5 w-5" />
+                        <span>
+                          {nextEvent.distanceKm && `${nextEvent.distanceKm} км`}
+                          {nextEvent.distanceKm && nextEvent.elevationGain && ' • '}
+                          {nextEvent.elevationGain && `${nextEvent.elevationGain}м набор высоты`}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <Link href={`/events/${nextEvent.slug}`}>
+                    <Button size="lg" className="w-full md:w-auto" data-testid="button-upcoming-event">
+                      Подробнее
+                    </Button>
+                  </Link>
+                </CardContent>
+              </div>
+            </Card>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">Предстоящие забеги скоро появятся</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -122,26 +149,27 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <PhotoCard
-              id="1"
-              url={photo1}
-              title="Финиш забега"
-              eventTitle="Riverside 10K"
-            />
-            <PhotoCard
-              id="2"
-              url={photo2}
-              title="Разминка"
-              eventTitle="Forest Trail 15K"
-            />
-            <PhotoCard
-              id="3"
-              url={photo3}
-              title="Старт"
-              eventTitle="Urban Park 5K"
-            />
-          </div>
+          {photosLoading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Загрузка фотографий...</p>
+            </div>
+          ) : photos.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {photos.slice(0, 3).map((photo) => (
+                <PhotoCard
+                  key={photo.id}
+                  id={photo.id}
+                  url={photo.url}
+                  title={photo.title || 'Фото забега'}
+                  eventTitle={photo.eventId ? 'Забег' : undefined}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Фотографии скоро появятся</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -195,40 +223,21 @@ export default function Home() {
       <section className="py-16 lg:py-24 bg-card">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <h2 className="text-3xl lg:text-4xl font-bold mb-8">Предстоящие забеги</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <EventCard
-              slug="riverside-10k"
-              title="Забег вдоль набережной"
-              date="2024-12-20T10:00:00"
-              location="Набережная, Москва"
-              distance={10}
-              elevation={50}
-              coverImage={event1}
-              status="open"
-              tags={["10км", "городской", "набережная"]}
-            />
-            <EventCard
-              slug="forest-trail-15k"
-              title="Лесной трейл"
-              date="2024-12-27T09:00:00"
-              location="Лесопарк, Москва"
-              distance={15}
-              elevation={280}
-              coverImage={event2}
-              status="upcoming"
-              tags={["15км", "трейл", "природа"]}
-            />
-            <EventCard
-              slug="urban-park-5k"
-              title="Пробежка в парке"
-              date="2025-01-10T10:00:00"
-              location="Парк Горького, Москва"
-              distance={5}
-              coverImage={event3}
-              status="upcoming"
-              tags={["5км", "парк", "легко"]}
-            />
-          </div>
+          {eventsLoading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Загрузка забегов...</p>
+            </div>
+          ) : upcomingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.slice(0, 3).map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Предстоящие забеги скоро появятся</p>
+            </div>
+          )}
         </div>
       </section>
     </div>

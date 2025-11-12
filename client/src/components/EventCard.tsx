@@ -10,9 +10,10 @@ import { useQuery } from "@tanstack/react-query";
 
 interface EventCardProps {
   event: Event;
+  grayscale?: boolean;
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, grayscale = false }: EventCardProps) {
   const eventDate = new Date(event.startsAt);
   
   const { data: location } = useQuery<Location>({
@@ -29,7 +30,7 @@ export default function EventCard({ event }: EventCardProps) {
           <img
             src={event.coverImageUrl}
             alt={event.title}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${grayscale ? 'grayscale' : ''}`}
           />
         ) : (
           <div className="text-center text-muted-foreground">

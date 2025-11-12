@@ -3,9 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, TrendingUp, Route } from "lucide-react";
 import { Link } from "wouter";
-import type { Event } from "@shared/schema";
+import type { Event, Location } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
+import { useQuery } from "@tanstack/react-query";
 
 interface EventCardProps {
   event: Event;
@@ -13,6 +14,13 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   const eventDate = new Date(event.startsAt);
+  
+  const { data: location } = useQuery<Location>({
+    queryKey: ["/api/locations", event.locationId],
+    enabled: !!event.locationId,
+  });
+
+  const locationText = location?.name || event.address || 'Место уточняется';
   
   return (
     <Card className="overflow-hidden hover:-translate-y-1 transition-transform border-2 border-black" data-testid={`card-event-${event.slug}`}>
@@ -48,7 +56,7 @@ export default function EventCard({ event }: EventCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
-            <span>{event.address}</span>
+            <span>{locationText}</span>
           </div>
           {event.distanceKm && (
             <div className="flex items-center gap-2">

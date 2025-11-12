@@ -5,7 +5,7 @@ import { Link } from "wouter";
 import EventCard from "@/components/EventCard";
 import PhotoCard from "@/components/PhotoCard";
 import { useQuery } from "@tanstack/react-query";
-import type { Event, Photo } from "@shared/schema";
+import type { Event, Photo, Location } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
@@ -18,6 +18,13 @@ export default function Home() {
 
   const { data: photos = [], isLoading: photosLoading } = useQuery<Photo[]>({
     queryKey: ['/api/photos'],
+  });
+
+  const nextEvent = upcomingEvents[0];
+  
+  const { data: nextEventLocation } = useQuery<Location>({
+    queryKey: ["/api/locations", nextEvent?.locationId],
+    enabled: !!nextEvent?.locationId,
   });
 
   const { data: homeSettings } = useQuery<{
@@ -35,7 +42,7 @@ export default function Home() {
     queryKey: ['/api/home-settings'],
   });
 
-  const nextEvent = upcomingEvents[0];
+  const nextEventLocationText = nextEventLocation?.name || nextEvent?.address || 'Место уточняется';
   
   return (
     <div className="min-h-screen">
@@ -135,16 +142,12 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-3">
                       <MapPin className="h-5 w-5" />
-                      <span>{nextEvent.address}</span>
+                      <span>{nextEventLocationText}</span>
                     </div>
-                    {(nextEvent.distanceKm || nextEvent.elevationGain) && (
+                    {nextEvent.distanceKm && (
                       <div className="flex items-center gap-3">
                         <TrendingUp className="h-5 w-5" />
-                        <span>
-                          {nextEvent.distanceKm && `${nextEvent.distanceKm} км`}
-                          {nextEvent.distanceKm && nextEvent.elevationGain && ' • '}
-                          {nextEvent.elevationGain && `${nextEvent.elevationGain}м набор высоты`}
-                        </span>
+                        <span>{nextEvent.distanceKm} км</span>
                       </div>
                     )}
                   </div>

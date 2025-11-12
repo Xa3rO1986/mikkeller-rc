@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, TrendingUp, Download, Share2, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import type { Event, Photo } from "@shared/schema";
+import type { Event, Photo, Location } from "@shared/schema";
 import { formatRussianDate } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
 import { DisqusComments } from "@/components/DisqusComments";
@@ -26,6 +26,11 @@ export default function EventDetail() {
   const { data: photos = [] } = useQuery<Photo[]>({
     queryKey: ['/api/photos', { eventId: event?.id }],
     enabled: !!event?.id,
+  });
+
+  const { data: location } = useQuery<Location>({
+    queryKey: ['/api/locations', event?.locationId],
+    enabled: !!event?.locationId,
   });
 
   if (!slug || eventError) {
@@ -227,20 +232,31 @@ export default function EventDetail() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-4">Организатор</h3>
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
-                      MRC
+              {location && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold mb-4">Локация</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="font-medium" data-testid="text-location-name">
+                            {location.name}
+                          </div>
+                          <div className="text-sm text-muted-foreground" data-testid="text-location-address">
+                            {location.address}
+                          </div>
+                        </div>
+                      </div>
+                      {location.description && (
+                        <p className="text-sm text-muted-foreground pl-7">
+                          {location.description}
+                        </p>
+                      )}
                     </div>
-                    <div>
-                      <div className="font-medium">Mikkeller Running Club</div>
-                      <div className="text-sm text-muted-foreground">Москва</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
 
               {event.tags.length > 0 && (
                 <Card>

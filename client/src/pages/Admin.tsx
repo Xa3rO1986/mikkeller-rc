@@ -13,12 +13,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2, Upload } from "lucide-react";
+import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2, Upload, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Admin, Event, Location, Product, Photo, Order } from "@shared/schema";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { LocationPicker } from "@/components/LocationPicker";
 
 export default function Admin() {
   const [_, setLocation] = useLocation();
@@ -143,11 +144,29 @@ export default function Admin() {
               </p>
             </CardContent>
           </Card>
+
+          <Card 
+            className="cursor-pointer hover-elevate transition-colors"
+            onClick={() => setActiveTab("locations")}
+            data-testid="card-locations"
+          >
+            <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Локации</CardTitle>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Места</div>
+              <p className="text-xs text-muted-foreground">
+                Каталог локаций
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
             <TabsTrigger value="events">События</TabsTrigger>
+            <TabsTrigger value="locations">Локации</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="photos">Фотографии</TabsTrigger>
             <TabsTrigger value="orders">Заказы</TabsTrigger>
@@ -157,6 +176,10 @@ export default function Admin() {
 
           <TabsContent value="events">
             <EventsManagement />
+          </TabsContent>
+
+          <TabsContent value="locations">
+            <LocationsManagement />
           </TabsContent>
 
           <TabsContent value="products">
@@ -1626,6 +1649,300 @@ function HomeSettingsManagement() {
         </Form>
       </CardContent>
     </Card>
+  );
+}
+
+function LocationsManagement() {
+  const { toast } = useToast();
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [description, setDescription] = useState("");
+  const [address, setAddress] = useState("");
+  const [latitude, setLatitude] = useState(55.7558);
+  const [longitude, setLongitude] = useState(37.6173);
+  const [editingLocation, setEditingLocation] = useState<Location | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { data: locations, isLoading } = useQuery<Location[]>({
+    queryKey: ["/api/locations"],
+  });
+
+  const saveLocationMutation = useMutation({
+    mutationFn: async () => {
+      const locationData = {
+        name,
+        slug,
+        description: description || null,
+        address,
+        latitude,
+        longitude,
+      };
+
+      if (editingLocation) {
+        const response = await apiRequest("PATCH", `/api/locations/${editingLocation.id}`, locationData);
+        return await response.json();
+      } else {
+        const response = await apiRequest("POST", "/api/locations", locationData);
+        return await response.json();
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/locations"] });
+      resetForm();
+      setIsDialogOpen(false);
+      toast({
+        title: editingLocation ? "Локация обновлена" : "Локация создана",
+        description: editingLocation ? "Локация успешно обновлена" : "Новая локация добавлена в каталог",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteLocationMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/locations/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/locations"] });
+      toast({
+        title: "Локация удалена",
+        description: "Локация успешно удалена из каталога",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetForm = () => {
+    setName("");
+    setSlug("");
+    setDescription("");
+    setAddress("");
+    setLatitude(55.7558);
+    setLongitude(37.6173);
+    setEditingLocation(null);
+  };
+
+  const handleEdit = (location: Location) => {
+    setName(location.name);
+    setSlug(location.slug);
+    setDescription(location.description || "");
+    setAddress(location.address);
+    setLatitude(location.latitude);
+    setLongitude(location.longitude);
+    setEditingLocation(location);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !slug || !address) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните обязательные поля: название, slug, адрес",
+        variant: "destructive",
+      });
+      return;
+    }
+    saveLocationMutation.mutate();
+  };
+
+  const handleLocationChange = (lat: number, lng: number) => {
+    setLatitude(lat);
+    setLongitude(lng);
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between gap-1">
+          <div>
+            <CardTitle>Каталог локаций</CardTitle>
+            <CardDescription>
+              Управление местами проведения событий
+            </CardDescription>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) resetForm();
+          }}>
+            <DialogTrigger asChild>
+              <Button data-testid="button-add-location">
+                <Plus className="h-4 w-4 mr-2" />
+                Добавить локацию
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingLocation ? "Редактировать локацию" : "Добавить локацию"}
+                </DialogTitle>
+                <DialogDescription>
+                  Укажите название, адрес и выберите точку на карте
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Название *</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (!editingLocation) {
+                        setSlug(e.target.value.toLowerCase().replace(/[^a-zа-я0-9]+/g, '-'));
+                      }
+                    }}
+                    placeholder="Бар Mikkeller"
+                    disabled={saveLocationMutation.isPending}
+                    data-testid="input-location-name"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="slug">Slug *</Label>
+                  <Input
+                    id="slug"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder="mikkeller-bar"
+                    disabled={saveLocationMutation.isPending}
+                    data-testid="input-location-slug"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address">Адрес *</Label>
+                  <Input
+                    id="address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="ул. Пушкина, д. 10"
+                    disabled={saveLocationMutation.isPending}
+                    data-testid="input-location-address"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Описание</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Описание локации..."
+                    disabled={saveLocationMutation.isPending}
+                    data-testid="input-location-description"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Расположение на карте</Label>
+                  <LocationPicker
+                    latitude={latitude}
+                    longitude={longitude}
+                    onLocationChange={handleLocationChange}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Координаты: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    type="submit"
+                    disabled={saveLocationMutation.isPending}
+                    data-testid="button-save-location"
+                  >
+                    {saveLocationMutation.isPending ? "Сохранение..." : editingLocation ? "Обновить" : "Создать"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      resetForm();
+                      setIsDialogOpen(false);
+                    }}
+                    disabled={saveLocationMutation.isPending}
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <p className="text-muted-foreground">Загрузка локаций...</p>
+          ) : locations && locations.length > 0 ? (
+            <div className="space-y-4">
+              {locations.map((location) => (
+                <div
+                  key={location.id}
+                  className="flex items-start justify-between p-4 border rounded-lg"
+                  data-testid={`location-item-${location.id}`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <h3 className="font-medium" data-testid={`location-name-${location.id}`}>
+                        {location.name}
+                      </h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-1">{location.address}</p>
+                    {location.description && (
+                      <p className="text-sm text-muted-foreground">{location.description}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleEdit(location)}
+                      data-testid={`button-edit-location-${location.id}`}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        if (confirm("Удалить эту локацию?")) {
+                          deleteLocationMutation.mutate(location.id);
+                        }
+                      }}
+                      data-testid={`button-delete-location-${location.id}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">Нет локаций. Создайте первую локацию.</p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

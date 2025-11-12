@@ -9,6 +9,7 @@ import type { Event, Photo } from "@shared/schema";
 import { formatRussianDate } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
 import { DisqusComments } from "@/components/DisqusComments";
+import { GPXMap } from "@/components/GPXMap";
 import NotFound from "@/pages/not-found";
 
 export default function EventDetail() {
@@ -124,17 +125,7 @@ export default function EventDetail() {
               {event.gpxUrl && (
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Маршрут</h2>
-                  <Card>
-                    <CardContent className="p-0">
-                      <div className="aspect-video bg-muted flex items-center justify-center">
-                        <div className="text-center text-muted-foreground">
-                          <MapPin className="h-12 w-12 mx-auto mb-2" />
-                          <p>Карта маршрута</p>
-                          <p className="text-sm">GPX: {event.gpxUrl}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <GPXMap gpxUrl={event.gpxUrl} />
 
                   {event.distanceKm && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">

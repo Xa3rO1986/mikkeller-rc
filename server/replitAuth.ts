@@ -23,10 +23,14 @@ function validateEnv() {
 const getOidcConfig = memoize(
   async () => {
     validateEnv();
-    return await client.discovery(
-      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
+    const issuerUrl = process.env.ISSUER_URL ?? "https://replit.com/oidc";
+    console.log(`[AUTH] Discovering OIDC config from: ${issuerUrl}, client: ${process.env.REPL_ID}`);
+    const config = await client.discovery(
+      new URL(issuerUrl),
       process.env.REPL_ID!
     );
+    console.log(`[AUTH] OIDC config loaded successfully`);
+    return config;
   },
   { maxAge: 3600 * 1000 }
 );
@@ -109,6 +113,7 @@ export async function setupAuth(app: Express) {
     const strategyName = `replitauth:${host}`;
     
     if (!registeredStrategies.has(strategyName)) {
+      console.log(`[AUTH] Registering new strategy: ${strategyName}, callback: ${callbackURL}`);
       const strategy = new Strategy(
         {
           name: strategyName,
@@ -120,6 +125,7 @@ export async function setupAuth(app: Express) {
       );
       passport.use(strategy);
       registeredStrategies.add(strategyName);
+      console.log(`[AUTH] Strategy registered successfully`);
     }
     return strategyName;
   };

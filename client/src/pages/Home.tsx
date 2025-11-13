@@ -141,12 +141,12 @@ export default function Home() {
           ) : nextEvent ? (
             <Card className="overflow-hidden border-2 border-black">
               <div className="grid md:grid-cols-2 gap-0">
-                <div className="relative h-64 md:h-auto bg-muted flex items-center justify-center">
+                <div className="relative h-64 md:h-auto bg-muted flex items-center justify-center grayscale hover:grayscale-0 transition-all">
                   {nextEvent.coverImageUrl ? (
                     <img
                       src={nextEvent.coverImageUrl}
                       alt={nextEvent.title}
-                      className="w-full h-full object-cover grayscale"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="text-center text-muted-foreground">

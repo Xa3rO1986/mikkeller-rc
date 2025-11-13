@@ -94,6 +94,25 @@ export const insertEventSchema = createInsertSchema(events).omit({
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type Event = typeof events.$inferSelect;
 
+// Event Routes table (multiple distances per event)
+export const eventRoutes = pgTable("event_routes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventId: varchar("event_id").references(() => events.id, { onDelete: "cascade" }).notNull(),
+  name: text("name"),
+  distanceKm: real("distance_km").notNull(),
+  gpxUrl: text("gpx_url"),
+  order: integer("order").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEventRouteSchema = createInsertSchema(eventRoutes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertEventRoute = z.infer<typeof insertEventRouteSchema>;
+export type EventRoute = typeof eventRoutes.$inferSelect;
+
 // Photos table
 export const photos = pgTable("photos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

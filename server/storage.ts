@@ -3,6 +3,7 @@ import { db } from "./db";
 import {
   admins,
   events,
+  eventRoutes,
   locations,
   photos,
   products,
@@ -14,6 +15,8 @@ import {
   type InsertAdmin,
   type Event,
   type InsertEvent,
+  type EventRoute,
+  type InsertEventRoute,
   type Location,
   type InsertLocation,
   type Photo,
@@ -46,6 +49,13 @@ export interface IStorage {
   createEvent(event: InsertEvent): Promise<Event>;
   updateEvent(id: string, event: Partial<InsertEvent>): Promise<Event | undefined>;
   deleteEvent(id: string): Promise<boolean>;
+
+  // Event Routes
+  getEventRoutes(eventId: string): Promise<EventRoute[]>;
+  getEventRoute(id: string): Promise<EventRoute | undefined>;
+  createEventRoute(route: InsertEventRoute): Promise<EventRoute>;
+  updateEventRoute(id: string, route: Partial<InsertEventRoute>): Promise<EventRoute | undefined>;
+  deleteEventRoute(id: string): Promise<boolean>;
 
   // Locations
   getLocations(): Promise<Location[]>;
@@ -169,6 +179,35 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEvent(id: string): Promise<boolean> {
     const result = await db.delete(events).where(eq(events.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Event Routes
+  async getEventRoutes(eventId: string): Promise<EventRoute[]> {
+    return await db
+      .select()
+      .from(eventRoutes)
+      .where(eq(eventRoutes.eventId, eventId))
+      .orderBy(asc(eventRoutes.order), asc(eventRoutes.distanceKm));
+  }
+
+  async getEventRoute(id: string): Promise<EventRoute | undefined> {
+    const [route] = await db.select().from(eventRoutes).where(eq(eventRoutes.id, id)).limit(1);
+    return route;
+  }
+
+  async createEventRoute(route: InsertEventRoute): Promise<EventRoute> {
+    const [newRoute] = await db.insert(eventRoutes).values(route).returning();
+    return newRoute;
+  }
+
+  async updateEventRoute(id: string, route: Partial<InsertEventRoute>): Promise<EventRoute | undefined> {
+    const [updated] = await db.update(eventRoutes).set(route).where(eq(eventRoutes.id, id)).returning();
+    return updated;
+  }
+
+  async deleteEventRoute(id: string): Promise<boolean> {
+    const result = await db.delete(eventRoutes).where(eq(eventRoutes.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
 

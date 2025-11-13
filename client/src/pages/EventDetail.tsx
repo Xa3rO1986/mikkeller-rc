@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, TrendingUp, Download, Share2, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import type { Event, Photo, Location } from "@shared/schema";
+import type { Event, Photo, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
 import { DisqusComments } from "@/components/DisqusComments";
@@ -33,6 +33,13 @@ export default function EventDetail() {
     queryKey: ['/api/locations', event?.locationId],
     enabled: !!event?.locationId,
   });
+
+  const { data: routes = [] } = useQuery<EventRoute[]>({
+    queryKey: ['/api/events', event?.id, 'routes'],
+    enabled: !!event?.id,
+  });
+
+  const sortedRoutes = [...routes].sort((a, b) => a.distanceKm - b.distanceKm);
 
   const addToCalendar = () => {
     if (!event) return;
@@ -143,12 +150,6 @@ export default function EventDetail() {
                     <span>{event.address}</span>
                   </div>
                 )}
-                {event.distanceKm && (
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>{event.distanceKm} км</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -170,10 +171,46 @@ export default function EventDetail() {
                 </section>
               )}
 
-              {event.gpxUrl && (
+              {sortedRoutes.length > 0 && (
                 <section>
-                  <h2 className="text-2xl font-bold mb-4">Маршрут</h2>
-                  <GPXMap gpxUrl={event.gpxUrl} />
+                  <h2 className="text-2xl font-bold mb-4">
+                    {sortedRoutes.length > 1 ? 'Маршруты' : 'Маршрут'}
+                  </h2>
+                  <div className="space-y-6">
+                    {sortedRoutes.map((route) => (
+                      <Card key={route.id} data-testid={`card-route-${route.id}`}>
+                        <CardContent className="p-6 space-y-4">
+                          <div className="flex items-center justify-between gap-4 flex-wrap">
+                            <div>
+                              <h3 className="text-lg font-semibold" data-testid={`text-route-name-${route.id}`}>
+                                {route.name || `Маршрут ${route.distanceKm} км`}
+                              </h3>
+                              <div className="flex items-center gap-2 text-muted-foreground mt-1">
+                                <TrendingUp className="h-4 w-4" />
+                                <span data-testid={`text-route-distance-${route.id}`}>{route.distanceKm} км</span>
+                              </div>
+                            </div>
+                            {route.gpxUrl && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                data-testid={`button-download-gpx-${route.id}`}
+                                onClick={() => window.open(route.gpxUrl!, '_blank')}
+                              >
+                                <Download className="mr-2 h-4 w-4" />
+                                Скачать GPX
+                              </Button>
+                            )}
+                          </div>
+                          {route.gpxUrl && (
+                            <div data-testid={`map-route-${route.id}`}>
+                              <GPXMap gpxUrl={route.gpxUrl} />
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </section>
               )}
 
@@ -218,17 +255,6 @@ export default function EventDetail() {
                     <Calendar className="mr-2 h-4 w-4" />
                     Добавить в календарь
                   </Button>
-                  {event.gpxUrl && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full" 
-                      data-testid="button-download-gpx"
-                      onClick={() => window.open(event.gpxUrl!, '_blank')}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Скачать GPX
-                    </Button>
-                  )}
                   <Button 
                     variant="outline" 
                     className="w-full" 
@@ -264,10 +290,16 @@ export default function EventDetail() {
                         <div className="font-medium">{event.address}</div>
                       </div>
                     )}
-                    {event.distanceKm && (
+                    {sortedRoutes.length > 0 && (
                       <div>
-                        <div className="text-muted-foreground mb-1">Дистанция</div>
-                        <div className="font-medium">{event.distanceKm} км</div>
+                        <div className="text-muted-foreground mb-1">Дистанции</div>
+                        <div className="font-medium space-y-1" data-testid="text-event-distances">
+                          {sortedRoutes.map((route, index) => (
+                            <div key={route.id}>
+                              {route.name || `${route.distanceKm} км`}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                     {event.eventType && (

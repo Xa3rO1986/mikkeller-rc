@@ -17,7 +17,7 @@ import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plu
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Admin, Event, Location, Product, Photo, Order } from "@shared/schema";
+import type { Admin, Event, Location, Product, Photo, Order, EventRoute } from "@shared/schema";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { LocationPicker } from "@/components/LocationPicker";
 import ImageCropper from "@/components/ImageCropper";
@@ -464,6 +464,15 @@ function AdminsManagement() {
     </div>
   );
 }
+interface RouteFormData {
+  id?: string;
+  name: string;
+  distanceKm: string;
+  gpxFile: File | null;
+  gpxUrl?: string;
+  order: number;
+}
+
 function EventsManagement() {
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -474,10 +483,9 @@ function EventsManagement() {
   const [startsAt, setStartsAt] = useState("");
   const [eventType, setEventType] = useState("club");
   const [locationId, setLocationId] = useState("");
-  const [distanceKm, setDistanceKm] = useState("");
   const [status, setStatus] = useState("draft");
   const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [gpxFile, setGpxFile] = useState<File | null>(null);
+  const [routes, setRoutes] = useState<RouteFormData[]>([]);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
   const { data: events } = useQuery<Event[]>({
@@ -494,10 +502,9 @@ function EventsManagement() {
     setStartsAt("");
     setEventType("club");
     setLocationId("none");
-    setDistanceKm("");
     setStatus("draft");
     setCoverImage(null);
-    setGpxFile(null);
+    setRoutes([]);
     setImageToCrop(null);
     setEditingEvent(null);
   };
@@ -507,18 +514,37 @@ function EventsManagement() {
     setDialogOpen(true);
   };
 
-  const openEditDialog = (event: Event) => {
+  const openEditDialog = async (event: Event) => {
     setEditingEvent(event);
     setTitle(event.title);
     setDescription(event.description || "");
     setStartsAt(new Date(event.startsAt).toISOString().slice(0, 16));
     setEventType(event.eventType || "club");
     setLocationId(event.locationId || "none");
-    setDistanceKm(event.distanceKm?.toString() || "");
     setStatus(event.status);
     setCoverImage(null);
-    setGpxFile(null);
     setImageToCrop(null);
+    
+    try {
+      const response = await fetch(`/api/events/${event.id}/routes`);
+      if (response.ok) {
+        const existingRoutes: EventRoute[] = await response.json();
+        setRoutes(existingRoutes.map(route => ({
+          id: route.id,
+          name: route.name || "",
+          distanceKm: route.distanceKm?.toString() || "",
+          gpxFile: null,
+          gpxUrl: route.gpxUrl || undefined,
+          order: route.order,
+        })));
+      } else {
+        setRoutes([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch routes:", error);
+      setRoutes([]);
+    }
+    
     setDialogOpen(true);
   };
 
@@ -544,6 +570,39 @@ function EventsManagement() {
     setImageToCrop(null);
   };
 
+  const addRoute = () => {
+    setRoutes([...routes, {
+      name: "",
+      distanceKm: "",
+      gpxFile: null,
+      order: routes.length,
+    }]);
+  };
+
+  const removeRoute = (index: number) => {
+    const updatedRoutes = routes.filter((_, i) => i !== index);
+    setRoutes(updatedRoutes.map((route, i) => ({ ...route, order: i })));
+  };
+
+  const updateRoute = (index: number, field: keyof RouteFormData, value: any) => {
+    const updatedRoutes = [...routes];
+    updatedRoutes[index] = { ...updatedRoutes[index], [field]: value };
+    setRoutes(updatedRoutes);
+  };
+
+  const deleteRouteMutation = useMutation({
+    mutationFn: async (routeId: string) => {
+      await apiRequest("DELETE", `/api/events/routes/${routeId}`);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка удаления маршрута",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const saveEventMutation = useMutation({
     mutationFn: async () => {
       if (!title.trim() || !startsAt) {
@@ -561,7 +620,6 @@ function EventsManagement() {
         startsAt: new Date(startsAt).toISOString(),
         eventType,
         locationId: locationId && locationId !== "none" ? locationId : null,
-        distanceKm: distanceKm ? parseFloat(distanceKm) : null,
         status,
         slug: editingEvent ? editingEvent.slug : createSlug(title),
       };
@@ -588,16 +646,39 @@ function EventsManagement() {
         }
       }
 
-      if (gpxFile && savedEvent?.id) {
-        const formData = new FormData();
-        formData.append('gpx', gpxFile);
-        const gpxResponse = await fetch(`/api/events/${savedEvent.id}/gpx`, {
-          method: 'POST',
-          body: formData,
-        });
-        if (!gpxResponse.ok) {
-          const error = await gpxResponse.json();
-          throw new Error(error.message || 'Ошибка загрузки GPX файла');
+      if (savedEvent?.id && routes.length > 0) {
+        for (const route of routes) {
+          let routeId = route.id;
+          
+          if (!routeId) {
+            const routeData = {
+              eventId: savedEvent.id,
+              name: route.name || null,
+              distanceKm: route.distanceKm ? parseFloat(route.distanceKm) : 0,
+              order: route.order,
+            };
+            
+            const routeResponse = await apiRequest("POST", `/api/events/${savedEvent.id}/routes`, routeData);
+            if (!routeResponse.ok) {
+              const error = await routeResponse.json();
+              throw new Error(error.message || 'Ошибка создания маршрута');
+            }
+            const createdRoute = await routeResponse.json();
+            routeId = createdRoute.id;
+          }
+          
+          if (route.gpxFile && routeId) {
+            const formData = new FormData();
+            formData.append('gpx', route.gpxFile);
+            const gpxResponse = await fetch(`/api/events/routes/${routeId}/gpx`, {
+              method: 'POST',
+              body: formData,
+            });
+            if (!gpxResponse.ok) {
+              const error = await gpxResponse.json();
+              throw new Error(error.message || 'Ошибка загрузки GPX файла');
+            }
+          }
         }
       }
 
@@ -722,27 +803,6 @@ function EventsManagement() {
                     </Select>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="distanceKm">
-                    Дистанция (км) {editingEvent?.gpxUrl && "(из GPX)"}
-                  </Label>
-                  <Input
-                    id="distanceKm"
-                    type="number"
-                    step="0.1"
-                    value={distanceKm}
-                    onChange={(e) => setDistanceKm(e.target.value)}
-                    placeholder="5.5"
-                    readOnly={!!editingEvent?.gpxUrl}
-                    className={editingEvent?.gpxUrl ? "bg-muted" : ""}
-                    data-testid="input-event-distance"
-                  />
-                  {editingEvent?.gpxUrl && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Дистанция рассчитывается автоматически из GPX файла
-                    </p>
-                  )}
-                </div>
                 
                 <div>
                   <Label htmlFor="coverImage">Обложка события</Label>
@@ -760,20 +820,102 @@ function EventsManagement() {
                   </div>
                 </div>
                 
-                <div>
-                  <Label htmlFor="gpxFile">GPX файл маршрута</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      id="gpxFile"
-                      type="file"
-                      accept=".gpx"
-                      onChange={(e) => setGpxFile(e.target.files?.[0] || null)}
-                      data-testid="input-event-gpx"
-                    />
-                    {gpxFile && (
-                      <span className="text-sm text-muted-foreground">{gpxFile.name}</span>
-                    )}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base">Маршруты</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addRoute}
+                      data-testid="button-add-route"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Добавить маршрут
+                    </Button>
                   </div>
+                  
+                  {routes.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Добавьте маршруты для события. Каждый маршрут может иметь свою дистанцию и GPX файл.
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {routes.map((route, index) => (
+                        <div key={index} className="border rounded-lg p-4 space-y-3" data-testid={`route-${index}`}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">Маршрут {index + 1}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                if (route.id) {
+                                  await deleteRouteMutation.mutateAsync(route.id);
+                                }
+                                removeRoute(index);
+                              }}
+                              data-testid={`button-delete-route-${index}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor={`route-name-${index}`}>Название (опционально)</Label>
+                            <Input
+                              id={`route-name-${index}`}
+                              value={route.name}
+                              onChange={(e) => updateRoute(index, 'name', e.target.value)}
+                              placeholder="5K, 10K, Основной маршрут..."
+                              data-testid={`input-route-name-${index}`}
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor={`route-distance-${index}`}>
+                              Дистанция (км) {route.gpxUrl && "(из GPX)"}
+                            </Label>
+                            <Input
+                              id={`route-distance-${index}`}
+                              type="number"
+                              step="0.1"
+                              value={route.distanceKm}
+                              onChange={(e) => updateRoute(index, 'distanceKm', e.target.value)}
+                              placeholder="5.5"
+                              readOnly={!!route.gpxUrl}
+                              className={route.gpxUrl ? "bg-muted" : ""}
+                              data-testid={`input-route-distance-${index}`}
+                            />
+                            {route.gpxUrl && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Дистанция рассчитывается автоматически из GPX файла
+                              </p>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor={`route-gpx-${index}`}>GPX файл маршрута</Label>
+                            <div className="flex gap-2 items-center">
+                              <Input
+                                id={`route-gpx-${index}`}
+                                type="file"
+                                accept=".gpx"
+                                onChange={(e) => updateRoute(index, 'gpxFile', e.target.files?.[0] || null)}
+                                data-testid={`input-route-gpx-${index}`}
+                              />
+                              {route.gpxFile && (
+                                <span className="text-sm text-muted-foreground">{route.gpxFile.name}</span>
+                              )}
+                              {route.gpxUrl && !route.gpxFile && (
+                                <span className="text-sm text-muted-foreground">✓ Загружен</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="status">Статус</Label>

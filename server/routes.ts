@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, hashPassword, verifyPassword } from "./auth";
-import { insertEventSchema, insertLocationSchema, insertPhotoSchema, insertAdminSchema, insertProductSchema } from "@shared/schema";
+import { insertEventSchema, insertEventRouteSchema, insertLocationSchema, insertPhotoSchema, insertAdminSchema, insertProductSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import path from "path";
@@ -525,6 +525,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedEvent);
     } catch (error) {
       console.error("Error uploading GPX file:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload GPX file" });
+    }
+  });
+
+  // Event Routes endpoints (multiple distances per event)
+  app.get('/api/events/:eventId/routes', async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      const routes = await storage.getEventRoutes(eventId);
+      res.json(routes);
+    } catch (error) {
+      console.error("Error fetching event routes:", error);
+      res.status(500).json({ message: "Failed to fetch event routes" });
+    }
+  });
+
+  app.post('/api/events/:eventId/routes', isAuthenticated, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      
+      const event = await storage.getEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      const validationResult = insertEventRouteSchema.safeParse({
+        ...req.body,
+        eventId,
+      });
+      
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+
+      const route = await storage.createEventRoute(validationResult.data);
+      res.status(201).json(route);
+    } catch (error) {
+      console.error("Error creating event route:", error);
+      res.status(500).json({ message: "Failed to create event route" });
+    }
+  });
+
+  app.patch('/api/events/routes/:routeId', isAuthenticated, async (req, res) => {
+    try {
+      const { routeId } = req.params;
+      
+      const validationResult = insertEventRouteSchema.partial().safeParse(req.body);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+
+      const route = await storage.updateEventRoute(routeId, validationResult.data);
+      if (!route) {
+        return res.status(404).json({ message: "Route not found" });
+      }
+      
+      res.json(route);
+    } catch (error) {
+      console.error("Error updating event route:", error);
+      res.status(500).json({ message: "Failed to update event route" });
+    }
+  });
+
+  app.delete('/api/events/routes/:routeId', isAuthenticated, async (req, res) => {
+    try {
+      const { routeId } = req.params;
+      const success = await storage.deleteEventRoute(routeId);
+      if (!success) {
+        return res.status(404).json({ message: "Route not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting event route:", error);
+      res.status(500).json({ message: "Failed to delete event route" });
+    }
+  });
+
+  app.post('/api/events/routes/:routeId/gpx', isAuthenticated, gpxUpload.single('gpx'), async (req: any, res) => {
+    try {
+      const { routeId } = req.params;
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "GPX file is required" });
+      }
+
+      const route = await storage.getEventRoute(routeId);
+      if (!route) {
+        await fs.unlink(req.file.path);
+        return res.status(404).json({ message: "Route not found" });
+      }
+
+      const gpxContent = await fs.readFile(req.file.path, 'utf-8');
+      const gpx = new gpxParser();
+      gpx.parse(gpxContent);
+
+      let distanceMeters = 0;
+
+      // Try to get distance from tracks first
+      if (gpx.tracks && gpx.tracks.length > 0) {
+        const track = gpx.tracks[0];
+        distanceMeters = track.distance?.total || 0;
+      } 
+      // If no tracks, try routes
+      else if (gpx.routes && gpx.routes.length > 0) {
+        const route = gpx.routes[0];
+        distanceMeters = route.distance?.total || 0;
+      }
+      // If neither tracks nor routes found
+      else {
+        await fs.unlink(req.file.path);
+        return res.status(400).json({ 
+          message: "Invalid GPX file: no tracks or routes found. Please upload a valid GPX file with track or route data." 
+        });
+      }
+
+      const gpxUrl = `/uploads/gpx/${path.basename(req.file.path)}`;
+
+      const updatedRoute = await storage.updateEventRoute(routeId, {
+        gpxUrl,
+        distanceKm: distanceMeters > 0 ? Math.round(distanceMeters) / 1000 : null,
+      });
+
+      res.json(updatedRoute);
+    } catch (error) {
+      console.error("Error uploading GPX file for route:", error);
       if (req.file) {
         await fs.unlink(req.file.path).catch(() => {});
       }

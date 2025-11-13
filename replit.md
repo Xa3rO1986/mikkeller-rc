@@ -26,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
 
-**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content. Event cover images use react-easy-crop for positioning/cropping to 800x400px during upload.
+**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content. Event cover images use react-easy-crop for positioning/cropping to 800x400px during upload. Events support multiple distance routes - admins can add/remove routes, upload GPX files for each route, and set custom names/distances.
 
 **Location Management**: LocationPicker component with Yandex Maps integration for coordinate selection:
 - Interactive map for visual location selection via click or marker drag
@@ -67,14 +67,18 @@ Preferred communication style: Simple, everyday language.
   - `address`: Physical address
   - `latitude` / `longitude`: Geographic coordinates for map display
   - `description`: Optional location description
-- `events`: Running events with geolocation, GPX routes, cover images, and rich-text descriptions
+- `events`: Running events with geolocation, cover images, and rich-text descriptions
   - `eventType`: Event type enum (club, irregular, out_of_town, city, athletics, croissant) displayed as Клубный, Внештатный, Выездной, Городской, Атлетикс, Курасан
   - `locationId`: Foreign key reference to locations table (optional)
   - `coverImageUrl`: Cover photo for event display (shown at content width on detail page, not full-screen)
-  - `gpxUrl`: GPX track file for route visualization (displayed in event cards with icon)
-  - `distanceKm`: Auto-calculated from GPX or manually entered (read-only when GPX present)
   - `description`: Rich-text HTML content (sanitized server-side)
   - `slug`: URL-friendly identifier for dynamic routing
+- `eventRoutes`: Multiple distance routes per event with individual GPX tracks
+  - `eventId`: Foreign key to events table (cascade delete)
+  - `name`: Optional route name
+  - `distanceKm`: Route distance (auto-calculated from GPX or manually entered)
+  - `gpxUrl`: GPX track file for route visualization
+  - `order`: Sort order for displaying routes (0-indexed)
 - `photos`: Event photography with approval workflow (pending/approved/rejected)
 - `products` & `variants`: E-commerce product catalog with size/color variations
 - `orders`: Order tracking with payment status
@@ -100,7 +104,7 @@ Preferred communication style: Simple, everyday language.
 
 **Map Visualization**: Leaflet.js library installed for future GPX route visualization on public event pages
 
-**GPX Processing**: gpxparser library automatically extracts distance from uploaded GPX files and locks manual distance editing to maintain data integrity
+**GPX Processing**: gpxparser library automatically extracts distance from uploaded GPX files for each route. Admin can create multiple routes per event with different distances and GPX tracks.
 
 **Comments System**: Disqus integration via embed script, configured with environment variable for shortname. Component dynamically loads Disqus script and handles cleanup.
 

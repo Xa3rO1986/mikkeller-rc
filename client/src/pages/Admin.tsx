@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
-import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2, Upload, MapPin } from "lucide-react";
+import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plus, Pencil, Trash2, Upload, MapPin, FileText, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -25,7 +25,7 @@ export default function Admin() {
   const [_, setLocation] = useLocation();
   const { admin, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("events");
+  const [activeTab, setActiveTab] = useState("settings");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -77,6 +77,23 @@ export default function Admin() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card 
+            className="cursor-pointer hover-elevate transition-colors"
+            onClick={() => setActiveTab("settings")}
+            data-testid="card-settings"
+          >
+            <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Настройки</CardTitle>
+              <Settings className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Страницы</div>
+              <p className="text-xs text-muted-foreground">
+                Редактирование контента сайта
+              </p>
+            </CardContent>
+          </Card>
+
           <Card 
             className="cursor-pointer hover-elevate transition-colors"
             onClick={() => setActiveTab("events")}
@@ -165,14 +182,18 @@ export default function Admin() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
+            <TabsTrigger value="settings">Настройки</TabsTrigger>
             <TabsTrigger value="events">События</TabsTrigger>
             <TabsTrigger value="locations">Локации</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="photos">Фотографии</TabsTrigger>
             <TabsTrigger value="orders">Заказы</TabsTrigger>
-            <TabsTrigger value="home">Главная страница</TabsTrigger>
             <TabsTrigger value="admins">Администраторы</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="settings">
+            <SettingsManagement />
+          </TabsContent>
 
           <TabsContent value="events">
             <EventsManagement />
@@ -192,10 +213,6 @@ export default function Admin() {
 
           <TabsContent value="orders">
             <OrdersManagement />
-          </TabsContent>
-
-          <TabsContent value="home">
-            <HomeSettingsManagement />
           </TabsContent>
 
           <TabsContent value="admins">
@@ -1642,6 +1659,483 @@ function HomeSettingsManagement() {
               type="submit"
               disabled={updateSettingsMutation.isPending}
               data-testid="button-save-home-settings"
+            >
+              {updateSettingsMutation.isPending ? "Сохранение..." : "Сохранить изменения"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SettingsManagement() {
+  const [settingsTab, setSettingsTab] = useState("about");
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Настройки страниц</CardTitle>
+          <CardDescription>
+            Редактирование контента страниц сайта
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      <Tabs value={settingsTab} onValueChange={setSettingsTab}>
+        <TabsList>
+          <TabsTrigger value="about">Страница О клубе</TabsTrigger>
+          <TabsTrigger value="home">Главная страница</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="about">
+          <AboutSettingsManagement />
+        </TabsContent>
+
+        <TabsContent value="home">
+          <HomeSettingsManagement />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+const aboutSettingsFormSchema = z.object({
+  heroTitle: z.string().min(1, "Заголовок обязателен"),
+  heroText1: z.string().min(1, "Текст обязателен"),
+  heroText2: z.string().min(1, "Текст обязателен"),
+  heroText3: z.string().min(1, "Текст обязателен"),
+  statsMembers: z.string().min(1, "Значение обязательно"),
+  statsMembersLabel: z.string().min(1, "Подпись обязательна"),
+  statsBars: z.string().min(1, "Значение обязательно"),
+  statsBarsLabel: z.string().min(1, "Подпись обязательна"),
+  statsRuns: z.string().min(1, "Значение обязательно"),
+  statsRunsLabel: z.string().min(1, "Подпись обязательна"),
+  statsDistance: z.string().min(1, "Значение обязательно"),
+  statsDistanceLabel: z.string().min(1, "Подпись обязательна"),
+  rule1Title: z.string().min(1, "Заголовок обязателен"),
+  rule1Text: z.string().min(1, "Текст обязателен"),
+  rule2Title: z.string().min(1, "Заголовок обязателен"),
+  rule2Text: z.string().min(1, "Текст обязателен"),
+  rule3Title: z.string().min(1, "Заголовок обязателен"),
+  rule3Text: z.string().min(1, "Текст обязателен"),
+  rule4Title: z.string().min(1, "Заголовок обязателен"),
+  rule4Text: z.string().min(1, "Текст обязателен"),
+});
+
+type AboutSettingsFormValues = z.infer<typeof aboutSettingsFormSchema>;
+
+function AboutSettingsManagement() {
+  const { toast } = useToast();
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ["/api/about-settings"],
+  });
+
+  const form = useForm<AboutSettingsFormValues>({
+    resolver: zodResolver(aboutSettingsFormSchema),
+    defaultValues: {
+      heroTitle: "",
+      heroText1: "",
+      heroText2: "",
+      heroText3: "",
+      statsMembers: "",
+      statsMembersLabel: "",
+      statsBars: "",
+      statsBarsLabel: "",
+      statsRuns: "",
+      statsRunsLabel: "",
+      statsDistance: "",
+      statsDistanceLabel: "",
+      rule1Title: "",
+      rule1Text: "",
+      rule2Title: "",
+      rule2Text: "",
+      rule3Title: "",
+      rule3Text: "",
+      rule4Title: "",
+      rule4Text: "",
+    },
+  });
+
+  useEffect(() => {
+    if (settings) {
+      form.reset({
+        heroTitle: settings.heroTitle || "",
+        heroText1: settings.heroText1 || "",
+        heroText2: settings.heroText2 || "",
+        heroText3: settings.heroText3 || "",
+        statsMembers: settings.statsMembers || "",
+        statsMembersLabel: settings.statsMembersLabel || "",
+        statsBars: settings.statsBars || "",
+        statsBarsLabel: settings.statsBarsLabel || "",
+        statsRuns: settings.statsRuns || "",
+        statsRunsLabel: settings.statsRunsLabel || "",
+        statsDistance: settings.statsDistance || "",
+        statsDistanceLabel: settings.statsDistanceLabel || "",
+        rule1Title: settings.rule1Title || "",
+        rule1Text: settings.rule1Text || "",
+        rule2Title: settings.rule2Title || "",
+        rule2Text: settings.rule2Text || "",
+        rule3Title: settings.rule3Title || "",
+        rule3Text: settings.rule3Text || "",
+        rule4Title: settings.rule4Title || "",
+        rule4Text: settings.rule4Text || "",
+      });
+    }
+  }, [settings, form]);
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (data: AboutSettingsFormValues) => {
+      const response = await fetch("/api/about-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update settings");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/about-settings"] });
+      toast({ title: "Настройки обновлены" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Ошибка обновления настроек", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
+  });
+
+  const onSubmit = (data: AboutSettingsFormValues) => {
+    updateSettingsMutation.mutate(data);
+  };
+
+  if (isLoading) {
+    return <p className="text-muted-foreground">Загрузка настроек...</p>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Настройки страницы О клубе</CardTitle>
+        <CardDescription>
+          Редактирование контента страницы About
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Заголовок и текст</h3>
+              
+              <FormField
+                control={form.control}
+                name="heroTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Заголовок страницы</FormLabel>
+                    <FormControl>
+                      <Input placeholder="О Mikkeller Running Club" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="heroText1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Первый параграф</FormLabel>
+                    <FormControl>
+                      <Textarea rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="heroText2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Второй параграф</FormLabel>
+                    <FormControl>
+                      <Textarea rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="heroText3"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Третий параграф</FormLabel>
+                    <FormControl>
+                      <Textarea rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Статистика</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="statsMembers"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Участники (значение)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="1,200+" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsMembersLabel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Участники (подпись)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Участников в Москве" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsBars"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Бары (значение)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="25+" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsBarsLabel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Бары (подпись)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Баров-партнеров" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsRuns"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Забеги (значение)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="500+" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsRunsLabel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Забеги (подпись)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Проведено забегов" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsDistance"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Километры (значение)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="15,000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="statsDistanceLabel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Километры (подпись)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Километров пробежано" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Правила клуба</h3>
+              
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="rule1Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 1 - Заголовок</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Все уровни приветствуются" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rule1Text"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 1 - Текст</FormLabel>
+                      <FormControl>
+                        <Textarea rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="rule2Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 2 - Заголовок</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Никто не остаётся позади" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rule2Text"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 2 - Текст</FormLabel>
+                      <FormControl>
+                        <Textarea rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="rule3Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 3 - Заголовок</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Безопасность превыше всего" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rule3Text"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 3 - Текст</FormLabel>
+                      <FormControl>
+                        <Textarea rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="rule4Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 4 - Заголовок</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Уважение к другим" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rule4Text"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Правило 4 - Текст</FormLabel>
+                      <FormControl>
+                        <Textarea rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={updateSettingsMutation.isPending}
+              data-testid="button-save-about-settings"
             >
               {updateSettingsMutation.isPending ? "Сохранение..." : "Сохранить изменения"}
             </Button>

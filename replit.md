@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a production-ready website for the Mikkeller Running Club, a running community that combines weekly runs with social gatherings at partner bars. The application features event management with location catalog, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
+This is a production-ready website for the Mikkeller Running Club, a running community that combines weekly runs with social gatherings at partner bars. The application features event management with location catalog, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel with editable page content. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
 
 ## User Preferences
 
@@ -26,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
 
-**Admin Dashboard**: Interactive summary cards that switch between management tabs (Events, Locations, Products, Photos, Orders) on click
+**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content.
 
 **Location Management**: LocationPicker component with Yandex Maps integration for coordinate selection:
 - Interactive map for visual location selection via click or marker drag
@@ -78,6 +78,8 @@ Preferred communication style: Simple, everyday language.
 - `photos`: Event photography with approval workflow (pending/approved/rejected)
 - `products` & `variants`: E-commerce product catalog with size/color variations
 - `orders`: Order tracking with payment status
+- `homeSettings`: Singleton table for Home page editable content (hero title/subtitle, about section, statistics)
+- `aboutSettings`: Singleton table for About page editable content (hero text paragraphs, statistics with labels, club rules)
 - `sessions`: Express session storage
 
 **Migrations**: Drizzle Kit for schema migrations stored in `/migrations` directory

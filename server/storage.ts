@@ -9,6 +9,7 @@ import {
   variants,
   orders,
   homeSettings,
+  aboutSettings,
   type Admin,
   type InsertAdmin,
   type Event,
@@ -25,6 +26,8 @@ import {
   type InsertOrder,
   type HomeSettings,
   type InsertHomeSettings,
+  type AboutSettings,
+  type InsertAboutSettings,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -86,6 +89,11 @@ export interface IStorage {
   getHomeSettings(): Promise<HomeSettings | undefined>;
   updateHomeSettings(settings: Partial<InsertHomeSettings>): Promise<HomeSettings>;
   initializeHomeSettings(): Promise<void>;
+
+  // About Settings
+  getAboutSettings(): Promise<AboutSettings | undefined>;
+  updateAboutSettings(settings: Partial<InsertAboutSettings>): Promise<AboutSettings>;
+  initializeAboutSettings(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -388,6 +396,39 @@ export class DatabaseStorage implements IStorage {
         .values({ id: "singleton" })
         .execute();
       console.log("Home settings initialized with default values");
+    }
+  }
+
+  // About Settings
+  async getAboutSettings(): Promise<AboutSettings | undefined> {
+    const [settings] = await db.select().from(aboutSettings).where(eq(aboutSettings.id, "singleton")).limit(1);
+    return settings;
+  }
+
+  async updateAboutSettings(settings: Partial<InsertAboutSettings>): Promise<AboutSettings> {
+    const existing = await this.getAboutSettings();
+    
+    if (!existing) {
+      throw new Error("About settings not initialized");
+    }
+
+    const [updated] = await db
+      .update(aboutSettings)
+      .set({ ...settings, updatedAt: new Date() })
+      .where(eq(aboutSettings.id, "singleton"))
+      .returning();
+    return updated;
+  }
+
+  async initializeAboutSettings(): Promise<void> {
+    const existing = await this.getAboutSettings();
+    
+    if (!existing) {
+      await db
+        .insert(aboutSettings)
+        .values({ id: "singleton" })
+        .execute();
+      console.log("About settings initialized with default values");
     }
   }
 }

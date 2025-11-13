@@ -199,3 +199,37 @@ export const insertHomeSettingsSchema = createInsertSchema(homeSettings).omit({
 
 export type InsertHomeSettings = z.infer<typeof insertHomeSettingsSchema>;
 export type HomeSettings = typeof homeSettings.$inferSelect;
+
+// About page settings table (singleton)
+export const aboutSettings = pgTable("about_settings", {
+  id: varchar("id").primaryKey().default("singleton"),
+  heroTitle: text("hero_title").notNull().default("О Mikkeller Running Club"),
+  heroText1: text("hero_text_1").notNull().default("Mikkeller Running Club — это международное беговое сообщество, основанное в 2014 году в Копенгагене. Наша философия проста: бег должен быть доступен всем, независимо от уровня подготовки."),
+  heroText2: text("hero_text_2").notNull().default("Каждую неделю тысячи бегунов по всему миру выходят на улицы своих городов, чтобы пробежать вместе 5-10 километров. После забега мы собираемся вместе, чтобы отметить достижения и насладиться компанией друг друга."),
+  heroText3: text("hero_text_3").notNull().default("В Москве клуб работает с 2016 года и объединяет более 1200 активных участников. Мы проводим еженедельные забеги в разных локациях города."),
+  statsMembers: text("stats_members").notNull().default("1,200+"),
+  statsMembersLabel: text("stats_members_label").notNull().default("Участников в Москве"),
+  statsBars: text("stats_bars").notNull().default("25+"),
+  statsBarsLabel: text("stats_bars_label").notNull().default("Баров-партнеров"),
+  statsRuns: text("stats_runs").notNull().default("500+"),
+  statsRunsLabel: text("stats_runs_label").notNull().default("Проведено забегов"),
+  statsDistance: text("stats_distance").notNull().default("15,000"),
+  statsDistanceLabel: text("stats_distance_label").notNull().default("Километров пробежано"),
+  rule1Title: text("rule_1_title").notNull().default("Все уровни приветствуются"),
+  rule1Text: text("rule_1_text").notNull().default("Не важно, новичок вы или опытный бегун — каждый найдёт свой темп и группу единомышленников."),
+  rule2Title: text("rule_2_title").notNull().default("Никто не остаётся позади"),
+  rule2Text: text("rule_2_text").notNull().default("Мы всегда бежим вместе. У нас есть группы разного темпа, чтобы всем было комфортно."),
+  rule3Title: text("rule_3_title").notNull().default("Безопасность превыше всего"),
+  rule3Text: text("rule_3_text").notNull().default("Следуйте правилам дорожного движения, бегайте по правой стороне дороги, используйте светоотражающие элементы."),
+  rule4Title: text("rule_4_title").notNull().default("Уважение к другим"),
+  rule4Text: text("rule_4_text").notNull().default("Мы уважаем всех участников, пешеходов и других пользователей дорог. Будьте вежливы и дружелюбны."),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertAboutSettingsSchema = createInsertSchema(aboutSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertAboutSettings = z.infer<typeof insertAboutSettingsSchema>;
+export type AboutSettings = typeof aboutSettings.$inferSelect;

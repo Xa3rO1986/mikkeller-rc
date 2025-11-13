@@ -745,6 +745,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // About settings routes
+  app.get('/api/about-settings', async (req, res) => {
+    try {
+      const settings = await storage.getAboutSettings();
+      
+      if (!settings) {
+        return res.status(404).json({ message: "About settings not initialized" });
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching about settings:", error);
+      res.status(500).json({ message: "Failed to fetch about settings" });
+    }
+  });
+
+  app.patch('/api/about-settings', isAuthenticated, async (req, res) => {
+    try {
+      const { insertAboutSettingsSchema } = await import("@shared/schema");
+      const validationResult = insertAboutSettingsSchema.partial().safeParse(req.body);
+      
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      
+      const settings = await storage.updateAboutSettings(validationResult.data);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error updating about settings:", error);
+      res.status(500).json({ message: "Failed to update about settings" });
+    }
+  });
+
   // Photos routes
   app.get('/api/photos', async (req, res) => {
     try {

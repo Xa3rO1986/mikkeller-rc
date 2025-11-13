@@ -3,10 +3,16 @@ import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { MapPin, Users, Calendar, Globe } from "lucide-react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import type { AboutSettings } from "@shared/schema";
 
 import heroImage from '@assets/generated_images/Runners_celebrating_finish_969c4387.png';
 
 export default function About() {
+  const { data: settings } = useQuery<AboutSettings>({
+    queryKey: ['/api/about-settings'],
+  });
+
   return (
     <div className="min-h-screen">
       <section className="py-16 lg:py-24 bg-background">
@@ -16,17 +22,17 @@ export default function About() {
           <div className="grid lg:grid-cols-2 gap-12 items-center mt-8">
             <div>
               <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-                О Mikkeller Running Club
+                {settings?.heroTitle || "О Mikkeller Running Club"}
               </h1>
               <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
                 <p>
-                  Mikkeller Running Club — это международное беговое сообщество, основанное в 2014 году в Копенгагене. Наша философия проста: бег должен быть доступен всем, независимо от уровня подготовки.
+                  {settings?.heroText1 || "Mikkeller Running Club — это международное беговое сообщество, основанное в 2014 году в Копенгагене. Наша философия проста: бег должен быть доступен всем, независимо от уровня подготовки."}
                 </p>
                 <p>
-                  Каждую неделю тысячи бегунов по всему миру выходят на улицы своих городов, чтобы пробежать вместе 5-10 километров. После забега мы собираемся вместе, чтобы отметить достижения и насладиться компанией друг друга.
+                  {settings?.heroText2 || "Каждую неделю тысячи бегунов по всему миру выходят на улицы своих городов, чтобы пробежать вместе 5-10 километров. После забега мы собираемся вместе, чтобы отметить достижения и насладиться компанией друг друга."}
                 </p>
                 <p>
-                  В Москве клуб работает с 2016 года и объединяет более 1200 активных участников. Мы проводим еженедельные забеги в разных локациях города.
+                  {settings?.heroText3 || "В Москве клуб работает с 2016 года и объединяет более 1200 активных участников. Мы проводим еженедельные забеги в разных локациях города."}
                 </p>
               </div>
             </div>
@@ -50,29 +56,29 @@ export default function About() {
             <Card>
               <CardContent className="p-8 text-center">
                 <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <div className="text-4xl font-bold mb-2">1,200+</div>
-                <div className="text-sm text-muted-foreground">Участников в Москве</div>
+                <div className="text-4xl font-bold mb-2">{settings?.statsMembers || "1,200+"}</div>
+                <div className="text-sm text-muted-foreground">{settings?.statsMembersLabel || "Участников в Москве"}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
                 <Globe className="h-12 w-12 mx-auto mb-4" />
-                <div className="text-4xl font-bold mb-2">25+</div>
-                <div className="text-sm text-muted-foreground">Баров-партнеров</div>
+                <div className="text-4xl font-bold mb-2">{settings?.statsBars || "25+"}</div>
+                <div className="text-sm text-muted-foreground">{settings?.statsBarsLabel || "Баров-партнеров"}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
                 <Calendar className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <div className="text-4xl font-bold mb-2">500+</div>
-                <div className="text-sm text-muted-foreground">Проведено забегов</div>
+                <div className="text-4xl font-bold mb-2">{settings?.statsRuns || "500+"}</div>
+                <div className="text-sm text-muted-foreground">{settings?.statsRunsLabel || "Проведено забегов"}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
                 <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <div className="text-4xl font-bold mb-2">15,000</div>
-                <div className="text-sm text-muted-foreground">Километров пробежано</div>
+                <div className="text-4xl font-bold mb-2">{settings?.statsDistance || "15,000"}</div>
+                <div className="text-sm text-muted-foreground">{settings?.statsDistanceLabel || "Километров пробежано"}</div>
               </CardContent>
             </Card>
           </div>
@@ -134,33 +140,33 @@ export default function About() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-3">Все уровни приветствуются</h3>
+                <h3 className="font-semibold text-lg mb-3">{settings?.rule1Title || "Все уровни приветствуются"}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Не важно, новичок вы или опытный бегун — каждый найдёт свой темп и группу единомышленников.
+                  {settings?.rule1Text || "Не важно, новичок вы или опытный бегун — каждый найдёт свой темп и группу единомышленников."}
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-3">Никто не остаётся позади</h3>
+                <h3 className="font-semibold text-lg mb-3">{settings?.rule2Title || "Никто не остаётся позади"}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Мы всегда бежим вместе. У нас есть группы разного темпа, чтобы всем было комфортно.
+                  {settings?.rule2Text || "Мы всегда бежим вместе. У нас есть группы разного темпа, чтобы всем было комфортно."}
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-3">Безопасность превыше всего</h3>
+                <h3 className="font-semibold text-lg mb-3">{settings?.rule3Title || "Безопасность превыше всего"}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Следуйте правилам дорожного движения, бегайте по правой стороне дороги, используйте светоотражающие элементы.
+                  {settings?.rule3Text || "Следуйте правилам дорожного движения, бегайте по правой стороне дороги, используйте светоотражающие элементы."}
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-3">Уважение к другим</h3>
+                <h3 className="font-semibold text-lg mb-3">{settings?.rule4Title || "Уважение к другим"}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Мы уважаем всех участников, пешеходов и других пользователей дорог. Будьте вежливы и дружелюбны.
+                  {settings?.rule4Text || "Мы уважаем всех участников, пешеходов и других пользователей дорог. Будьте вежливы и дружелюбны."}
                 </p>
               </CardContent>
             </Card>

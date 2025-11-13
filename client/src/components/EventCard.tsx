@@ -11,9 +11,10 @@ import { useQuery } from "@tanstack/react-query";
 interface EventCardProps {
   event: Event;
   grayscale?: boolean;
+  showEventType?: boolean;
 }
 
-export default function EventCard({ event, grayscale = false }: EventCardProps) {
+export default function EventCard({ event, grayscale = false, showEventType = true }: EventCardProps) {
   const eventDate = new Date(event.startsAt);
   
   const { data: location } = useQuery<Location>({
@@ -43,7 +44,7 @@ export default function EventCard({ event, grayscale = false }: EventCardProps) 
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-2 mb-3">
           <h3 className="font-bold text-xl flex-1">{event.title}</h3>
-          {event.eventType && (
+          {showEventType && event.eventType && (
             <Badge variant="outline" className="text-xs whitespace-nowrap" data-testid={`badge-event-type-${event.slug}`}>
               {formatEventType(event.eventType)}
             </Badge>

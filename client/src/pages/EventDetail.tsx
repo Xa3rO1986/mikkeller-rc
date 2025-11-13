@@ -9,7 +9,7 @@ import { Link } from "wouter";
 import type { Event, Photo, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
-import { DisqusComments } from "@/components/DisqusComments";
+import { AnyCommentWidget } from "@/components/AnyCommentWidget";
 import { GPXMap } from "@/components/GPXMap";
 import NotFound from "@/pages/not-found";
 
@@ -234,11 +234,11 @@ export default function EventDetail() {
 
               <section>
                 <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
-                <DisqusComments
-                  shortname={import.meta.env.VITE_DISQUS_SHORTNAME || 'mikkeller-club'}
-                  identifier={`event-${slug}`}
-                  title={event.title}
-                  url={window.location.href}
+                <AnyCommentWidget
+                  appId={Number(import.meta.env.VITE_ANYCOMMENT_APP_ID) || 0}
+                  language="ru"
+                  pageId={`event-${slug}`}
+                  pageTitle={event.title}
                 />
               </section>
             </div>

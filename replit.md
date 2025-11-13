@@ -106,8 +106,6 @@ Preferred communication style: Simple, everyday language.
 
 **GPX Processing**: gpxparser library automatically extracts distance from uploaded GPX files for each route. Admin can create multiple routes per event with different distances and GPX tracks.
 
-**Comments System**: AnyComment.io CommentStream widget integration for event comments. The widget is embedded directly in event detail pages using inline script tags with APP ID 7264, Russian language support, and the stream embed (https://widget.anycomment.io/stream/embed.js).
-
 **Image Assets**: Static assets stored in `attached_assets/` directory, imported directly into components
 
 **Analytics**: Designed to support Plausible or Vercel Analytics via environment flag (implementation pending)

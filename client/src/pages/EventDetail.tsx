@@ -230,27 +230,6 @@ export default function EventDetail() {
                   </div>
                 </section>
               )}
-
-              <section>
-                <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
-                <div id="anycomment-stream" data-testid="anycomment-stream"></div>
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      AnyComment = window.AnyComment || []; AnyComment.CommentStream = [];
-                      AnyComment.CommentStream.push({
-                          root: "anycomment-stream",
-                          app_id: 7264,
-                          language: "ru"
-                      });
-                      var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
-                      s.src = "https://widget.anycomment.io/stream/embed.js";
-                      var sa = document.getElementsByTagName("script")[0];
-                      sa.parentNode.insertBefore(s, s.nextSibling);
-                    `
-                  }}
-                />
-              </section>
             </div>
 
             <div className="space-y-6">

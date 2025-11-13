@@ -39,7 +39,7 @@ export default function Locations() {
                       <img
                         src={location.logoUrl}
                         alt={`${location.name} logo`}
-                        className="h-12 w-auto object-contain mb-3"
+                        className="h-24 w-auto max-w-full object-contain mb-3"
                         data-testid={`img-location-logo-${location.slug}`}
                       />
                     )}

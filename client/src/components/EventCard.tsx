@@ -63,7 +63,7 @@ export default function EventCard({ event, grayscale = false, showEventType = tr
                 <img
                   src={location.logoUrl}
                   alt={`${location.name} logo`}
-                  className="h-8 w-auto object-contain"
+                  className="h-16 w-auto max-w-full object-contain"
                   data-testid={`img-location-logo-${event.slug}`}
                 />
               )}

@@ -168,7 +168,7 @@ export default function LocationDetail() {
               <img
                 src={location.logoUrl}
                 alt={`${location.name} logo`}
-                className="h-16 w-auto object-contain mb-4"
+                className="h-32 w-auto max-w-full object-contain mb-4"
                 data-testid={`img-location-logo-${location.slug}`}
               />
             )}

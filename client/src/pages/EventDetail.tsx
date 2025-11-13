@@ -250,7 +250,7 @@ export default function EventDetail() {
                             <img
                               src={location.logoUrl}
                               alt={`${location.name} logo`}
-                              className="h-10 w-auto object-contain mb-2"
+                              className="h-20 w-auto max-w-full object-contain mb-2"
                               data-testid={`img-location-logo-${location.slug}`}
                             />
                           )}

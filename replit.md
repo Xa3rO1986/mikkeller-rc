@@ -26,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
 
-**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content.
+**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content. Event cover images use react-easy-crop for positioning/cropping to 800x400px during upload.
 
 **Location Management**: LocationPicker component with Yandex Maps integration for coordinate selection:
 - Interactive map for visual location selection via click or marker drag

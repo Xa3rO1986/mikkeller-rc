@@ -20,6 +20,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Admin, Event, Location, Product, Photo, Order } from "@shared/schema";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { LocationPicker } from "@/components/LocationPicker";
+import ImageCropper from "@/components/ImageCropper";
 
 export default function Admin() {
   const [_, setLocation] = useLocation();
@@ -449,6 +450,7 @@ function EventsManagement() {
   const [status, setStatus] = useState("draft");
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [gpxFile, setGpxFile] = useState<File | null>(null);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
   const { data: events } = useQuery<Event[]>({
     queryKey: ["/api/events"],
@@ -468,6 +470,7 @@ function EventsManagement() {
     setStatus("draft");
     setCoverImage(null);
     setGpxFile(null);
+    setImageToCrop(null);
     setEditingEvent(null);
   };
 
@@ -487,7 +490,30 @@ function EventsManagement() {
     setStatus(event.status);
     setCoverImage(null);
     setGpxFile(null);
+    setImageToCrop(null);
     setDialogOpen(true);
+  };
+
+  const handleCoverImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageToCrop(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+  };
+
+  const handleCropComplete = (croppedImageBlob: Blob) => {
+    const file = new File([croppedImageBlob], "cover-image.jpg", { type: "image/jpeg" });
+    setCoverImage(file);
+    setImageToCrop(null);
+  };
+
+  const handleCropCancel = () => {
+    setImageToCrop(null);
   };
 
   const saveEventMutation = useMutation({
@@ -697,7 +723,7 @@ function EventsManagement() {
                       id="coverImage"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
+                      onChange={handleCoverImageSelect}
                       data-testid="input-event-cover"
                     />
                     {coverImage && (
@@ -749,6 +775,16 @@ function EventsManagement() {
               </div>
             </DialogContent>
           </Dialog>
+
+          {imageToCrop && (
+            <ImageCropper
+              image={imageToCrop}
+              onCropComplete={handleCropComplete}
+              onCancel={handleCropCancel}
+              aspectRatio={2}
+              cropShape="rect"
+            />
+          )}
         </div>
       </CardHeader>
       <CardContent>

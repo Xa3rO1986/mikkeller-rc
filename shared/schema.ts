@@ -48,6 +48,7 @@ export const locations = pgTable("locations", {
   address: text("address").notNull(),
   latitude: real("latitude").notNull(),
   longitude: real("longitude").notNull(),
+  logoUrl: text("logo_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

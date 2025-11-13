@@ -125,6 +125,36 @@ const gpxStorage = multer.diskStorage({
   }
 });
 
+// Configure multer for location logo uploads
+const logoStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'logos'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    const extension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${extension}`);
+  }
+});
+
+const logoUpload = multer({
+  storage: logoStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for logos
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|svg/;
+    const extension = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = allowedTypes.test(file.mimetype);
+    
+    if (extension && mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 const gpxUpload = multer({
   storage: gpxStorage,
   limits: {
@@ -154,6 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads/covers', express.static(path.join(__dirname, 'uploads', 'covers')));
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
   app.use('/uploads/hero', express.static(path.join(__dirname, 'uploads', 'hero')));
+  app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads', 'logos')));
 
   // Admin authentication routes
   app.post('/api/admin/login', async (req, res) => {
@@ -576,6 +607,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting location:", error);
       res.status(500).json({ message: "Failed to delete location" });
+    }
+  });
+
+  app.post('/api/locations/:id/logo', isAuthenticated, logoUpload.single('logo'), async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "Logo image is required" });
+      }
+
+      const logoUrl = `/uploads/logos/${path.basename(req.file.path)}`;
+      
+      const location = await storage.updateLocation(id, { logoUrl });
+      
+      if (!location) {
+        await fs.unlink(req.file.path).catch(() => {});
+        return res.status(404).json({ message: "Location not found" });
+      }
+
+      res.json(location);
+    } catch (error) {
+      console.error("Error uploading location logo:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload location logo" });
     }
   });
 

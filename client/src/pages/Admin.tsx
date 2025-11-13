@@ -2154,6 +2154,7 @@ function LocationsManagement() {
   const [address, setAddress] = useState("");
   const [latitude, setLatitude] = useState(55.7558);
   const [longitude, setLongitude] = useState(37.6173);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -2218,6 +2219,30 @@ function LocationsManagement() {
     },
   });
 
+  const uploadLogoMutation = useMutation({
+    mutationFn: async ({ locationId, file }: { locationId: string; file: File }) => {
+      const formData = new FormData();
+      formData.append("logo", file);
+      const response = await fetch(`/api/locations/${locationId}/logo`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Failed to upload logo");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/locations"] });
+      setLogoFile(null);
+      toast({ title: "Логотип загружен" });
+    },
+    onError: () => {
+      toast({ title: "Ошибка загрузки логотипа", variant: "destructive" });
+    },
+  });
+
   const resetForm = () => {
     setName("");
     setSlug("");
@@ -2225,6 +2250,7 @@ function LocationsManagement() {
     setAddress("");
     setLatitude(55.7558);
     setLongitude(37.6173);
+    setLogoFile(null);
     setEditingLocation(null);
   };
 
@@ -2343,6 +2369,42 @@ function LocationsManagement() {
                     rows={3}
                   />
                 </div>
+
+                {editingLocation && (
+                  <div className="space-y-2">
+                    <Label htmlFor="logoFile">Логотип локации</Label>
+                    {editingLocation.logoUrl && (
+                      <div className="mb-2">
+                        <img
+                          src={editingLocation.logoUrl}
+                          alt={`${editingLocation.name} logo`}
+                          className="h-16 w-auto object-contain"
+                        />
+                      </div>
+                    )}
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        id="logoFile"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+                        data-testid="input-location-logo"
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          if (logoFile && editingLocation) {
+                            uploadLogoMutation.mutate({ locationId: editingLocation.id, file: logoFile });
+                          }
+                        }}
+                        disabled={!logoFile || uploadLogoMutation.isPending}
+                        data-testid="button-upload-location-logo"
+                      >
+                        {uploadLogoMutation.isPending ? "Загрузка..." : "Загрузить"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label>Расположение на карте</Label>

@@ -67,7 +67,7 @@ export default function EventCard({ event, grayscale = false, showEventType = tr
         <div className="space-y-2 mb-4 text-sm">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{formatRussianDate(eventDate, { includeYear: true })}</span>
+            <span>{formatRussianDate(eventDate, { includeYear: true, includeTime: true })}</span>
           </div>
           <div className="flex items-start gap-2">
             <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />

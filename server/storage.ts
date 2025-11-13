@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, sql, gte, lte } from "drizzle-orm";
+import { eq, desc, asc, and, sql, gte, lte, inArray } from "drizzle-orm";
 import { db } from "./db";
 import {
   admins,
@@ -52,6 +52,7 @@ export interface IStorage {
 
   // Event Routes
   getEventRoutes(eventId: string): Promise<EventRoute[]>;
+  getEventRoutesByEventIds(eventIds: string[]): Promise<EventRoute[]>;
   getEventRoute(id: string): Promise<EventRoute | undefined>;
   createEventRoute(route: InsertEventRoute): Promise<EventRoute>;
   updateEventRoute(id: string, route: Partial<InsertEventRoute>): Promise<EventRoute | undefined>;
@@ -188,6 +189,17 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(eventRoutes)
       .where(eq(eventRoutes.eventId, eventId))
+      .orderBy(asc(eventRoutes.order), asc(eventRoutes.distanceKm));
+  }
+
+  async getEventRoutesByEventIds(eventIds: string[]): Promise<EventRoute[]> {
+    if (eventIds.length === 0) {
+      return [];
+    }
+    return await db
+      .select()
+      .from(eventRoutes)
+      .where(inArray(eventRoutes.eventId, eventIds))
       .orderBy(asc(eventRoutes.order), asc(eventRoutes.distanceKm));
   }
 

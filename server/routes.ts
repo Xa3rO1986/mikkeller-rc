@@ -334,7 +334,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: status as string,
         upcoming: upcoming === 'true',
       });
-      res.json(events);
+      
+      if (events.length > 0) {
+        const eventIds = events.map(e => e.id);
+        const allRoutes = await storage.getEventRoutesByEventIds(eventIds);
+        
+        const eventsWithRoutes = events.map(event => {
+          const eventRoutes = allRoutes.filter(r => r.eventId === event.id);
+          return {
+            ...event,
+            routes: eventRoutes.sort((a, b) => a.distanceKm - b.distanceKm)
+          };
+        });
+        
+        res.json(eventsWithRoutes);
+      } else {
+        res.json(events);
+      }
     } catch (error) {
       console.error("Error fetching events:", error);
       res.status(500).json({ message: "Failed to fetch events" });

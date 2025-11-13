@@ -205,6 +205,7 @@ export type HomeSettings = typeof homeSettings.$inferSelect;
 export const aboutSettings = pgTable("about_settings", {
   id: varchar("id").primaryKey().default("singleton"),
   heroTitle: text("hero_title").notNull().default("О Mikkeller Running Club"),
+  heroImageUrl: text("hero_image_url"),
   heroText1: text("hero_text_1").notNull().default("Mikkeller Running Club — это международное беговое сообщество, основанное в 2014 году в Копенгагене. Наша философия проста: бег должен быть доступен всем, независимо от уровня подготовки."),
   heroText2: text("hero_text_2").notNull().default("Каждую неделю тысячи бегунов по всему миру выходят на улицы своих городов, чтобы пробежать вместе 5-10 километров. После забега мы собираемся вместе, чтобы отметить достижения и насладиться компанией друг друга."),
   heroText3: text("hero_text_3").notNull().default("В Москве клуб работает с 2016 года и объединяет более 1200 активных участников. Мы проводим еженедельные забеги в разных локациях города."),

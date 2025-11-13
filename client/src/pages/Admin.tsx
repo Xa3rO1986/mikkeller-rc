@@ -1732,6 +1732,8 @@ function AboutSettingsManagement() {
     queryKey: ["/api/about-settings"],
   });
 
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+
   const form = useForm<AboutSettingsFormValues>({
     resolver: zodResolver(aboutSettingsFormSchema),
     defaultValues: {
@@ -1812,6 +1814,36 @@ function AboutSettingsManagement() {
     },
   });
 
+  const uploadHeroImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("heroImage", file);
+      const response = await fetch("/api/about-settings/hero-image", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Failed to upload hero image");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/about-settings"] });
+      setHeroImageFile(null);
+      toast({ title: "Фото загружено" });
+    },
+    onError: () => {
+      toast({ title: "Ошибка загрузки фото", variant: "destructive" });
+    },
+  });
+
+  const handleHeroImageUpload = () => {
+    if (heroImageFile) {
+      uploadHeroImageMutation.mutate(heroImageFile);
+    }
+  };
+
   const onSubmit = (data: AboutSettingsFormValues) => {
     updateSettingsMutation.mutate(data);
   };
@@ -1831,6 +1863,37 @@ function AboutSettingsManagement() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Hero фото</h3>
+              
+              {settings?.heroImageUrl && (
+                <div className="mb-2">
+                  <img
+                    src={settings.heroImageUrl}
+                    alt="About page hero"
+                    className="w-full max-w-md h-48 object-cover rounded-md"
+                  />
+                </div>
+              )}
+              <div className="flex gap-2 items-center">
+                <Input
+                  id="heroImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setHeroImageFile(e.target.files?.[0] || null)}
+                  data-testid="input-about-hero-image"
+                />
+                <Button
+                  type="button"
+                  onClick={handleHeroImageUpload}
+                  disabled={!heroImageFile || uploadHeroImageMutation.isPending}
+                  data-testid="button-upload-about-hero-image"
+                >
+                  {uploadHeroImageMutation.isPending ? "Загрузка..." : "Загрузить"}
+                </Button>
+              </div>
+            </div>
+
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Заголовок и текст</h3>
               

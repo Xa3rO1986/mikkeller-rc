@@ -38,7 +38,7 @@ export default function About() {
             </div>
             <div className="rounded-lg overflow-hidden border-2 border-black">
               <img
-                src={heroImage}
+                src={settings?.heroImageUrl || heroImage}
                 alt="MRC Community"
                 className="w-full h-full object-cover grayscale"
               />
@@ -55,28 +55,28 @@ export default function About() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
               <CardContent className="p-8 text-center">
-                <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <Users className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
                 <div className="text-4xl font-bold mb-2">{settings?.statsMembers || "1,200+"}</div>
                 <div className="text-sm text-muted-foreground">{settings?.statsMembersLabel || "Участников в Москве"}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
-                <Globe className="h-12 w-12 mx-auto mb-4" />
+                <Globe className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
                 <div className="text-4xl font-bold mb-2">{settings?.statsBars || "25+"}</div>
                 <div className="text-sm text-muted-foreground">{settings?.statsBarsLabel || "Баров-партнеров"}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
-                <Calendar className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <Calendar className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
                 <div className="text-4xl font-bold mb-2">{settings?.statsRuns || "500+"}</div>
                 <div className="text-sm text-muted-foreground">{settings?.statsRunsLabel || "Проведено забегов"}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-8 text-center">
-                <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <MapPin className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
                 <div className="text-4xl font-bold mb-2">{settings?.statsDistance || "15,000"}</div>
                 <div className="text-sm text-muted-foreground">{settings?.statsDistanceLabel || "Километров пробежано"}</div>
               </CardContent>

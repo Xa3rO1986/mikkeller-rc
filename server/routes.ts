@@ -155,6 +155,36 @@ const logoUpload = multer({
   }
 });
 
+// Configure multer for about page image uploads
+const aboutImageStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'about'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    const extension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${extension}`);
+  }
+});
+
+const aboutImageUpload = multer({
+  storage: aboutImageStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extension = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = allowedTypes.test(file.mimetype);
+    
+    if (extension && mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 const gpxUpload = multer({
   storage: gpxStorage,
   limits: {
@@ -185,6 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
   app.use('/uploads/hero', express.static(path.join(__dirname, 'uploads', 'hero')));
   app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads', 'logos')));
+  app.use('/uploads/about', express.static(path.join(__dirname, 'uploads', 'about')));
 
   // Admin authentication routes
   app.post('/api/admin/login', async (req, res) => {
@@ -837,6 +868,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating about settings:", error);
       res.status(500).json({ message: "Failed to update about settings" });
+    }
+  });
+
+  app.post('/api/about-settings/hero-image', isAuthenticated, aboutImageUpload.single('heroImage'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Hero image is required" });
+      }
+
+      const heroImageUrl = `/uploads/about/${path.basename(req.file.path)}`;
+      
+      const settings = await storage.updateAboutSettings({
+        heroImageUrl,
+      });
+
+      res.json(settings);
+    } catch (error) {
+      console.error("Error uploading about hero image:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload about hero image" });
     }
   });
 

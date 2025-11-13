@@ -147,13 +147,11 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(events.status, filters.status as any));
     }
     if (filters?.upcoming) {
-      // Show events as upcoming until end of the day they start (Moscow timezone UTC+3)
+      // Show events as upcoming if their start time hasn't passed yet (Moscow timezone UTC+3)
       const nowMoscow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
-      const todayMoscow = new Date(nowMoscow);
-      todayMoscow.setHours(0, 0, 0, 0);
-      // Convert Moscow midnight to UTC for database comparison
-      const todayMoscowUTC = new Date(todayMoscow.getTime() - (3 * 60 * 60 * 1000));
-      conditions.push(gte(events.startsAt, todayMoscowUTC));
+      // Convert current Moscow time to UTC for database comparison
+      const nowMoscowUTC = new Date(nowMoscow.getTime() - (3 * 60 * 60 * 1000));
+      conditions.push(gte(events.startsAt, nowMoscowUTC));
     }
 
     if (conditions.length > 0) {

@@ -34,6 +34,43 @@ export default function EventDetail() {
     enabled: !!event?.locationId,
   });
 
+  const addToCalendar = () => {
+    if (!event) return;
+
+    const eventDate = new Date(event.startsAt);
+    const endDate = new Date(eventDate.getTime() + 2 * 60 * 60 * 1000); // +2 hours
+
+    const formatICSDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Mikkeller Running Club//Event//EN',
+      'BEGIN:VEVENT',
+      `UID:${event.id}@mikkellerrunningclub.com`,
+      `DTSTAMP:${formatICSDate(new Date())}`,
+      `DTSTART:${formatICSDate(eventDate)}`,
+      `DTEND:${formatICSDate(endDate)}`,
+      `SUMMARY:${event.title}`,
+      event.description ? `DESCRIPTION:${event.description.replace(/<[^>]*>/g, '').replace(/\n/g, '\\n')}` : '',
+      event.address ? `LOCATION:${event.address}` : '',
+      `URL:${window.location.href}`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].filter(Boolean).join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${event.slug || 'event'}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  };
+
   if (!slug || eventError) {
     return <NotFound />;
   }
@@ -172,7 +209,12 @@ export default function EventDetail() {
             <div className="space-y-6">
               <Card>
                 <CardContent className="p-6 space-y-4">
-                  <Button variant="outline" className="w-full" data-testid="button-add-calendar">
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    data-testid="button-add-calendar"
+                    onClick={addToCalendar}
+                  >
                     <Calendar className="mr-2 h-4 w-4" />
                     Добавить в календарь
                   </Button>

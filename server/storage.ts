@@ -147,7 +147,10 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(events.status, filters.status as any));
     }
     if (filters?.upcoming) {
-      conditions.push(gte(events.startsAt, new Date()));
+      // Show events as upcoming until end of the day they start
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      conditions.push(gte(events.startsAt, today));
     }
 
     if (conditions.length > 0) {

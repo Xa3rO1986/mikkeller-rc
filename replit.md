@@ -49,7 +49,7 @@ Preferred communication style: Simple, everyday language.
 
 **Route Organization**: Single routes file (`server/routes.ts`) containing all API endpoints for events, photos, products, orders, and admin operations
 
-**Data Access Layer**: Storage abstraction layer (`server/storage.ts`) provides interface-based data access, separating business logic from database operations
+**Data Access Layer**: Storage abstraction layer (`server/storage.ts`) provides interface-based data access, separating business logic from database operations. Events are filtered as "upcoming" if they start on or after the current day (00:00), ensuring events remain visible throughout the day they occur.
 
 **Content Security**: HTML sanitization via sanitize-html library on event descriptions to prevent XSS attacks. Allowed tags: p, br, strong, em, b, i, h2, h3, ul, ol, li
 

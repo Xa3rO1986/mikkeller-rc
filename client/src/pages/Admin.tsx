@@ -1814,10 +1814,10 @@ function HomeSettingsManagement() {
                   name="statsCities"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Города</FormLabel>
+                      <FormLabel>Литров пива</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="50+" 
+                          placeholder="8К" 
                           data-testid="input-stats-cities"
                           {...field} 
                         />

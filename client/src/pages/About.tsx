@@ -123,14 +123,6 @@ export default function About() {
               </CardContent>
             </Card>
           </div>
-
-          <div className="text-center">
-            <Link href="/join">
-              <Button size="lg" className="text-lg px-8" data-testid="button-join-now">
-                Присоединиться сейчас
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 

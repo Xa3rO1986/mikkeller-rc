@@ -14,7 +14,6 @@ import Gallery from "@/pages/Gallery";
 import Shop from "@/pages/Shop";
 import ProductDetail from "@/pages/ProductDetail";
 import About from "@/pages/About";
-import Join from "@/pages/Join";
 import PaceCalculator from "@/pages/PaceCalculator";
 import Admin from "@/pages/Admin";
 import AdminLogin from "@/pages/AdminLogin";
@@ -32,7 +31,6 @@ function Router() {
       <Route path="/shop" component={Shop} />
       <Route path="/shop/:slug" component={ProductDetail} />
       <Route path="/about" component={About} />
-      <Route path="/join" component={Join} />
       <Route path="/pace-calculator" component={PaceCalculator} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={Admin} />

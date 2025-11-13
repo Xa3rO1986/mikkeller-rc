@@ -48,7 +48,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 Mikkeller Running Club. Все права защищены.</p>
+          <p>&copy; 2025 Mikkeller Running Club. Все права защищены.</p>
         </div>
       </div>
     </footer>

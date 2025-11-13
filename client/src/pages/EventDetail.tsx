@@ -329,7 +329,7 @@ export default function EventDetail() {
                             />
                           )}
                           <Link href={`/locations/${location.slug}`}>
-                            <div className="font-medium hover:underline cursor-pointer" data-testid="link-location-name">
+                            <div className="font-medium underline cursor-pointer" data-testid="link-location-name">
                               {location.name}
                             </div>
                           </Link>
@@ -338,11 +338,6 @@ export default function EventDetail() {
                           </div>
                         </div>
                       </div>
-                      {location.description && (
-                        <p className="text-sm text-muted-foreground pl-7">
-                          {location.description}
-                        </p>
-                      )}
                     </div>
                   </CardContent>
                 </Card>

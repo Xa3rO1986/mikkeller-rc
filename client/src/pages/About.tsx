@@ -47,47 +47,6 @@ export default function About() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-8">Как присоединиться</h2>
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card>
-              <CardContent className="p-6">
-                <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl mb-4">
-                  1
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Зарегистрируйтесь</h3>
-                <p className="text-sm text-muted-foreground">
-                  Заполните простую форму регистрации на нашем сайте. Это бесплатно!
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl mb-4">
-                  2
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Выберите забег</h3>
-                <p className="text-sm text-muted-foreground">
-                  Посмотрите расписание предстоящих забегов и выберите удобное время и бар.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl mb-4">
-                  3
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Приходите и бегите</h3>
-                <p className="text-sm text-muted-foreground">
-                  Приходите в указанное время, знакомьтесь с участниками и наслаждайтесь пробежкой!
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       <section className="py-16 lg:py-24 bg-card">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <h2 className="text-3xl lg:text-4xl font-bold mb-8">Правила клуба</h2>

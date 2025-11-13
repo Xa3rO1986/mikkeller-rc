@@ -14,14 +14,14 @@ export default function PhotoCard({ id, url, title, eventTitle, onClick, graysca
 
   return (
     <div
-      className="relative overflow-hidden rounded-lg cursor-pointer hover-elevate group"
+      className={`relative overflow-hidden rounded-lg cursor-pointer hover-elevate group ${grayscale ? 'grayscale hover:grayscale-0 transition-all' : ''}`}
       onClick={onClick}
       data-testid={`photo-${id}`}
     >
       <img
         src={url}
         alt={title || 'Event photo'}
-        className={`w-full h-full object-cover transition-opacity ${grayscale ? 'grayscale' : ''} ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full object-cover transition-opacity ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setLoaded(true)}
       />
       {!loaded && (

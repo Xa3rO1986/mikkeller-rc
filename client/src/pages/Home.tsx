@@ -271,9 +271,9 @@ export default function Home() {
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="text-4xl font-bold text-primary mb-2">
-                    {homeSettings?.statsCities || "50+"}
+                    {homeSettings?.statsCities || "8К"}
                   </div>
-                  <div className="text-sm text-muted-foreground">Городов</div>
+                  <div className="text-sm text-muted-foreground">Литров пива</div>
                 </CardContent>
               </Card>
               <Card>

@@ -3,13 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, TrendingUp, Route } from "lucide-react";
 import { Link } from "wouter";
-import type { Event, Location } from "@shared/schema";
+import type { Event, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
 import { useQuery } from "@tanstack/react-query";
 
+interface EventWithRoutes extends Event {
+  routes?: EventRoute[];
+}
+
 interface EventCardProps {
-  event: Event;
+  event: EventWithRoutes;
   grayscale?: boolean;
   showEventType?: boolean;
 }
@@ -23,6 +27,15 @@ export default function EventCard({ event, grayscale = false, showEventType = tr
   });
 
   const locationText = location?.name || event.address || 'Место уточняется';
+  
+  const routes = event.routes || [];
+  const hasGpx = routes.some(route => route.gpxUrl);
+  
+  const distanceText = routes.length > 0 
+    ? routes.map(r => `${r.distanceKm} км`).join(' и ')
+    : event.distanceKm 
+      ? `${event.distanceKm} км` 
+      : null;
   
   return (
     <Card className="overflow-hidden hover:-translate-y-1 transition-transform border-2 border-black" data-testid={`card-event-${event.slug}`}>
@@ -70,16 +83,16 @@ export default function EventCard({ event, grayscale = false, showEventType = tr
               <span>{locationText}</span>
             </div>
           </div>
-          {event.distanceKm && (
+          {distanceText && (
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              <span>{event.distanceKm} км</span>
+              <span data-testid={`text-distance-${event.slug}`}>{distanceText}</span>
             </div>
           )}
-          {event.gpxUrl && (
+          {(hasGpx || event.gpxUrl) && (
             <div className="flex items-center gap-2">
               <Route className="h-4 w-4" />
-              <span>GPX маршрут доступен</span>
+              <span data-testid={`text-gpx-${event.slug}`}>GPX маршрут доступен</span>
             </div>
           )}
         </div>

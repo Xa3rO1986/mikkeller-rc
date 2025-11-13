@@ -22,6 +22,7 @@ export default function Header() {
     { href: "/events", label: "Забеги" },
     { href: "/gallery", label: "Галерея" },
     { href: "/shop", label: "Магазин" },
+    { href: "/pace-calculator", label: "Калькулятор" },
     { href: "/about", label: "О клубе" },
   ];
 

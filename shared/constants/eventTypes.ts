@@ -3,6 +3,7 @@ export const EVENT_TYPE_LABELS: Record<string, string> = {
   irregular: "Внештатный",
   out_of_town: "Выездной",
   city: "Городской",
+  athletics: "Атлетикс",
 };
 
 export function formatEventType(type: string | null | undefined): string {

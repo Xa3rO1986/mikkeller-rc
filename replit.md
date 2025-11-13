@@ -68,7 +68,7 @@ Preferred communication style: Simple, everyday language.
   - `latitude` / `longitude`: Geographic coordinates for map display
   - `description`: Optional location description
 - `events`: Running events with geolocation, GPX routes, cover images, and rich-text descriptions
-  - `eventType`: Event type enum (club, irregular, out_of_town, city) displayed as Клубный, Внештатный, Выездной, Городской
+  - `eventType`: Event type enum (club, irregular, out_of_town, city, athletics) displayed as Клубный, Внештатный, Выездной, Городской, Атлетикс
   - `locationId`: Foreign key reference to locations table (optional)
   - `coverImageUrl`: Cover photo for event display (shown at content width on detail page, not full-screen)
   - `gpxUrl`: GPX track file for route visualization (displayed in event cards with icon)

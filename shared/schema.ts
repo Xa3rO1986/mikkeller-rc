@@ -5,7 +5,7 @@ import { z } from "zod";
 
 // Enums
 export const eventStatusEnum = pgEnum("event_status", ["draft", "published", "archived"]);
-export const eventTypeEnum = pgEnum("event_type", ["club", "irregular", "out_of_town", "city"]);
+export const eventTypeEnum = pgEnum("event_type", ["club", "irregular", "out_of_town", "city", "athletics"]);
 export const photoStatusEnum = pgEnum("photo_status", ["pending", "approved", "rejected"]);
 export const orderStatusEnum = pgEnum("order_status", ["created", "paid", "failed"]);
 

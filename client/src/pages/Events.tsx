@@ -73,6 +73,7 @@ export default function Events() {
                   <SelectItem value="city">{formatEventType("city")}</SelectItem>
                   <SelectItem value="out_of_town">{formatEventType("out_of_town")}</SelectItem>
                   <SelectItem value="athletics">{formatEventType("athletics")}</SelectItem>
+                  <SelectItem value="croissant">{formatEventType("croissant")}</SelectItem>
                 </SelectContent>
               </Select>
 

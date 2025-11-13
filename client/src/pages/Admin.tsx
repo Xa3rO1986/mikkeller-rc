@@ -647,6 +647,7 @@ function EventsManagement() {
                         <SelectItem value="out_of_town">Выездной</SelectItem>
                         <SelectItem value="city">Городской</SelectItem>
                         <SelectItem value="athletics">Атлетикс</SelectItem>
+                        <SelectItem value="croissant">Курасан</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -771,6 +772,7 @@ function EventsManagement() {
                     {event.eventType === 'out_of_town' && 'Выездной'}
                     {event.eventType === 'city' && 'Городской'}
                     {event.eventType === 'athletics' && 'Атлетикс'}
+                    {event.eventType === 'croissant' && 'Курасан'}
                     {' • '}
                     {event.status === 'draft' && 'Черновик'}
                     {event.status === 'published' && 'Опубликовано'}

@@ -106,7 +106,7 @@ Preferred communication style: Simple, everyday language.
 
 **GPX Processing**: gpxparser library automatically extracts distance from uploaded GPX files for each route. Admin can create multiple routes per event with different distances and GPX tracks.
 
-**Comments System**: AnyComment.io widget integration for event comments. APP ID (7264) is served via `/api/config` endpoint. Component dynamically loads AnyComment script with Russian language support, page identification, and cleanup handling.
+**Comments System**: AnyComment.io CommentStream widget integration for event comments. The widget is embedded directly in event detail pages using inline script tags with APP ID 7264, Russian language support, and the stream embed (https://widget.anycomment.io/stream/embed.js).
 
 **Image Assets**: Static assets stored in `attached_assets/` directory, imported directly into components
 

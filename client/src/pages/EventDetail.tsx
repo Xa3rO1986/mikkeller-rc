@@ -9,7 +9,6 @@ import { Link } from "wouter";
 import type { Event, Photo, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
-import { AnyCommentWidget } from "@/components/AnyCommentWidget";
 import { GPXMap } from "@/components/GPXMap";
 import NotFound from "@/pages/not-found";
 
@@ -37,10 +36,6 @@ export default function EventDetail() {
   const { data: routes = [] } = useQuery<EventRoute[]>({
     queryKey: ['/api/events', event?.id, 'routes'],
     enabled: !!event?.id,
-  });
-
-  const { data: config } = useQuery<{ anycommentAppId: number }>({
-    queryKey: ['/api/config'],
   });
 
   const sortedRoutes = [...routes].sort((a, b) => a.distanceKm - b.distanceKm);
@@ -236,17 +231,26 @@ export default function EventDetail() {
                 </section>
               )}
 
-              {config?.anycommentAppId && (
-                <section>
-                  <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
-                  <AnyCommentWidget
-                    appId={config.anycommentAppId}
-                    language="ru"
-                    pageId={`event-${slug}`}
-                    pageTitle={event.title}
-                  />
-                </section>
-              )}
+              <section>
+                <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
+                <div id="anycomment-stream" data-testid="anycomment-stream"></div>
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      AnyComment = window.AnyComment || []; AnyComment.CommentStream = [];
+                      AnyComment.CommentStream.push({
+                          root: "anycomment-stream",
+                          app_id: 7264,
+                          language: "ru"
+                      });
+                      var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
+                      s.src = "https://widget.anycomment.io/stream/embed.js";
+                      var sa = document.getElementsByTagName("script")[0];
+                      sa.parentNode.insertBefore(s, s.nextSibling);
+                    `
+                  }}
+                />
+              </section>
             </div>
 
             <div className="space-y-6">

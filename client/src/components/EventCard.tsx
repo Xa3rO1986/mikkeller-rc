@@ -56,9 +56,19 @@ export default function EventCard({ event, grayscale = false, showEventType = tr
             <Calendar className="h-4 w-4" />
             <span>{formatRussianDate(eventDate, { includeYear: true })}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            <span>{locationText}</span>
+          <div className="flex items-start gap-2">
+            <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <div className="flex flex-col gap-1">
+              {location?.logoUrl && (
+                <img
+                  src={location.logoUrl}
+                  alt={`${location.name} logo`}
+                  className="h-8 w-auto object-contain"
+                  data-testid={`img-location-logo-${event.slug}`}
+                />
+              )}
+              <span>{locationText}</span>
+            </div>
           </div>
           {event.distanceKm && (
             <div className="flex items-center gap-2">

@@ -236,15 +236,17 @@ export default function EventDetail() {
                 </section>
               )}
 
-              <section>
-                <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
-                <AnyCommentWidget
-                  appId={config?.anycommentAppId || 0}
-                  language="ru"
-                  pageId={`event-${slug}`}
-                  pageTitle={event.title}
-                />
-              </section>
+              {config?.anycommentAppId && (
+                <section>
+                  <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
+                  <AnyCommentWidget
+                    appId={config.anycommentAppId}
+                    language="ru"
+                    pageId={`event-${slug}`}
+                    pageTitle={event.title}
+                  />
+                </section>
+              )}
             </div>
 
             <div className="space-y-6">

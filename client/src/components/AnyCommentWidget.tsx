@@ -61,11 +61,8 @@ export function AnyCommentWidget({ appId, language = "ru", pageId, pageTitle }: 
   if (!appId) {
     return (
       <div className="border rounded-md p-6 text-center" data-testid="anycomment-placeholder">
-        <p className="text-muted-foreground mb-2">
-          Комментарии будут доступны после настройки AnyComment.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Чтобы включить комментарии, добавьте VITE_ANYCOMMENT_APP_ID в переменные окружения.
+        <p className="text-muted-foreground">
+          Загрузка комментариев...
         </p>
       </div>
     );

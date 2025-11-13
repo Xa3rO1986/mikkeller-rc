@@ -3,22 +3,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { Calendar, MapPin, TrendingUp, ArrowRight, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, TrendingUp, ArrowRight, X, ChevronLeft, ChevronRight, Route } from "lucide-react";
 import { Link } from "wouter";
 import EventCard from "@/components/EventCard";
 import PhotoCard from "@/components/PhotoCard";
 import { useQuery } from "@tanstack/react-query";
-import type { Event, Photo, Location } from "@shared/schema";
+import type { Event, Photo, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
 import logo from '@assets/PulK8qcN_1762970447644.jpg';
 
+interface EventWithRoutes extends Event {
+  routes?: EventRoute[];
+}
+
 export default function Home() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-  const { data: upcomingEvents = [], isLoading: eventsLoading } = useQuery<Event[]>({
+  const { data: upcomingEvents = [], isLoading: eventsLoading } = useQuery<EventWithRoutes[]>({
     queryKey: ['/api/events?upcoming=true'],
   });
 
@@ -51,6 +55,14 @@ export default function Home() {
   });
 
   const nextEventLocationText = nextEventLocation?.name || nextEvent?.address || 'Место уточняется';
+  
+  const routes = nextEvent?.routes || [];
+  const hasGpx = routes.some(route => route.gpxUrl);
+  const distanceText = routes.length > 0 
+    ? routes.map(r => `${r.distanceKm} км`).join(' и ')
+    : nextEvent?.distanceKm 
+      ? `${nextEvent.distanceKm} км` 
+      : null;
 
   const openLightbox = (index: number) => {
     setCurrentPhotoIndex(index);
@@ -161,10 +173,16 @@ export default function Home() {
                       <MapPin className="h-5 w-5" />
                       <span>{nextEventLocationText}</span>
                     </div>
-                    {nextEvent.distanceKm && (
+                    {distanceText && (
                       <div className="flex items-center gap-3">
                         <TrendingUp className="h-5 w-5" />
-                        <span>{nextEvent.distanceKm} км</span>
+                        <span data-testid="text-next-event-distance">{distanceText}</span>
+                      </div>
+                    )}
+                    {(hasGpx || nextEvent.gpxUrl) && (
+                      <div className="flex items-center gap-3">
+                        <Route className="h-5 w-5" />
+                        <span data-testid="text-next-event-gpx">GPX маршрут доступен</span>
                       </div>
                     )}
                   </div>

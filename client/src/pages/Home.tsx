@@ -12,7 +12,7 @@ import type { Event, Photo, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
-import logo from '@assets/PulK8qcN_1762970447644.jpg';
+import logo from '@assets/MRC_1763044539473.png';
 
 interface EventWithRoutes extends Event {
   routes?: EventRoute[];

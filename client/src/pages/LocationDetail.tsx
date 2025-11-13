@@ -164,6 +164,14 @@ export default function LocationDetail() {
 
         <div className="space-y-8 mt-8">
           <div>
+            {location.logoUrl && (
+              <img
+                src={location.logoUrl}
+                alt={`${location.name} logo`}
+                className="h-16 w-auto object-contain mb-4"
+                data-testid={`img-location-logo-${location.slug}`}
+              />
+            )}
             <h1 className="text-4xl font-bold mb-4" data-testid="text-location-name">
               {location.name}
             </h1>

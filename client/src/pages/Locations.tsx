@@ -35,6 +35,14 @@ export default function Locations() {
                   data-testid={`card-location-${location.slug}`}
                 >
                   <CardHeader>
+                    {location.logoUrl && (
+                      <img
+                        src={location.logoUrl}
+                        alt={`${location.name} logo`}
+                        className="h-12 w-auto object-contain mb-3"
+                        data-testid={`img-location-logo-${location.slug}`}
+                      />
+                    )}
                     <CardTitle className="flex items-start gap-2">
                       <MapPin className="h-5 w-5 mt-1 flex-shrink-0" />
                       <span>{location.name}</span>

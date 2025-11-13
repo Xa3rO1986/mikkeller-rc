@@ -245,7 +245,15 @@ export default function EventDetail() {
                     <div className="space-y-3">
                       <div className="flex items-start gap-2">
                         <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                        <div>
+                        <div className="flex-1">
+                          {location.logoUrl && (
+                            <img
+                              src={location.logoUrl}
+                              alt={`${location.name} logo`}
+                              className="h-10 w-auto object-contain mb-2"
+                              data-testid={`img-location-logo-${location.slug}`}
+                            />
+                          )}
                           <Link href={`/locations/${location.slug}`}>
                             <div className="font-medium hover:underline cursor-pointer" data-testid="link-location-name">
                               {location.name}

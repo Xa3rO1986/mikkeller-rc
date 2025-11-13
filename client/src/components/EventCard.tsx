@@ -39,12 +39,12 @@ export default function EventCard({ event, grayscale = false, showEventType = tr
   
   return (
     <Card className="overflow-hidden hover:-translate-y-1 transition-transform border-2 border-black" data-testid={`card-event-${event.slug}`}>
-      <div className="relative h-48 overflow-hidden bg-muted flex items-center justify-center">
+      <div className={`relative h-48 overflow-hidden bg-muted flex items-center justify-center ${grayscale ? 'grayscale' : ''}`}>
         {event.coverImageUrl ? (
           <img
             src={event.coverImageUrl}
             alt={event.title}
-            className={`w-full h-full object-cover ${grayscale ? 'grayscale' : ''}`}
+            className="w-full h-full object-cover"
           />
         ) : (
           <div className="text-center text-muted-foreground">

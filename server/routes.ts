@@ -270,6 +270,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public configuration endpoint
+  app.get('/api/config', async (_req, res) => {
+    res.json({
+      anycommentAppId: 7264
+    });
+  });
+
   // Admin management routes (protected)
   app.get('/api/admins', isAuthenticated, async (req, res) => {
     try {

@@ -39,6 +39,10 @@ export default function EventDetail() {
     enabled: !!event?.id,
   });
 
+  const { data: config } = useQuery<{ anycommentAppId: number }>({
+    queryKey: ['/api/config'],
+  });
+
   const sortedRoutes = [...routes].sort((a, b) => a.distanceKm - b.distanceKm);
 
   const addToCalendar = () => {
@@ -235,7 +239,7 @@ export default function EventDetail() {
               <section>
                 <h2 className="text-2xl font-bold mb-4">Комментарии</h2>
                 <AnyCommentWidget
-                  appId={Number(import.meta.env.VITE_ANYCOMMENT_APP_ID) || 0}
+                  appId={config?.anycommentAppId || 0}
                   language="ru"
                   pageId={`event-${slug}`}
                   pageTitle={event.title}

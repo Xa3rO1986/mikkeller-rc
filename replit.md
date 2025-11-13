@@ -106,7 +106,7 @@ Preferred communication style: Simple, everyday language.
 
 **GPX Processing**: gpxparser library automatically extracts distance from uploaded GPX files for each route. Admin can create multiple routes per event with different distances and GPX tracks.
 
-**Comments System**: AnyComment.io widget integration for event comments. Configured with VITE_ANYCOMMENT_APP_ID environment variable. Component dynamically loads AnyComment script with Russian language support, page identification, and cleanup handling.
+**Comments System**: AnyComment.io widget integration for event comments. APP ID (7264) is served via `/api/config` endpoint. Component dynamically loads AnyComment script with Russian language support, page identification, and cleanup handling.
 
 **Image Assets**: Static assets stored in `attached_assets/` directory, imported directly into components
 
@@ -126,7 +126,6 @@ Preferred communication style: Simple, everyday language.
 - `SESSION_SECRET`: Session encryption key (required)
 - `VITE_YANDEX_MAPS_API_KEY`: Yandex Maps API key for location picker (optional - uses manual coordinate input if not provided)
 - `YOOKASSA_SHOP_ID` & `YOOKASSA_SECRET_KEY`: Payment gateway credentials (optional)
-- `VITE_ANYCOMMENT_APP_ID`: AnyComment.io widget APP ID for comments integration (optional)
 
 ### File Organization
 

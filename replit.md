@@ -116,10 +116,20 @@ Preferred communication style: Simple, everyday language.
 
 **Production Build**: 
 - Frontend: Vite builds to `dist/public`
-- Backend: esbuild bundles Express server to `dist/index.js` as ESM
-- Single command deployment with `npm run build`
+- Backend: esbuild bundles Express server to `dist/index.js` as ESM with dev dependencies marked as external
+- Static file serving: Separate `server/static.ts` module compiled to `dist/static.js` for production
+- Dynamic imports with computed paths prevent bundling of Vite in production
+
+**Production Infrastructure**:
+- CapRover deployment platform with Docker multi-stage builds
+- Separate builder stage with all dependencies for compilation
+- Minimal production stage with only runtime dependencies
+- PostgreSQL database runs in separate container (srv-captain--mikkeller-db)
+- Persistent uploads volume mounted at `/app/server/uploads`
+- Automatic HTTPS with Let's Encrypt via CapRover
 
 **Environment Variables**:
+- `NODE_ENV`: Runtime environment (development/production)
 - `DATABASE_URL`: PostgreSQL connection string (required)
 - `SESSION_SECRET`: Session encryption key (required)
 - `VITE_YANDEX_MAPS_API_KEY`: Yandex Maps API key for location picker (optional - uses manual coordinate input if not provided)

@@ -15,7 +15,12 @@ RUN npm ci
 COPY . .
 
 # Собираем приложение (требует devDependencies: vite, esbuild, etc.)
-RUN npm run build
+# Frontend build
+RUN npx vite build
+# Backend build с явным исключением dev-only пакетов
+RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --external:vite --external:@vitejs/* --external:@replit/* --external:tsx --external:drizzle-kit --outdir=dist
+# Компилируем server/static.ts для production
+RUN npx esbuild server/static.ts --platform=node --format=esm --outfile=dist/static.js
 
 # Stage 2: Production
 FROM node:20-slim
@@ -38,6 +43,7 @@ COPY --from=builder /app/dist ./dist
 
 # Копируем необходимые runtime файлы
 COPY --from=builder /app/shared ./shared
+COPY --from=builder /app/package.json ./package.json
 
 # Создаем директории для загрузок
 RUN mkdir -p server/uploads/photos server/uploads/covers server/uploads/gpx

@@ -1,0 +1,123 @@
+------------------------- Sun Nov 16 2025 12:27:09 GMT+0000 (Coordinated Universal Time)
+Build started for mikkeller-rc
+Ignore warnings for unconsumed build-args if there is any
+Step 1/20 : FROM node:20-slim AS builder
+
+---> 12541e65a377
+Step 2/20 : WORKDIR /app
+
+---> Using cache
+---> 9a01222723fb
+Step 3/20 : COPY package*.json ./
+
+---> Using cache
+---> f590e7027f28
+Step 4/20 : RUN npm ci
+
+---> Using cache
+---> c6fc515137a1
+Step 5/20 : COPY . .
+
+---> 53ac85d4521e
+Step 6/20 : RUN npx vite build
+
+---> Running in 6e09c178d4e0
+vite v5.4.20 building for production...
+transforming...
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+
+✓ 1817 modules transformed.
+rendering chunks...
+computing gzip size...
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+../dist/public/index.html                                                      0.73 kB │ gzip:   0.40 kB
+../dist/public/assets/MRC_1763044539473-CWUSUGzG.png                          61.75 kB
+../dist/public/assets/Black_running_t-shirt_product_3eadb9cf-NyOzNCuB.png    631.91 kB
+../dist/public/assets/Yellow_tank_top_product_c8520cd2-DDnobC29.png          671.61 kB
+../dist/public/assets/Teal_hoodie_product_ad3ee456-BziiDsYd.png            1,138.99 kB
+../dist/public/assets/Runners_celebrating_finish_969c4387-J-CrJiSV.png     1,588.09 kB
+../dist/public/assets/Hero_runners_urban_setting_ad89a1fd-vbmRpD_X.png     2,101.88 kB
+../dist/public/assets/index-CjatvI6j.css                                     102.05 kB │ gzip:  15.00 kB
+../dist/public/assets/index-DY_6lcjx.js                                      947.25 kB │ gzip: 288.68 kB
+✓ built in 9.22s
+---> Removed intermediate container 6e09c178d4e0
+---> 51976e7ef014
+Step 7/20 : RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --external:vite --external:@vitejs/* --external:@replit/* --external:tsx --external:drizzle-kit --outdir=dist
+
+---> Running in 0463a9fa3883
+
+  dist/index.js  74.4kb
+
+⚡ Done in 13ms
+
+---> Removed intermediate container 0463a9fa3883
+---> 6747bfe96442
+Step 8/20 : RUN npx esbuild server/static.ts --platform=node --format=esm --outfile=dist/static.js
+
+---> Running in ee759c7c3b07
+
+  dist/static.js  487b 
+
+⚡ Done in 4ms
+
+---> Removed intermediate container ee759c7c3b07
+---> 3a176267a9e9
+Step 9/20 : FROM node:20-slim
+
+---> 12541e65a377
+Step 10/20 : RUN apt-get update && apt-get install -y     ca-certificates     && rm -rf /var/lib/apt/lists/*
+
+---> Using cache
+---> faa90a8c4eda
+Step 11/20 : WORKDIR /app
+
+---> Using cache
+---> 753415e21e79
+Step 12/20 : COPY package*.json ./
+
+---> Using cache
+---> 43042409eb8f
+Step 13/20 : RUN npm ci --only=production && npm cache clean --force
+
+---> Using cache
+---> 3f362e3780cd
+Step 14/20 : COPY --from=builder /app/dist ./dist
+
+---> Using cache
+---> 57f536e149a8
+Step 15/20 : COPY --from=builder /app/shared ./shared
+
+---> Using cache
+---> da046148eb48
+Step 16/20 : COPY --from=builder /app/package.json ./package.json
+
+---> Using cache
+---> 91f348e9df30
+Step 17/20 : COPY --from=builder /app/drizzle.config.js ./drizzle.config.js
+
+---> e4fd7e9d3f75
+Step 18/20 : RUN mkdir -p server/uploads/photos server/uploads/covers server/uploads/gpx
+
+---> Running in 76053b01acd9
+---> Removed intermediate container 76053b01acd9
+---> 7585eb38304b
+Step 19/20 : EXPOSE 5000
+
+---> Running in 291287466b5d
+---> Removed intermediate container 291287466b5d
+---> 810d388d6555
+Step 20/20 : CMD ["node", "dist/index.js"]
+
+---> Running in 7cb3f7761c3d
+---> Removed intermediate container 7cb3f7761c3d
+---> 94ea50501ff2
+[Warning] One or more build-args [DATABASE_URL NODE_ENV SESSION_SECRET VITE_YANDEX_MAPS_API_KEY] were not consumed
+Successfully built 94ea50501ff2
+Successfully tagged img-captain-mikkeller-rc:latest
+Build has finished successfully!

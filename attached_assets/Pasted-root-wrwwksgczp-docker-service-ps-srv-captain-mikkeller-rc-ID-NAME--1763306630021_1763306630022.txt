@@ -1,0 +1,60 @@
+root@wrwwksgczp:~# docker service ps srv-captain--mikkeller-rc
+ID             NAME                              IMAGE                         NODE         DESIRED STATE   CURRENT STATE                      ERROR                       PORTS
+mn14tsggrro2   srv-captain--mikkeller-rc.1       img-captain-mikkeller-rc:11   wrwwksgczp   Ready           Preparing less than a second ago                               
+3fqe8ijh0l6h    \_ srv-captain--mikkeller-rc.1   img-captain-mikkeller-rc:11   wrwwksgczp   Shutdown        Failed less than a second ago      "task: non-zero exit (1)"   
+ftiw09mqv57i    \_ srv-captain--mikkeller-rc.1   img-captain-mikkeller-rc:11   wrwwksgczp   Shutdown        Failed 6 seconds ago               "task: non-zero exit (1)"   
+ul5cgvjgrvz7    \_ srv-captain--mikkeller-rc.1   img-captain-mikkeller-rc:11   wrwwksgczp   Shutdown        Failed 13 seconds ago              "task: non-zero exit (1)"   
+zj205xmkubum    \_ srv-captain--mikkeller-rc.1   img-captain-mikkeller-rc:11   wrwwksgczp   Shutdown        Failed 20 seconds ago              "task: non-zero exit (1)"   
+root@wrwwksgczp:~# docker service logs srv-captain--mikkeller-rc --tail 50
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    | Error: The server does not support SSL connections
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:516:28)
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:528:26)
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    |     at async file:///app/dist/index.js:1811:3
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.cc9rylgssnh8@wrwwksgczp    | Node.js v20.19.5
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    | Error: The server does not support SSL connections
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:516:28)
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:528:26)
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    |     at async file:///app/dist/index.js:1811:3
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.jeabmfap46cq@wrwwksgczp    | Node.js v20.19.5
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    | Error: The server does not support SSL connections
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:516:28)
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:528:26)
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    |     at async file:///app/dist/index.js:1811:3
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.ab47xp4o1yrr@wrwwksgczp    | Node.js v20.19.5
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    | Error: The server does not support SSL connections
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:516:28)
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:528:26)
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    |     at async file:///app/dist/index.js:1811:3
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.tnn97viu8ftx@wrwwksgczp    | Node.js v20.19.5

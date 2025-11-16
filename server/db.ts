@@ -11,7 +11,8 @@ if (!process.env.DATABASE_URL) {
 // Поддерживает обычные PostgreSQL соединения (не только Neon)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL.includes('localhost') 
+  // SSL только для облачных БД (например Neon), не для локального Docker PostgreSQL
+  ssl: process.env.DATABASE_URL?.includes('neon.tech') || process.env.DATABASE_URL?.includes('amazonaws.com')
     ? { rejectUnauthorized: false } 
     : false
 });

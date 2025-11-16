@@ -55,7 +55,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Storage
 
-**Database**: PostgreSQL via Neon serverless driver
+**Database**: PostgreSQL via node-postgres driver (compatible with any PostgreSQL instance, including Neon, CapRover, self-hosted)
 
 **ORM**: Drizzle ORM with schema-first approach defined in `shared/schema.ts`
 

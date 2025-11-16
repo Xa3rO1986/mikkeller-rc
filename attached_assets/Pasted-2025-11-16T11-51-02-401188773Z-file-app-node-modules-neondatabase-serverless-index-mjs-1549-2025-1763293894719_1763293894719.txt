@@ -1,0 +1,35 @@
+2025-11-16T11:51:02.401188773Z file:///app/node_modules/@neondatabase/serverless/index.mjs:1549
+2025-11-16T11:51:02.401281439Z ...ee})}catch(W){let H=new pe(`Error connecting to database: ${W.message}`);throw H.
+2025-11-16T11:51:02.401288261Z ^
+2025-11-16T11:51:02.401292379Z
+2025-11-16T11:51:02.401295144Z NeonDbError: Error connecting to database: fetch failed
+2025-11-16T11:51:02.401298781Z at execute (file:///app/node_modules/@neondatabase/serverless/index.mjs:1549:24)
+2025-11-16T11:51:02.401302638Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16T11:51:02.401306125Z at async NeonHttpPreparedQuery.execute (file:///app/node_modules/drizzle-orm/neon-http/session.js:40:20)
+2025-11-16T11:51:02.401310042Z at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:512:28)
+2025-11-16T11:51:02.401313308Z at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:524:26)
+2025-11-16T11:51:02.401315843Z at async file:///app/dist/index.js:1807:3 {
+2025-11-16T11:51:02.401318308Z severity: undefined,
+2025-11-16T11:51:02.401321233Z code: undefined,
+2025-11-16T11:51:02.401323698Z detail: undefined,
+2025-11-16T11:51:02.401326132Z hint: undefined,
+2025-11-16T11:51:02.401328527Z position: undefined,
+2025-11-16T11:51:02.401330911Z internalPosition: undefined,
+2025-11-16T11:51:02.401333306Z internalQuery: undefined,
+2025-11-16T11:51:02.401335700Z where: undefined,
+2025-11-16T11:51:02.401338316Z schema: undefined,
+2025-11-16T11:51:02.401340731Z table: undefined,
+2025-11-16T11:51:02.401343185Z column: undefined,
+2025-11-16T11:51:02.401345570Z dataType: undefined,
+2025-11-16T11:51:02.401347984Z constraint: undefined,
+2025-11-16T11:51:02.401350389Z file: undefined,
+2025-11-16T11:51:02.401352783Z line: undefined,
+2025-11-16T11:51:02.401355729Z routine: undefined,
+2025-11-16T11:51:02.401359486Z sourceError: TypeError: fetch failed
+2025-11-16T11:51:02.401363433Z at node:internal/deps/undici/undici:13510:13
+2025-11-16T11:51:02.401367511Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16T11:51:02.401371519Z at async execute (file:///app/node_modules/@neondatabase/serverless/index.mjs:1548:15)
+2025-11-16T11:51:02.401374925Z at async NeonHttpPreparedQuery.execute (file:///app/node_modules/drizzle-orm/neon-http/session.js:40:20)
+2025-11-16T11:51:02.401377460Z at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:512:28)
+2025-11-16T11:51:02.401380105Z at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:524:26)
+2025-11-16T11:51:02.401382609Z at async file:///app/dist/index.js:1807:3 {

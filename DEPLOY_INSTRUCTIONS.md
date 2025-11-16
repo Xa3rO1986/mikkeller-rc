@@ -1,0 +1,80 @@
+# Инструкции по развертыванию на CapRover
+
+## Что исправлено:
+✅ Заменен Neon HTTP драйвер на `node-postgres` (работает с любым PostgreSQL)
+✅ `drizzle-kit` добавлен в production зависимости (для `npm run db:push`)
+✅ `drizzle.config.ts` и `migrations/` копируются в Docker контейнер
+✅ Удален неиспользуемый `@neondatabase/serverless`
+
+---
+
+## Шаг 1: Создайте архив для деплоя
+
+```bash
+# В директории проекта:
+tar -czf mikkeller-rc.tar.gz \
+  --exclude='node_modules' \
+  --exclude='.git' \
+  --exclude='dist' \
+  --exclude='server/uploads' \
+  .
+```
+
+---
+
+## Шаг 2: Задеплойте на CapRover
+
+1. Откройте: https://captain.mikkeller.ru
+2. Перейдите: **Apps** → **mikkeller-rc**
+3. Вкладка **"Deployment"**
+4. Выберите **"Upload tar file"**
+5. Загрузите файл `mikkeller-rc.tar.gz`
+6. Дождитесь завершения сборки (3-5 минут)
+
+---
+
+## Шаг 3: Проверьте DATABASE_URL
+
+В **App Configs** → **Environment Variables** убедитесь что:
+
+```
+DATABASE_URL=postgresql://mikkeller_user:ВАШ_ПАРОЛЬ@srv-captain--mikkeller-db:5432/mikkeller_rc
+```
+
+⚠️ **Важно**: URL должен начинаться с `postgresql://` (не `https://`)
+
+---
+
+## Шаг 4: Инициализируйте базу данных
+
+### Вариант A: Через CapRover UI
+1. **Apps** → **mikkeller-rc** → вкладка **"Execute Command"**
+2. Введите: `npm run db:push`
+3. Нажмите **"Execute"**
+
+### Вариант B: Через SSH
+```bash
+# Найдите контейнер
+docker ps | grep mikkeller-rc
+
+# Выполните миграцию (замените CONTAINER_ID)
+docker exec <CONTAINER_ID> npm run db:push
+```
+
+---
+
+## Шаг 5: Проверьте логи
+
+**Apps** → **mikkeller-rc** → **"App Logs"**
+
+Ожидаемый вывод:
+```
+serving on port 5000
+```
+
+---
+
+## Готово! 🎉
+
+Откройте: https://mikkeller-rc.captain.mikkeller.ru (или ваш кастомный домен)
+

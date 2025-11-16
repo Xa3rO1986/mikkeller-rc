@@ -20,7 +20,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: false, // В production за proxy HTTPS терминируется на CapRover
       maxAge: sessionTtl,
     },
   });

@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calculator, Timer, Ruler, Zap } from "lucide-react";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 export default function PaceCalculator() {
   const [activeTab, setActiveTab] = useState("pace");
@@ -139,9 +141,11 @@ export default function PaceCalculator() {
   };
 
   return (
-    <div className="min-h-screen py-16">
-      <div className="max-w-4xl mx-auto px-4 lg:px-8">
-        <div className="text-center mb-12">
+    <>
+      <SEO {...seoPages.paceCalculator} />
+      <div className="min-h-screen py-16">
+        <div className="max-w-4xl mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Calculator className="h-12 w-12" />
             <h1 className="text-4xl lg:text-5xl font-bold" data-testid="text-page-title">
@@ -512,7 +516,8 @@ export default function PaceCalculator() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

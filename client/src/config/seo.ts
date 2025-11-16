@@ -1,0 +1,123 @@
+import type { SEOProps } from '@/components/SEO';
+
+const DEFAULT_OG_IMAGE = '/uploads/hero/default.jpg';
+
+export const defaultSEO: SEOProps = {
+  title: 'Mikkeller Running Club — Беговой клуб Москва',
+  description: 'Присоединяйтесь к беговому сообществу Mikkeller Running Club в Москве. Еженедельные пробежки, маршруты с GPX-треками, фотогалерея событий и магазин брендовой экипировки.',
+  keywords: 'беговой клуб москва, mikkeller running club, бег москва, пробежки, running club moscow, марафон подготовка',
+  ogImage: DEFAULT_OG_IMAGE,
+};
+
+export const seoPages: Record<string, Omit<SEOProps, 'ogUrl'>> = {
+  home: {
+    title: 'Mikkeller Running Club — Беговой клуб Москва',
+    description: 'Присоединяйтесь к беговому сообществу Mikkeller Running Club в Москве. Еженедельные пробежки, маршруты с GPX-треками, фотогалерея событий и магазин брендовой экипировки.',
+    keywords: 'беговой клуб москва, mikkeller running club, бег москва, пробежки, running club moscow',
+    ogTitle: 'Mikkeller Running Club Moscow',
+    ogDescription: 'Join the Mikkeller Running Club community in Moscow. Weekly runs, GPX routes, photo gallery, and branded gear shop.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+  
+  events: {
+    title: 'События — Mikkeller Running Club',
+    description: 'Расписание предстоящих забегов и прошедших событий Mikkeller Running Club. Маршруты с GPX-треками, фотографии и детали каждой пробежки.',
+    keywords: 'расписание забегов москва, беговые события, mikkeller runs, gpx треки',
+    ogTitle: 'Events — Mikkeller Running Club',
+    ogDescription: 'Upcoming runs and past events schedule with GPX routes and photos.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+  
+  locations: {
+    title: 'Локации — Mikkeller Running Club',
+    description: 'Места встреч и партнёрские бары Mikkeller Running Club в Москве. Адреса, карты и информация о локациях для пробежек.',
+    keywords: 'бары mikkeller москва, места встреч бегунов, running locations moscow',
+    ogTitle: 'Locations — Mikkeller Running Club',
+    ogDescription: 'Meeting points and partner bars in Moscow with maps and details.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+  
+  gallery: {
+    title: 'Фотогалерея — Mikkeller Running Club',
+    description: 'Фотографии с пробежек Mikkeller Running Club. Атмосфера наших событий, участники и яркие моменты беговых встреч.',
+    keywords: 'фото пробежек москва, беговое сообщество фото, running club photos',
+    ogTitle: 'Photo Gallery — Mikkeller Running Club',
+    ogDescription: 'Photos from our runs, events, and community moments.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+  
+  shop: {
+    title: 'Магазин — Mikkeller Running Club',
+    description: 'Официальный магазин брендовой экипировки Mikkeller Running Club. Футболки, шапки, аксессуары для бега с доставкой по России.',
+    keywords: 'mikkeller одежда, беговая форма купить, running gear moscow, мерч беговой клуб',
+    ogTitle: 'Shop — Mikkeller Running Club',
+    ogDescription: 'Official branded gear: t-shirts, caps, and running accessories with delivery across Russia.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+  
+  about: {
+    title: 'О клубе — Mikkeller Running Club',
+    description: 'История и философия Mikkeller Running Club. Узнайте о нашем беговом сообществе, правилах участия и ценностях клуба.',
+    keywords: 'о клубе mikkeller, беговое сообщество москва, running club philosophy',
+    ogTitle: 'About — Mikkeller Running Club',
+    ogDescription: 'Our story, philosophy, and community values. Learn about the running club that combines fitness and social connection.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+  
+  paceCalculator: {
+    title: 'Калькулятор темпа — Mikkeller Running Club',
+    description: 'Бесплатный онлайн калькулятор темпа бега. Рассчитайте время финиша, темп на километр и планируйте тренировки для марафона и полумарафона.',
+    keywords: 'калькулятор темпа бега, pace calculator, темп на км, марафон калькулятор, полумарафон время',
+    ogTitle: 'Pace Calculator — Mikkeller Running Club',
+    ogDescription: 'Free online running pace calculator. Calculate finish time, pace per km, and plan your marathon training.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
+};
+
+export function getEventSEO(title: string, description: string, coverImage?: string, slug?: string): SEOProps {
+  const cleanDescription = description
+    ? description.replace(/<[^>]*>/g, '').slice(0, 160)
+    : 'Детали забега Mikkeller Running Club с маршрутом, временем старта и информацией о локации.';
+
+  return {
+    title: `${title} — События — Mikkeller Running Club`,
+    description: cleanDescription,
+    keywords: `${title}, забег москва, mikkeller run, беговое событие`,
+    ogTitle: title,
+    ogDescription: cleanDescription,
+    ogImage: coverImage || DEFAULT_OG_IMAGE,
+    ogUrl: slug ? `${window.location.origin}/events/${slug}` : undefined,
+  };
+}
+
+export function getProductSEO(name: string, description: string, price: number, imageUrl?: string, slug?: string): SEOProps {
+  const cleanDescription = description
+    ? description.replace(/<[^>]*>/g, '').slice(0, 160)
+    : `${name} — официальная продукция Mikkeller Running Club.`;
+
+  return {
+    title: `${name} — ${price} ₽ — Магазин — Mikkeller Running Club`,
+    description: `${cleanDescription} Цена: ${price} ₽. Доставка по России.`,
+    keywords: `${name}, mikkeller merch, беговая экипировка купить`,
+    ogTitle: `${name} — ${price} ₽`,
+    ogDescription: cleanDescription,
+    ogImage: imageUrl || DEFAULT_OG_IMAGE,
+    ogUrl: slug ? `${window.location.origin}/shop/${slug}` : undefined,
+  };
+}
+
+export function getLocationSEO(name: string, address: string, description?: string, logoUrl?: string, slug?: string): SEOProps {
+  const cleanDescription = description
+    ? description.replace(/<[^>]*>/g, '').slice(0, 160)
+    : `${name} — место встреч Mikkeller Running Club. Адрес: ${address}`;
+
+  return {
+    title: `${name} — Локации — Mikkeller Running Club`,
+    description: cleanDescription,
+    keywords: `${name}, ${address}, место встречи бегунов москва`,
+    ogTitle: name,
+    ogDescription: cleanDescription,
+    ogImage: logoUrl || DEFAULT_OG_IMAGE,
+    ogUrl: slug ? `${window.location.origin}/locations/${slug}` : undefined,
+  };
+}

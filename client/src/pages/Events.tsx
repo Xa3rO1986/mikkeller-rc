@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import type { Event, Location } from "@shared/schema";
 import { formatEventType } from "@shared/constants/eventTypes";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 export default function Events() {
   const [eventTypeFilter, setEventTypeFilter] = useState<string>("all");
@@ -43,9 +45,11 @@ export default function Events() {
   }, [pastEvents, eventTypeFilter, locationFilter]);
 
   return (
-    <div className="min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <Breadcrumbs items={[{ label: "Забеги" }]} />
+    <>
+      <SEO {...seoPages.events} />
+      <div className="min-h-screen py-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <Breadcrumbs items={[{ label: "Забеги" }]} />
         
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Забеги</h1>
@@ -148,7 +152,8 @@ export default function Events() {
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

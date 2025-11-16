@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import type { Location, Event } from "@shared/schema";
 import { useEffect, useRef, useState } from "react";
+import { SEO } from "@/components/SEO";
+import { getLocationSEO } from "@/config/seo";
 
 declare global {
   interface Window {
@@ -154,10 +156,20 @@ export default function LocationDetail() {
 
   const locationEvents = events.filter(event => event.locationId === location.id);
 
+  const seo = getLocationSEO(
+    location.name,
+    location.address,
+    location.description || undefined,
+    location.logoUrl || undefined,
+    location.slug
+  );
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Breadcrumbs items={[
+    <>
+      <SEO {...seo} />
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <Breadcrumbs items={[
           { label: "Локации", href: "/locations" },
           { label: location.name }
         ]} />
@@ -254,8 +266,9 @@ export default function LocationDetail() {
               </div>
             </Card>
           )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

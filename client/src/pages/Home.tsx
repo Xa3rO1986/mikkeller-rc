@@ -10,6 +10,8 @@ import PhotoCard from "@/components/PhotoCard";
 import { useQuery } from "@tanstack/react-query";
 import type { Event, Photo, Location, EventRoute } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 import heroImage from '@assets/generated_images/Hero_runners_urban_setting_ad89a1fd.png';
 import logo from '@assets/MRC_1763044539473.png';
@@ -80,7 +82,9 @@ export default function Home() {
   };
   
   return (
-    <div className="min-h-screen">
+    <>
+      <SEO {...seoPages.home} ogImage={homeSettings?.heroImageUrl || seoPages.home.ogImage} />
+      <div className="min-h-screen">
       <section className="relative min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -371,6 +375,7 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 }

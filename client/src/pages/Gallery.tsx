@@ -9,6 +9,8 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import type { Photo, Event } from "@shared/schema";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 export default function Gallery() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,9 +60,11 @@ export default function Gallery() {
   };
 
   return (
-    <div className="min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <Breadcrumbs items={[{ label: "Галерея" }]} />
+    <>
+      <SEO {...seoPages.gallery} />
+      <div className="min-h-screen py-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <Breadcrumbs items={[{ label: "Галерея" }]} />
         
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Галерея</h1>
@@ -175,7 +179,8 @@ export default function Gallery() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

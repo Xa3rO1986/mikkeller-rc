@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Share2, ChevronLeft, ChevronRight } from "lucide-react";
+import { SEO } from "@/components/SEO";
+import { getProductSEO } from "@/config/seo";
 
 import product1 from '@assets/generated_images/Black_running_t-shirt_product_3eadb9cf.png';
 
@@ -18,8 +20,18 @@ export default function ProductDetail() {
   const sizes = ["S", "M", "L", "XL", "XXL"];
   const colors = ["Черный", "Желтый"];
 
+  const seo = getProductSEO(
+    "Беговая футболка MRC",
+    "Высококачественная беговая футболка с логотипом Mikkeller Running Club. Дышащая ткань, идеальная посадка.",
+    2500,
+    product1,
+    "black-running-tee"
+  );
+
   return (
-    <div className="min-h-screen py-12">
+    <>
+      <SEO {...seo} />
+      <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <Breadcrumbs items={[
           { label: "Магазин", href: "/shop" },
@@ -201,7 +213,8 @@ export default function ProductDetail() {
             </Card>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

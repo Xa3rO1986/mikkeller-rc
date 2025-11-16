@@ -5,6 +5,8 @@ import { MapPin, Users, Calendar, Globe } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { AboutSettings } from "@shared/schema";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 import heroImage from '@assets/generated_images/Runners_celebrating_finish_969c4387.png';
 
@@ -14,7 +16,9 @@ export default function About() {
   });
 
   return (
-    <div className="min-h-screen">
+    <>
+      <SEO {...seoPages.about} ogImage={settings?.heroImageUrl || seoPages.about.ogImage} />
+      <div className="min-h-screen">
       <section className="py-16 lg:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <Breadcrumbs items={[{ label: "О клубе" }]} />
@@ -86,6 +90,7 @@ export default function About() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

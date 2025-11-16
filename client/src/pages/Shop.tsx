@@ -3,6 +3,8 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 import product1 from '@assets/generated_images/Black_running_t-shirt_product_3eadb9cf.png';
 import product2 from '@assets/generated_images/Yellow_tank_top_product_c8520cd2.png';
@@ -76,9 +78,11 @@ export default function Shop() {
   ];
 
   return (
-    <div className="min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <Breadcrumbs items={[{ label: "Магазин" }]} />
+    <>
+      <SEO {...seoPages.shop} />
+      <div className="min-h-screen py-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <Breadcrumbs items={[{ label: "Магазин" }]} />
         
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Магазин</h1>
@@ -133,7 +137,8 @@ export default function Shop() {
             <ProductCard key={product.slug} {...product} />
           ))}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

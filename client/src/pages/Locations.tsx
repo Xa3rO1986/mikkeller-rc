@@ -4,6 +4,8 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { MapPin } from "lucide-react";
 import { Link } from "wouter";
 import type { Location } from "@shared/schema";
+import { SEO } from "@/components/SEO";
+import { seoPages } from "@/config/seo";
 
 export default function Locations() {
   const { data: locations = [], isLoading } = useQuery<Location[]>({
@@ -11,7 +13,9 @@ export default function Locations() {
   });
 
   return (
-    <div className="min-h-screen py-16 lg:py-24">
+    <>
+      <SEO {...seoPages.locations} />
+      <div className="min-h-screen py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <Breadcrumbs items={[{ label: "Локации" }]} />
         
@@ -67,7 +71,8 @@ export default function Locations() {
             <p className="text-lg text-muted-foreground">Локации скоро появятся</p>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

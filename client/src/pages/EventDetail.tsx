@@ -11,6 +11,8 @@ import { formatRussianDate } from "@/lib/date-utils";
 import { formatEventType } from "@shared/constants/eventTypes";
 import { GPXMap } from "@/components/GPXMap";
 import NotFound from "@/pages/not-found";
+import { SEO } from "@/components/SEO";
+import { getEventSEO } from "@/config/seo";
 
 export default function EventDetail() {
   const params = useParams<{ slug: string }>();
@@ -99,12 +101,21 @@ export default function EventDetail() {
   const eventDate = new Date(event.startsAt);
   const approvedPhotos = photos.filter(p => p.status === 'approved');
   
+  const seo = getEventSEO(
+    event.title,
+    event.description || '',
+    event.coverImageUrl || undefined,
+    event.slug
+  );
+  
   return (
-    <div className="min-h-screen">
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <Breadcrumbs items={[
-            { label: "Забеги", href: "/events" },
+    <>
+      <SEO {...seo} />
+      <div className="min-h-screen">
+        <div className="py-8">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8">
+            <Breadcrumbs items={[
+              { label: "Забеги", href: "/events" },
             { label: event.title }
           ]} />
           
@@ -348,8 +359,9 @@ export default function EventDetail() {
               )}
             </div>
           </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

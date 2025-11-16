@@ -671,7 +671,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const updatedRoute = await storage.updateEventRoute(routeId, {
         gpxUrl,
-        distanceKm: distanceMeters > 0 ? Math.round(distanceMeters) / 1000 : null,
+        distanceKm: distanceMeters > 0 ? Math.round(distanceMeters) / 1000 : undefined,
       });
 
       res.json(updatedRoute);

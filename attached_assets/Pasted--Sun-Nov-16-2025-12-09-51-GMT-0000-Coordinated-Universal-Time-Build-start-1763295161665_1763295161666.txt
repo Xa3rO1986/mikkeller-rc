@@ -1,0 +1,189 @@
+------------------------- Sun Nov 16 2025 12:09:51 GMT+0000 (Coordinated Universal Time)
+Build started for mikkeller-rc
+Ignore warnings for unconsumed build-args if there is any
+Step 1/21 : FROM node:20-slim AS builder
+
+---> 12541e65a377
+Step 2/21 : WORKDIR /app
+
+---> Using cache
+---> 9a01222723fb
+Step 3/21 : COPY package*.json ./
+
+---> 87306b7cbbeb
+Step 4/21 : RUN npm ci
+
+---> Running in 486fd949928a
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+
+npm warn deprecated request-promise-native@1.0.9: request-promise-native has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
+
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+
+npm warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+
+npm warn deprecated domexception@1.0.1: Use your platform's native DOMException instead
+
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+
+npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+
+npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+
+added 683 packages, and audited 684 packages in 18s
+
+107 packages are looking for funding
+  run `npm fund` for details
+16 vulnerabilities (3 low, 11 moderate, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.6.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+npm notice To update run: npm install -g npm@11.6.2
+npm notice
+
+---> Removed intermediate container 486fd949928a
+---> a935c9f5a1e2
+Step 5/21 : COPY . .
+
+---> 265f6755f5a6
+Step 6/21 : RUN npx vite build
+
+---> Running in 45ab187c720c
+vite v5.4.20 building for production...
+transforming...
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+
+✓ 1817 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                                                      0.73 kB │ gzip:   0.40 kB
+../dist/public/assets/MRC_1763044539473-CWUSUGzG.png                          61.75 kB
+../dist/public/assets/Black_running_t-shirt_product_3eadb9cf-NyOzNCuB.png    631.91 kB
+../dist/public/assets/Yellow_tank_top_product_c8520cd2-DDnobC29.png          671.61 kB
+../dist/public/assets/Teal_hoodie_product_ad3ee456-BziiDsYd.png            1,138.99 kB
+../dist/public/assets/Runners_celebrating_finish_969c4387-J-CrJiSV.png     1,588.09 kB
+../dist/public/assets/Hero_runners_urban_setting_ad89a1fd-vbmRpD_X.png     2,101.88 kB
+../dist/public/assets/index-CjatvI6j.css                                     102.05 kB │ gzip:  15.00 kB
+../dist/public/assets/index-DY_6lcjx.js                                      947.25 kB │ gzip: 288.68 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+✓ built in 9.01s
+---> Removed intermediate container 45ab187c720c
+---> 9161e3ed7149
+Step 7/21 : RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --external:vite --external:@vitejs/* --external:@replit/* --external:tsx --external:drizzle-kit --outdir=dist
+
+---> Running in aa8281d4cab6
+
+  dist/index.js  74.4kb
+
+⚡ Done in 11ms
+
+---> Removed intermediate container aa8281d4cab6
+---> 40c7d437a8dd
+Step 8/21 : RUN npx esbuild server/static.ts --platform=node --format=esm --outfile=dist/static.js
+
+---> Running in 1c4c22d13f2b
+
+  dist/static.js  487b 
+
+⚡ Done in 6ms
+
+---> Removed intermediate container 1c4c22d13f2b
+---> 439361957521
+Step 9/21 : FROM node:20-slim
+
+---> 12541e65a377
+Step 10/21 : RUN apt-get update && apt-get install -y     ca-certificates     && rm -rf /var/lib/apt/lists/*
+
+---> Using cache
+---> faa90a8c4eda
+Step 11/21 : WORKDIR /app
+
+---> Using cache
+---> 753415e21e79
+Step 12/21 : COPY package*.json ./
+
+---> e7099d987e9c
+Step 13/21 : RUN npm ci --only=production && npm cache clean --force
+
+---> Running in b238ccb2342f
+npm warn config only Use `--omit=dev` to omit dev dependencies from the install.
+
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+
+npm warn deprecated request-promise-native@1.0.9: request-promise-native has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
+
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+
+npm warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+
+npm warn deprecated domexception@1.0.1: Use your platform's native DOMException instead
+
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+
+added 588 packages, and audited 589 packages in 13s
+95 packages are looking for funding
+  run `npm fund` for details
+11 vulnerabilities (3 low, 6 moderate, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.6.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+npm notice To update run: npm install -g npm@11.6.2
+npm notice
+
+npm warn using --force Recommended protections disabled.
+
+---> Removed intermediate container b238ccb2342f
+---> 5569b01ad325
+Step 14/21 : COPY --from=builder /app/dist ./dist
+
+---> 1880947e10bf
+Step 15/21 : COPY --from=builder /app/shared ./shared
+
+---> 5975584a163f
+Step 16/21 : COPY --from=builder /app/package.json ./package.json
+
+---> c81c749d2b16
+Step 17/21 : COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+
+---> b75d9cf570bf
+Step 18/21 : COPY --from=builder /app/migrations ./migrations
+
+{"message":"COPY failed: stat app/migrations: file does not exist"}
+COPY failed: stat app/migrations: file does not exist
+Build has failed!
+----------------------
+Deploy failed!
+Error: {"message":"COPY failed: stat app/migrations: file does not exist"}
+COPY failed: stat app/migrations: file does not exist

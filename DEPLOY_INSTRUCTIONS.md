@@ -3,8 +3,9 @@
 ## Что исправлено:
 ✅ Заменен Neon HTTP драйвер на `node-postgres` (работает с любым PostgreSQL)
 ✅ `drizzle-kit` добавлен в production зависимости (для `npm run db:push`)
-✅ `drizzle.config.ts` и `migrations/` копируются в Docker контейнер
+✅ `drizzle.config.ts` копируется в Docker контейнер
 ✅ Удален неиспользуемый `@neondatabase/serverless`
+✅ Исправлена ошибка сборки Docker (удалено копирование несуществующей директории migrations)
 
 ---
 

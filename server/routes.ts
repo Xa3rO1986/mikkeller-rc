@@ -16,6 +16,24 @@ import sanitizeHtml from "sanitize-html";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+async function ensureUploadDirectories() {
+  const directories = [
+    path.join(__dirname, 'uploads', 'photos'),
+    path.join(__dirname, 'uploads', 'covers'),
+    path.join(__dirname, 'uploads', 'gpx'),
+    path.join(__dirname, 'uploads', 'hero'),
+    path.join(__dirname, 'uploads', 'logos'),
+  ];
+  
+  for (const dir of directories) {
+    try {
+      await fs.mkdir(dir, { recursive: true });
+    } catch (error) {
+      console.error(`Failed to create directory ${dir}:`, error);
+    }
+  }
+}
+
 // Initialize YooKassa (will be undefined if keys are not set)
 let yooKassa: YooKassa | undefined;
 if (process.env.YOOKASSA_SHOP_ID && process.env.YOOKASSA_SECRET_KEY) {
@@ -206,6 +224,9 @@ const gpxUpload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Ensure upload directories exist
+  await ensureUploadDirectories();
+  
   // Auth middleware
   await setupAuth(app);
   

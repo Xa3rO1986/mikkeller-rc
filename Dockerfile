@@ -44,7 +44,7 @@ COPY --from=builder /app/dist ./dist
 # Копируем необходимые runtime файлы
 COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder /app/drizzle.config.js ./drizzle.config.js
 
 # Создаем директории для загрузок
 RUN mkdir -p server/uploads/photos server/uploads/covers server/uploads/gpx

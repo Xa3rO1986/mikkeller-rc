@@ -1,0 +1,63 @@
+root@wrwwksgczp:~# docker service logs srv-captain--mikkeller-rc --tail 50
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    | error: password authentication failed for user "mikkeller_user"
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:517:28)
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:529:26)
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |     at async file:///app/dist/index.js:1812:3 {
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   length: 110,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   severity: 'FATAL',
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   code: '28P01',
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   detail: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   hint: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   position: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   internalPosition: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   internalQuery: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   where: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   schema: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   table: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   column: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   dataType: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   constraint: undefined,
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   file: 'auth.c',
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   line: '335',
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    |   routine: 'auth_failed'
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    | }
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.afo5229dpn42@wrwwksgczp    | Node.js v20.19.5
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    | error: password authentication failed for user "mikkeller_user"
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:517:28)
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:529:26)
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |     at async file:///app/dist/index.js:1812:3 {
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   length: 110,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   severity: 'FATAL',
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   code: '28P01',
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   detail: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   hint: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   position: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   internalPosition: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   internalQuery: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   where: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   schema: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   table: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   column: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   dataType: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   constraint: undefined,
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   file: 'auth.c',
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   line: '335',
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    |   routine: 'auth_failed'
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    | }
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.6dnhsaigharo@wrwwksgczp    | Node.js v20.19.5

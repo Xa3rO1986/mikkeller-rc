@@ -1,0 +1,124 @@
+2025-11-16T18:08:05.879055171Z /app/node_modules/pg-pool/index.js:45
+2025-11-16T18:08:05.879103303Z Error.captureStackTrace(err)
+2025-11-16T18:08:05.879108983Z ^
+2025-11-16T18:08:05.879111738Z
+2025-11-16T18:08:05.879114464Z error: relation "home_settings" does not exist
+2025-11-16T18:08:05.879117209Z at /app/node_modules/pg-pool/index.js:45:11
+2025-11-16T18:08:05.879119794Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16T18:08:05.879122539Z at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+2025-11-16T18:08:05.879125073Z at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:517:28)
+2025-11-16T18:08:05.879182813Z at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:529:26)
+2025-11-16T18:08:05.879187471Z at async file:///app/dist/index.js:1812:3 {
+2025-11-16T18:08:05.879190087Z length: 113,
+2025-11-16T18:08:05.879192572Z severity: 'ERROR',
+2025-11-16T18:08:05.879195007Z code: '42P01',
+2025-11-16T18:08:05.879197431Z detail: undefined,
+2025-11-16T18:08:05.879199936Z hint: undefined,
+2025-11-16T18:08:05.879202431Z position: '200',
+2025-11-16T18:08:05.879204895Z internalPosition: undefined,
+2025-11-16T18:08:05.879209925Z internalQuery: undefined,
+2025-11-16T18:08:05.879212399Z where: undefined,
+2025-11-16T18:08:05.879214864Z schema: undefined,
+2025-11-16T18:08:05.879217308Z table: undefined,
+2025-11-16T18:08:05.879219743Z column: undefined,
+2025-11-16T18:08:05.879222168Z dataType: undefined,
+2025-11-16T18:08:05.879224582Z constraint: undefined,
+2025-11-16T18:08:05.879227017Z file: 'parse_relation.c',
+2025-11-16T18:08:05.879229441Z line: '1381',
+2025-11-16T18:08:05.879231846Z routine: 'parserOpenTable'
+2025-11-16T18:08:05.879234310Z }
+2025-11-16T18:08:05.879236725Z
+2025-11-16T18:08:05.879239169Z Node.js v20.19.5
+2025-11-16T18:08:12.395363392Z /app/node_modules/pg-pool/index.js:45
+2025-11-16T18:08:12.395395593Z Error.captureStackTrace(err)
+2025-11-16T18:08:12.395399510Z ^
+2025-11-16T18:08:12.395402205Z
+2025-11-16T18:08:12.395404960Z error: relation "home_settings" does not exist
+2025-11-16T18:08:12.395407776Z at /app/node_modules/pg-pool/index.js:45:11
+2025-11-16T18:08:12.395410371Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16T18:08:12.395412996Z at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+2025-11-16T18:08:12.395415511Z at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:517:28)
+2025-11-16T18:08:12.395418006Z at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:529:26)
+2025-11-16T18:08:12.395420541Z at async file:///app/dist/index.js:1812:3 {
+2025-11-16T18:08:12.395423025Z length: 113,
+2025-11-16T18:08:12.395425460Z severity: 'ERROR',
+2025-11-16T18:08:12.395427894Z code: '42P01',
+2025-11-16T18:08:12.395430309Z detail: undefined,
+2025-11-16T18:08:12.395432743Z hint: undefined,
+2025-11-16T18:08:12.395435138Z position: '200',
+2025-11-16T18:08:12.395437522Z internalPosition: undefined,
+2025-11-16T18:08:12.395439967Z internalQuery: undefined,
+2025-11-16T18:08:12.395442792Z where: undefined,
+2025-11-16T18:08:12.395445267Z schema: undefined,
+2025-11-16T18:08:12.395447681Z table: undefined,
+2025-11-16T18:08:12.395450066Z column: undefined,
+2025-11-16T18:08:12.395471126Z dataType: undefined,
+2025-11-16T18:08:12.395473982Z constraint: undefined,
+2025-11-16T18:08:12.395476446Z file: 'parse_relation.c',
+2025-11-16T18:08:12.395478901Z line: '1381',
+2025-11-16T18:08:12.395481275Z routine: 'parserOpenTable'
+2025-11-16T18:08:12.395483780Z }
+2025-11-16T18:08:12.395486215Z
+2025-11-16T18:08:12.395488649Z Node.js v20.19.5
+2025-11-16T18:08:18.799060354Z /app/node_modules/pg-pool/index.js:45
+2025-11-16T18:08:18.799101372Z Error.captureStackTrace(err)
+2025-11-16T18:08:18.799105570Z ^
+2025-11-16T18:08:18.799108455Z
+2025-11-16T18:08:18.799111100Z error: relation "home_settings" does not exist
+2025-11-16T18:08:18.799113865Z at /app/node_modules/pg-pool/index.js:45:11
+2025-11-16T18:08:18.799116761Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16T18:08:18.799119426Z at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+2025-11-16T18:08:18.799121980Z at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:517:28)
+2025-11-16T18:08:18.799124836Z at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:529:26)
+2025-11-16T18:08:18.799127371Z at async file:///app/dist/index.js:1812:3 {
+2025-11-16T18:08:18.799129855Z length: 113,
+2025-11-16T18:08:18.799132320Z severity: 'ERROR',
+2025-11-16T18:08:18.799134784Z code: '42P01',
+2025-11-16T18:08:18.799145315Z detail: undefined,
+2025-11-16T18:08:18.799148040Z hint: undefined,
+2025-11-16T18:08:18.799150465Z position: '200',
+2025-11-16T18:08:18.799152899Z internalPosition: undefined,
+2025-11-16T18:08:18.799155334Z internalQuery: undefined,
+2025-11-16T18:08:18.799157779Z where: undefined,
+2025-11-16T18:08:18.799160143Z schema: undefined,
+2025-11-16T18:08:18.799162588Z table: undefined,
+2025-11-16T18:08:18.799165002Z column: undefined,
+2025-11-16T18:08:18.799167407Z dataType: undefined,
+2025-11-16T18:08:18.799169801Z constraint: undefined,
+2025-11-16T18:08:18.799172266Z file: 'parse_relation.c',
+2025-11-16T18:08:18.799174740Z line: '1381',
+2025-11-16T18:08:18.799177145Z routine: 'parserOpenTable'
+2025-11-16T18:08:18.799179980Z }
+2025-11-16T18:08:18.799190490Z
+2025-11-16T18:08:18.799193086Z Node.js v20.19.5
+2025-11-16T18:08:25.266415057Z /app/node_modules/pg-pool/index.js:45
+2025-11-16T18:08:25.266491181Z Error.captureStackTrace(err)
+2025-11-16T18:08:25.266497353Z ^
+2025-11-16T18:08:25.266500899Z
+2025-11-16T18:08:25.266504236Z error: relation "home_settings" does not exist
+2025-11-16T18:08:25.266507792Z at /app/node_modules/pg-pool/index.js:45:11
+2025-11-16T18:08:25.266511069Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16T18:08:25.266514395Z at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+2025-11-16T18:08:25.266517721Z at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:517:28)
+2025-11-16T18:08:25.266521177Z at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:529:26)
+2025-11-16T18:08:25.266524574Z at async file:///app/dist/index.js:1812:3 {
+2025-11-16T18:08:25.266527881Z length: 113,
+2025-11-16T18:08:25.266531037Z severity: 'ERROR',
+2025-11-16T18:08:25.266534153Z code: '42P01',
+2025-11-16T18:08:25.266537309Z detail: undefined,
+2025-11-16T18:08:25.266545103Z hint: undefined,
+2025-11-16T18:08:25.266548319Z position: '200',
+2025-11-16T18:08:25.266551616Z internalPosition: undefined,
+2025-11-16T18:08:25.266555032Z internalQuery: undefined,
+2025-11-16T18:08:25.266558298Z where: undefined,
+2025-11-16T18:08:25.266561354Z schema: undefined,
+2025-11-16T18:08:25.266564369Z table: undefined,
+2025-11-16T18:08:25.266567535Z column: undefined,
+2025-11-16T18:08:25.266570601Z dataType: undefined,
+2025-11-16T18:08:25.266573727Z constraint: undefined,
+2025-11-16T18:08:25.266576923Z file: 'parse_relation.c',
+2025-11-16T18:08:25.266580059Z line: '1381',
+2025-11-16T18:08:25.266583126Z routine: 'parserOpenTable'
+2025-11-16T18:08:25.266586322Z }
+2025-11-16T18:08:25.266589508Z
+2025-11-16T18:08:25.266592613Z Node.js v20.19.5

@@ -23,6 +23,8 @@ async function ensureUploadDirectories() {
     path.join(__dirname, 'uploads', 'gpx'),
     path.join(__dirname, 'uploads', 'hero'),
     path.join(__dirname, 'uploads', 'logos'),
+    path.join(__dirname, 'uploads', 'about'),
+    path.join(__dirname, 'uploads', 'og'),
   ];
   
   for (const dir of directories) {
@@ -203,6 +205,36 @@ const aboutImageUpload = multer({
   }
 });
 
+// Configure multer for OG image uploads
+const ogImageStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'og'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    const extension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${extension}`);
+  }
+});
+
+const ogImageUpload = multer({
+  storage: ogImageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for OG images
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extension = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = allowedTypes.test(file.mimetype);
+    
+    if (extension && mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 const gpxUpload = multer({
   storage: gpxStorage,
   limits: {
@@ -237,6 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads/hero', express.static(path.join(__dirname, 'uploads', 'hero')));
   app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads', 'logos')));
   app.use('/uploads/about', express.static(path.join(__dirname, 'uploads', 'about')));
+  app.use('/uploads/og', express.static(path.join(__dirname, 'uploads', 'og')));
 
   // Admin authentication routes
   app.post('/api/admin/login', async (req, res) => {
@@ -1063,6 +1096,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await fs.unlink(req.file.path).catch(() => {});
       }
       res.status(500).json({ message: "Failed to upload about hero image" });
+    }
+  });
+
+  // Page SEO Settings routes
+  app.get('/api/page-settings', async (req, res) => {
+    try {
+      const settings = await storage.getAllPageSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching page settings:", error);
+      res.status(500).json({ message: "Failed to fetch page settings" });
+    }
+  });
+
+  app.get('/api/page-settings/:pageKey', async (req, res) => {
+    try {
+      const { pageKey } = req.params;
+      const settings = await storage.getPageSettings(pageKey);
+      
+      if (!settings) {
+        return res.status(404).json({ message: "Page settings not found" });
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching page settings:", error);
+      res.status(500).json({ message: "Failed to fetch page settings" });
+    }
+  });
+
+  app.patch('/api/page-settings/:pageKey', isAuthenticated, async (req, res) => {
+    try {
+      const { pageKey } = req.params;
+      const { insertPageSettingsSchema } = await import("@shared/schema");
+      const validationResult = insertPageSettingsSchema.partial().omit({ pageKey: true }).safeParse(req.body);
+      
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+      
+      const settings = await storage.updatePageSettings(pageKey, validationResult.data);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error updating page settings:", error);
+      res.status(500).json({ message: "Failed to update page settings" });
+    }
+  });
+
+  app.post('/api/page-settings/:pageKey/og-image', isAuthenticated, ogImageUpload.single('ogImage'), async (req: any, res) => {
+    try {
+      const { pageKey } = req.params;
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "OG image is required" });
+      }
+
+      const ogImageUrl = `/uploads/og/${path.basename(req.file.path)}`;
+      
+      const settings = await storage.updatePageSettings(pageKey, {
+        ogImageUrl,
+      });
+
+      res.json(settings);
+    } catch (error) {
+      console.error("Error uploading OG image:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload OG image" });
     }
   });
 

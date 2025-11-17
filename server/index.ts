@@ -62,6 +62,7 @@ app.use((req, res, next) => {
   const { storage } = await import("./storage");
   await storage.initializeHomeSettings();
   await storage.initializeAboutSettings();
+  await storage.initializePageSettings();
 
   const server = await registerRoutes(app);
 

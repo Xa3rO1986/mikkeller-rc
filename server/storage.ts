@@ -11,6 +11,7 @@ import {
   orders,
   homeSettings,
   aboutSettings,
+  pageSettings,
   type Admin,
   type InsertAdmin,
   type Event,
@@ -31,6 +32,8 @@ import {
   type InsertHomeSettings,
   type AboutSettings,
   type InsertAboutSettings,
+  type PageSettings,
+  type InsertPageSettings,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -105,6 +108,12 @@ export interface IStorage {
   getAboutSettings(): Promise<AboutSettings | undefined>;
   updateAboutSettings(settings: Partial<InsertAboutSettings>): Promise<AboutSettings>;
   initializeAboutSettings(): Promise<void>;
+
+  // Page SEO Settings
+  getPageSettings(pageKey: string): Promise<PageSettings | undefined>;
+  getAllPageSettings(): Promise<PageSettings[]>;
+  updatePageSettings(pageKey: string, settings: Partial<InsertPageSettings>): Promise<PageSettings>;
+  initializePageSettings(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -485,6 +494,105 @@ export class DatabaseStorage implements IStorage {
         .execute();
       console.log("About settings initialized with default values");
     }
+  }
+
+  // Page SEO Settings
+  async getPageSettings(pageKey: string): Promise<PageSettings | undefined> {
+    const [settings] = await db.select().from(pageSettings).where(eq(pageSettings.pageKey, pageKey)).limit(1);
+    return settings;
+  }
+
+  async getAllPageSettings(): Promise<PageSettings[]> {
+    return await db.select().from(pageSettings);
+  }
+
+  async updatePageSettings(pageKey: string, settings: Partial<InsertPageSettings>): Promise<PageSettings> {
+    const existing = await this.getPageSettings(pageKey);
+    
+    if (!existing) {
+      const [created] = await db
+        .insert(pageSettings)
+        .values({ pageKey, ...settings } as InsertPageSettings)
+        .returning();
+      return created;
+    }
+
+    const [updated] = await db
+      .update(pageSettings)
+      .set({ ...settings, updatedAt: new Date() })
+      .where(eq(pageSettings.pageKey, pageKey))
+      .returning();
+    return updated;
+  }
+
+  async initializePageSettings(): Promise<void> {
+    const defaultPages = [
+      {
+        pageKey: 'home',
+        title: 'Mikkeller Running Club — Беговой клуб Москва',
+        description: 'Присоединяйтесь к беговому сообществу Mikkeller Running Club в Москве. Еженедельные пробежки, маршруты с GPX-треками, фотогалерея событий и магазин брендовой экипировки.',
+        keywords: 'беговой клуб москва, mikkeller running club, бег москва, пробежки, running club moscow',
+        ogTitle: 'Mikkeller Running Club Moscow',
+        ogDescription: 'Join the Mikkeller Running Club community in Moscow. Weekly runs, GPX routes, photo gallery, and branded gear shop.',
+      },
+      {
+        pageKey: 'events',
+        title: 'События — Mikkeller Running Club',
+        description: 'Расписание предстоящих забегов и прошедших событий Mikkeller Running Club. Маршруты с GPX-треками, фотографии и детали каждой пробежки.',
+        keywords: 'расписание забегов москва, беговые события, mikkeller runs, gpx треки',
+        ogTitle: 'Events — Mikkeller Running Club',
+        ogDescription: 'Upcoming runs and past events schedule with GPX routes and photos.',
+      },
+      {
+        pageKey: 'locations',
+        title: 'Локации — Mikkeller Running Club',
+        description: 'Места встреч и партнёрские бары Mikkeller Running Club в Москве. Адреса, карты и информация о локациях для пробежек.',
+        keywords: 'бары mikkeller москва, места встреч бегунов, running locations moscow',
+        ogTitle: 'Locations — Mikkeller Running Club',
+        ogDescription: 'Meeting points and partner bars in Moscow with maps and details.',
+      },
+      {
+        pageKey: 'gallery',
+        title: 'Фотогалерея — Mikkeller Running Club',
+        description: 'Фотографии с пробежек Mikkeller Running Club. Атмосфера наших событий, участники и яркие моменты беговых встреч.',
+        keywords: 'фото пробежек москва, беговое сообщество фото, running club photos',
+        ogTitle: 'Photo Gallery — Mikkeller Running Club',
+        ogDescription: 'Photos from our runs, events, and community moments.',
+      },
+      {
+        pageKey: 'shop',
+        title: 'Магазин — Mikkeller Running Club',
+        description: 'Официальный магазин брендовой экипировки Mikkeller Running Club. Футболки, шапки, аксессуары для бега с доставкой по России.',
+        keywords: 'mikkeller одежда, беговая форма купить, running gear moscow, мерч беговой клуб',
+        ogTitle: 'Shop — Mikkeller Running Club',
+        ogDescription: 'Official branded gear: t-shirts, caps, and running accessories with delivery across Russia.',
+      },
+      {
+        pageKey: 'about',
+        title: 'О клубе — Mikkeller Running Club',
+        description: 'История и философия Mikkeller Running Club. Узнайте о нашем беговом сообществе, правилах участия и ценностях клуба.',
+        keywords: 'о клубе mikkeller, беговое сообщество москва, running club philosophy',
+        ogTitle: 'About — Mikkeller Running Club',
+        ogDescription: 'Our story, philosophy, and community values. Learn about the running club that combines fitness and social connection.',
+      },
+      {
+        pageKey: 'paceCalculator',
+        title: 'Калькулятор темпа — Mikkeller Running Club',
+        description: 'Бесплатный онлайн калькулятор темпа бега. Рассчитайте время финиша, темп на километр и планируйте тренировки для марафона и полумарафона.',
+        keywords: 'калькулятор темпа бега, pace calculator, темп на км, марафон калькулятор, полумарафон время',
+        ogTitle: 'Pace Calculator — Mikkeller Running Club',
+        ogDescription: 'Free online running pace calculator. Calculate finish time, pace per km, and plan your marathon training.',
+      },
+    ];
+
+    for (const page of defaultPages) {
+      const existing = await this.getPageSettings(page.pageKey);
+      if (!existing) {
+        await db.insert(pageSettings).values(page).execute();
+      }
+    }
+    
+    console.log("Page SEO settings initialized with default values");
   }
 }
 

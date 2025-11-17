@@ -254,3 +254,24 @@ export const insertAboutSettingsSchema = createInsertSchema(aboutSettings).omit(
 
 export type InsertAboutSettings = z.infer<typeof insertAboutSettingsSchema>;
 export type AboutSettings = typeof aboutSettings.$inferSelect;
+
+// Page SEO settings table
+export const pageSettings = pgTable("page_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  pageKey: varchar("page_key").unique().notNull(), // home, events, locations, gallery, shop, about, paceCalculator
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  keywords: text("keywords"),
+  ogTitle: text("og_title"),
+  ogDescription: text("og_description"),
+  ogImageUrl: text("og_image_url"), // Custom uploaded OG image
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPageSettingsSchema = createInsertSchema(pageSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertPageSettings = z.infer<typeof insertPageSettingsSchema>;
+export type PageSettings = typeof pageSettings.$inferSelect;

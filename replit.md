@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is a production-ready website for the Mikkeller Running Club, a running community that combines weekly runs with social gatherings at partner bars. The application features event management with location catalog, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel with editable page content. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
+This is a production-ready website for the Mikkeller Running Club Saint Petersburg, a running community that combines weekly runs with social gatherings at partner bars. The application features event management with location catalog, photo galleries, an e-commerce shop for merchandise, and a comprehensive admin panel with editable page content. The design follows a strict minimalist monochrome aesthetic inspired by athletic sportswear brands, using only black and white with careful attention to typography and spacing.
+
+**Location**: Saint Petersburg (Санкт-Петербург), Russia. All SEO metadata and keywords are optimized for Saint Petersburg market.
 
 ## User Preferences
 
@@ -26,15 +28,17 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
 
-**SEO Implementation**: Comprehensive SEO module with automatic meta tag management:
+**SEO Implementation**: Comprehensive SEO module with automatic meta tag management and admin-managed database-backed configuration:
 - Universal SEO component (`client/src/components/SEO.tsx`) manages title, description, keywords, Open Graph, and Twitter Card tags
 - Automatic cleanup of stale meta tags on page navigation to prevent inconsistent metadata
-- Static page configurations (`client/src/config/seo.ts`) for all pages with bilingual content (Russian primary, English for OG tags)
+- Database-backed SEO configuration via `pageSettings` table - allows admins to customize SEO for all pages without code changes
+- Admin panel "SEO настройки" tab for managing meta tags, OG tags, keywords, and custom OG images per page
+- `usePageSEO(pageKey)` hook loads SEO from API with fallback to static configuration in `client/src/config/seo.ts`
 - Dynamic SEO generation for events, products, and locations using server data
 - Fallback Open Graph images (`/uploads/hero/default.jpg`) for all pages to ensure proper social media sharing
-- Keywords optimized for both Russian and English search queries
+- Keywords optimized for Saint Petersburg market with both Russian and English search queries
 
-**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content. Event cover images use react-easy-crop for positioning/cropping to 800x400px during upload. Events support multiple distance routes - admins can add/remove routes, upload GPX files for each route, and set custom names/distances.
+**Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page, Home page content, and SEO настройки (comprehensive SEO management). SEO tab allows editing title, description, keywords, Open Graph metadata, and uploading custom OG images for each page. Event cover images use react-easy-crop for positioning/cropping to 800x400px during upload. Events support multiple distance routes - admins can add/remove routes, upload GPX files for each route, and set custom names/distances.
 
 **Location Management**: LocationPicker component with Yandex Maps integration for coordinate selection:
 - Interactive map for visual location selection via click or marker drag

@@ -26,6 +26,14 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**: Follows strict spacing rhythm using Tailwind units (4, 6, 8, 12, 16, 20, 24) with responsive breakpoints. All images use grayscale filter to maintain monochrome aesthetic.
 
+**SEO Implementation**: Comprehensive SEO module with automatic meta tag management:
+- Universal SEO component (`client/src/components/SEO.tsx`) manages title, description, keywords, Open Graph, and Twitter Card tags
+- Automatic cleanup of stale meta tags on page navigation to prevent inconsistent metadata
+- Static page configurations (`client/src/config/seo.ts`) for all pages with bilingual content (Russian primary, English for OG tags)
+- Dynamic SEO generation for events, products, and locations using server data
+- Fallback Open Graph images (`/uploads/hero/default.jpg`) for all pages to ensure proper social media sharing
+- Keywords optimized for both Russian and English search queries
+
 **Admin Dashboard**: Interactive summary cards that switch between management tabs (Settings, Events, Locations, Products, Photos, Orders) on click. Settings tab contains sub-tabs for editing About page and Home page content. Event cover images use react-easy-crop for positioning/cropping to 800x400px during upload. Events support multiple distance routes - admins can add/remove routes, upload GPX files for each route, and set custom names/distances.
 
 **Location Management**: LocationPicker component with Yandex Maps integration for coordinate selection:

@@ -1897,6 +1897,7 @@ function SettingsManagement() {
         <TabsList>
           <TabsTrigger value="about">Страница О клубе</TabsTrigger>
           <TabsTrigger value="home">Главная страница</TabsTrigger>
+          <TabsTrigger value="seo">SEO настройки</TabsTrigger>
         </TabsList>
 
         <TabsContent value="about">
@@ -1905,6 +1906,10 @@ function SettingsManagement() {
 
         <TabsContent value="home">
           <HomeSettingsManagement />
+        </TabsContent>
+
+        <TabsContent value="seo">
+          <SEOSettingsManagement />
         </TabsContent>
       </Tabs>
     </div>
@@ -2843,6 +2848,256 @@ function OrdersManagement() {
           <p className="text-muted-foreground">Нет заказов</p>
         )}
       </CardContent>
+    </Card>
+  );
+}
+
+interface PageSetting {
+  id: string;
+  pageKey: string;
+  title: string;
+  description: string;
+  keywords: string | null;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImageUrl: string | null;
+  updatedAt: string;
+}
+
+const PAGE_LABELS: Record<string, string> = {
+  home: "Главная страница",
+  events: "События",
+  locations: "Локации",
+  gallery: "Галерея",
+  shop: "Магазин",
+  about: "О клубе",
+  paceCalculator: "Калькулятор темпа",
+};
+
+function SEOSettingsManagement() {
+  const { toast } = useToast();
+  const { data: pageSettings, isLoading } = useQuery<PageSetting[]>({
+    queryKey: ['/api/page-settings'],
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ pageKey, data }: { pageKey: string; data: Partial<PageSetting> }) => {
+      return await apiRequest("PATCH", `/api/page-settings/${pageKey}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/page-settings'] });
+      toast({
+        title: "SEO настройки обновлены",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить SEO настройки",
+        variant: "destructive",
+      });
+    },
+  });
+
+  if (isLoading) {
+    return <div className="text-muted-foreground">Загрузка...</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>SEO настройки страниц</CardTitle>
+          <CardDescription>
+            Управление мета-тегами, Open Graph и Twitter Cards для всех страниц сайта
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {pageSettings?.map((pageSetting) => (
+              <SEOPageEditor
+                key={pageSetting.pageKey}
+                pageSetting={pageSetting}
+                onUpdate={(data) => updateMutation.mutate({ pageKey: pageSetting.pageKey, data })}
+              />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function SEOPageEditor({ 
+  pageSetting, 
+  onUpdate 
+}: { 
+  pageSetting: PageSetting; 
+  onUpdate: (data: Partial<PageSetting>) => void;
+}) {
+  const { toast } = useToast();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [formData, setFormData] = useState({
+    title: pageSetting.title,
+    description: pageSetting.description,
+    keywords: pageSetting.keywords || "",
+    ogTitle: pageSetting.ogTitle || "",
+    ogDescription: pageSetting.ogDescription || "",
+  });
+
+  const handleSave = () => {
+    onUpdate(formData);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('ogImage', file);
+
+    try {
+      const response = await fetch(`/api/page-settings/${pageSetting.pageKey}/og-image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      queryClient.invalidateQueries({ queryKey: ['/api/page-settings'] });
+      toast({
+        title: "OG изображение загружено",
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка загрузки",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader 
+        className="cursor-pointer hover-elevate"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-lg">{PAGE_LABELS[pageSetting.pageKey] || pageSetting.pageKey}</CardTitle>
+            <CardDescription className="text-sm mt-1">
+              {pageSetting.title}
+            </CardDescription>
+          </div>
+          <Button variant="ghost" size="icon">
+            {isExpanded ? <Pencil className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+          </Button>
+        </div>
+      </CardHeader>
+
+      {isExpanded && (
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor={`title-${pageSetting.pageKey}`}>Title</Label>
+            <Input
+              id={`title-${pageSetting.pageKey}`}
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Заголовок страницы"
+              data-testid={`input-seo-title-${pageSetting.pageKey}`}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`description-${pageSetting.pageKey}`}>Description</Label>
+            <Textarea
+              id={`description-${pageSetting.pageKey}`}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Описание страницы (до 160 символов)"
+              rows={3}
+              data-testid={`textarea-seo-description-${pageSetting.pageKey}`}
+            />
+            <p className="text-xs text-muted-foreground">
+              {formData.description.length} / 160 символов
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`keywords-${pageSetting.pageKey}`}>Keywords</Label>
+            <Input
+              id={`keywords-${pageSetting.pageKey}`}
+              value={formData.keywords}
+              onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
+              placeholder="ключевые слова, через запятую"
+              data-testid={`input-seo-keywords-${pageSetting.pageKey}`}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`og-title-${pageSetting.pageKey}`}>Open Graph Title</Label>
+            <Input
+              id={`og-title-${pageSetting.pageKey}`}
+              value={formData.ogTitle}
+              onChange={(e) => setFormData({ ...formData, ogTitle: e.target.value })}
+              placeholder="Заголовок для соцсетей (оставьте пустым для использования Title)"
+              data-testid={`input-seo-og-title-${pageSetting.pageKey}`}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`og-description-${pageSetting.pageKey}`}>Open Graph Description</Label>
+            <Textarea
+              id={`og-description-${pageSetting.pageKey}`}
+              value={formData.ogDescription}
+              onChange={(e) => setFormData({ ...formData, ogDescription: e.target.value })}
+              placeholder="Описание для соцсетей (оставьте пустым для использования Description)"
+              rows={2}
+              data-testid={`textarea-seo-og-description-${pageSetting.pageKey}`}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Open Graph Image</Label>
+            {pageSetting.ogImageUrl && (
+              <div className="mb-2">
+                <img 
+                  src={pageSetting.ogImageUrl} 
+                  alt="OG preview" 
+                  className="w-full max-w-md h-auto rounded-md border"
+                />
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                data-testid={`input-seo-og-image-${pageSetting.pageKey}`}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Рекомендуемый размер: 1200x630px
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button 
+              onClick={() => setIsExpanded(false)} 
+              variant="outline"
+              data-testid={`button-seo-cancel-${pageSetting.pageKey}`}
+            >
+              Отмена
+            </Button>
+            <Button 
+              onClick={handleSave}
+              data-testid={`button-seo-save-${pageSetting.pageKey}`}
+            >
+              Сохранить
+            </Button>
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 }

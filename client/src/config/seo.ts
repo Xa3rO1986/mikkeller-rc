@@ -1,6 +1,18 @@
 import type { SEOProps } from '@/components/SEO';
+import { useQuery } from '@tanstack/react-query';
 
 const DEFAULT_OG_IMAGE = '/uploads/hero/default.jpg';
+
+interface PageSettingResponse {
+  id: string;
+  pageKey: string;
+  title: string;
+  description: string;
+  keywords: string | null;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImageUrl: string | null;
+}
 
 export const defaultSEO: SEOProps = {
   title: 'Mikkeller Running Club — Беговой клуб Москва',
@@ -119,5 +131,25 @@ export function getLocationSEO(name: string, address: string, description?: stri
     ogDescription: cleanDescription,
     ogImage: logoUrl || DEFAULT_OG_IMAGE,
     ogUrl: slug ? `${window.location.origin}/locations/${slug}` : undefined,
+  };
+}
+
+export function usePageSEO(pageKey: string): SEOProps {
+  const { data } = useQuery<PageSettingResponse>({
+    queryKey: [`/api/page-settings/${pageKey}`],
+    staleTime: Infinity,
+  });
+
+  if (!data) {
+    return seoPages[pageKey] || defaultSEO;
+  }
+
+  return {
+    title: data.title,
+    description: data.description,
+    keywords: data.keywords || undefined,
+    ogTitle: data.ogTitle || undefined,
+    ogDescription: data.ogDescription || undefined,
+    ogImage: data.ogImageUrl || DEFAULT_OG_IMAGE,
   };
 }

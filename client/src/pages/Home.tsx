@@ -241,7 +241,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-card">
+      <section className="py-16 lg:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold">Фотогалерея</h2>
@@ -279,7 +279,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-background">
+      <section className="py-16 lg:py-24 bg-card">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -336,7 +336,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-card">
+      <section className="py-16 lg:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <h2 className="text-3xl lg:text-4xl font-bold mb-8">Предстоящие забеги</h2>
           {eventsLoading ? (

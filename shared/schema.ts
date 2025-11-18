@@ -8,6 +8,7 @@ export const eventStatusEnum = pgEnum("event_status", ["draft", "published", "ar
 export const eventTypeEnum = pgEnum("event_type", ["club", "irregular", "out_of_town", "city", "athletics", "croissant"]);
 export const photoStatusEnum = pgEnum("photo_status", ["pending", "approved", "rejected"]);
 export const orderStatusEnum = pgEnum("order_status", ["created", "paid", "failed"]);
+export const newsStatusEnum = pgEnum("news_status", ["draft", "published"]);
 
 // Session storage table
 export const sessions = pgTable(
@@ -133,6 +134,31 @@ export const insertPhotoSchema = createInsertSchema(photos).omit({
 
 export type InsertPhoto = z.infer<typeof insertPhotoSchema>;
 export type Photo = typeof photos.$inferSelect;
+
+// News table
+export const news = pgTable("news", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
+  coverImageUrl: text("cover_image_url"),
+  publishedAt: timestamp("published_at"),
+  status: newsStatusEnum("status").default("draft").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertNewsSchema = createInsertSchema(news).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  publishedAt: z.string().or(z.date()).optional(),
+});
+
+export type InsertNews = z.infer<typeof insertNewsSchema>;
+export type News = typeof news.$inferSelect;
 
 // Products table
 export const products = pgTable("products", {

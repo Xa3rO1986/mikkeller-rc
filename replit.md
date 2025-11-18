@@ -112,7 +112,7 @@ Preferred communication style: Simple, everyday language.
 
 ### External Dependencies
 
-**Payment Processing**: YooKassa (Russian payment gateway) integration for merchandise checkout with webhook support for payment confirmation
+**Payment Processing**: YooKassa (Russian payment gateway) is the ONLY payment provider used for merchandise checkout with webhook support for payment confirmation. Stripe is NOT used in this project.
 
 **Map Visualization**: Leaflet.js library installed for future GPX route visualization on public event pages
 
@@ -121,6 +121,8 @@ Preferred communication style: Simple, everyday language.
 **Image Assets**: Static assets stored in `attached_assets/` directory, imported directly into components
 
 **Analytics**: Designed to support Plausible or Vercel Analytics via environment flag (implementation pending)
+
+**Strava Integration**: OAuth 2.0 integration for automatic activity synchronization and runner leaderboard/rating system. Athletes connect their Strava accounts to sync running activities and participate in monthly distance challenges.
 
 ### Build & Deployment
 

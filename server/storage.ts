@@ -639,15 +639,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createNews(newsItem: InsertNews): Promise<News> {
-    const [created] = await db.insert(news).values(newsItem).returning();
+    const values = {
+      ...newsItem,
+      publishedAt: newsItem.publishedAt ? new Date(newsItem.publishedAt) : undefined,
+    };
+    const [created] = await db.insert(news).values(values).returning();
     return created;
   }
 
   async updateNews(id: string, newsItem: Partial<InsertNews>): Promise<News | undefined> {
-    const [updated] = await db.update(news).set({
+    const values = {
       ...newsItem,
+      publishedAt: newsItem.publishedAt ? new Date(newsItem.publishedAt) : undefined,
       updatedAt: new Date(),
-    }).where(eq(news.id, id)).returning();
+    };
+    const [updated] = await db.update(news).set(values).where(eq(news.id, id)).returning();
     return updated;
   }
 

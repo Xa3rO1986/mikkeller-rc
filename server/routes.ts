@@ -25,6 +25,7 @@ async function ensureUploadDirectories() {
     path.join(__dirname, 'uploads', 'logos'),
     path.join(__dirname, 'uploads', 'about'),
     path.join(__dirname, 'uploads', 'og'),
+    path.join(__dirname, 'uploads', 'news'),
   ];
   
   for (const dir of directories) {
@@ -255,6 +256,36 @@ const gpxUpload = multer({
   }
 });
 
+// Configure multer for news cover image uploads
+const newsCoverStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(__dirname, 'uploads', 'news'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueId = nanoid();
+    const extension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${extension}`);
+  }
+});
+
+const newsCoverUpload = multer({
+  storage: newsCoverStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for news covers
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extension = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = allowedTypes.test(file.mimetype);
+    
+    if (extension && mimeType) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ensure upload directories exist
   await ensureUploadDirectories();
@@ -267,6 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads/covers', express.static(path.join(__dirname, 'uploads', 'covers')));
   app.use('/uploads/gpx', express.static(path.join(__dirname, 'uploads', 'gpx')));
   app.use('/uploads/hero', express.static(path.join(__dirname, 'uploads', 'hero')));
+  app.use('/uploads/news', express.static(path.join(__dirname, 'uploads', 'news')));
   app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads', 'logos')));
   app.use('/uploads/about', express.static(path.join(__dirname, 'uploads', 'about')));
   app.use('/uploads/og', express.static(path.join(__dirname, 'uploads', 'og')));
@@ -1169,6 +1201,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await fs.unlink(req.file.path).catch(() => {});
       }
       res.status(500).json({ message: "Failed to upload OG image" });
+    }
+  });
+
+  // News routes
+  app.get('/api/news', async (req, res) => {
+    try {
+      const { status, limit } = req.query;
+      const filters: { status?: string; limit?: number } = {};
+      
+      if (typeof status === 'string') {
+        filters.status = status;
+      }
+      if (typeof limit === 'string') {
+        filters.limit = parseInt(limit, 10);
+      }
+      
+      const news = await storage.getNews(filters);
+      res.json(news);
+    } catch (error) {
+      console.error("Error fetching news:", error);
+      res.status(500).json({ message: "Failed to fetch news" });
+    }
+  });
+
+  app.get('/api/news/:slug', async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const newsItem = await storage.getNewsBySlug(slug);
+      
+      if (!newsItem) {
+        return res.status(404).json({ message: "News not found" });
+      }
+      
+      res.json(newsItem);
+    } catch (error) {
+      console.error("Error fetching news item:", error);
+      res.status(500).json({ message: "Failed to fetch news item" });
+    }
+  });
+
+  app.post('/api/news', isAuthenticated, newsCoverUpload.single('coverImage'), async (req: any, res) => {
+    try {
+      const { insertNewsSchema } = await import("@shared/schema");
+      
+      const newsData = {
+        ...req.body,
+        coverImageUrl: req.file ? `/uploads/news/${req.file.filename}` : null,
+      };
+      
+      const validationResult = insertNewsSchema.safeParse(newsData);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        if (req.file) {
+          await fs.unlink(req.file.path).catch(() => {});
+        }
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+
+      const newsItem = await storage.createNews(validationResult.data);
+      res.status(201).json(newsItem);
+    } catch (error) {
+      console.error("Error creating news:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to create news" });
+    }
+  });
+
+  app.patch('/api/news/:id', isAuthenticated, newsCoverUpload.single('coverImage'), async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { insertNewsSchema } = await import("@shared/schema");
+      
+      const newsData = {
+        ...req.body,
+        coverImageUrl: req.file ? `/uploads/news/${req.file.filename}` : undefined,
+      };
+      
+      const validationResult = insertNewsSchema.partial().safeParse(newsData);
+      if (!validationResult.success) {
+        const validationError = fromZodError(validationResult.error);
+        if (req.file) {
+          await fs.unlink(req.file.path).catch(() => {});
+        }
+        return res.status(400).json({ 
+          message: "Validation error", 
+          error: validationError.toString() 
+        });
+      }
+
+      const newsItem = await storage.updateNews(id, validationResult.data);
+      if (!newsItem) {
+        if (req.file) {
+          await fs.unlink(req.file.path).catch(() => {});
+        }
+        return res.status(404).json({ message: "News not found" });
+      }
+      
+      res.json(newsItem);
+    } catch (error) {
+      console.error("Error updating news:", error);
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to update news" });
+    }
+  });
+
+  app.delete('/api/news/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteNews(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "News not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting news:", error);
+      res.status(500).json({ message: "Failed to delete news" });
     }
   });
 

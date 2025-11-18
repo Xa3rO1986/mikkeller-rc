@@ -84,6 +84,15 @@ export const seoPages: Record<string, Omit<SEOProps, 'ogUrl'>> = {
     ogDescription: 'Free online running pace calculator. Calculate finish time, pace per km, and plan your marathon training.',
     ogImage: DEFAULT_OG_IMAGE,
   },
+
+  news: {
+    title: 'Новости — Mikkeller Running Club',
+    description: 'Последние новости и события Mikkeller Running Club в Санкт-Петербурге. Анонсы забегов, истории участников, достижения и жизнь бегового сообщества.',
+    keywords: 'новости mikkeller, новости бегового клуба санкт-петербург, running club news, события клуба',
+    ogTitle: 'News — Mikkeller Running Club',
+    ogDescription: 'Latest news and updates from the Mikkeller Running Club community in Saint Petersburg.',
+    ogImage: DEFAULT_OG_IMAGE,
+  },
 };
 
 export function getEventSEO(title: string, description: string, coverImage?: string, slug?: string): SEOProps {
@@ -131,6 +140,22 @@ export function getLocationSEO(name: string, address: string, description?: stri
     ogDescription: cleanDescription,
     ogImage: logoUrl || DEFAULT_OG_IMAGE,
     ogUrl: slug ? `${window.location.origin}/locations/${slug}` : undefined,
+  };
+}
+
+export function getNewsSEO(title: string, excerpt: string, content: string, coverImage?: string, slug?: string): SEOProps {
+  const cleanDescription = excerpt || (content
+    ? content.replace(/<[^>]*>/g, '').slice(0, 160)
+    : 'Новости и события Mikkeller Running Club.');
+
+  return {
+    title: `${title} — Новости — Mikkeller Running Club`,
+    description: cleanDescription,
+    keywords: `${title}, новости mikkeller, беговой клуб новости санкт-петербург`,
+    ogTitle: title,
+    ogDescription: cleanDescription,
+    ogImage: coverImage || DEFAULT_OG_IMAGE,
+    ogUrl: slug ? `${window.location.origin}/news/${slug}` : undefined,
   };
 }
 

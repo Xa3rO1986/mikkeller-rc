@@ -7,8 +7,9 @@ import { Calendar, MapPin, TrendingUp, ArrowRight, X, ChevronLeft, ChevronRight,
 import { Link } from "wouter";
 import EventCard from "@/components/EventCard";
 import PhotoCard from "@/components/PhotoCard";
+import NewsCard from "@/components/NewsCard";
 import { useQuery } from "@tanstack/react-query";
-import type { Event, Photo, Location, EventRoute } from "@shared/schema";
+import type { Event, Photo, Location, EventRoute, News } from "@shared/schema";
 import { formatRussianDate, formatRussianMonth } from "@/lib/date-utils";
 import { SEO } from "@/components/SEO";
 import { seoPages } from "@/config/seo";
@@ -30,6 +31,10 @@ export default function Home() {
 
   const { data: photos = [], isLoading: photosLoading } = useQuery<Photo[]>({
     queryKey: ['/api/photos?status=approved'],
+  });
+
+  const { data: news = [], isLoading: newsLoading } = useQuery<News[]>({
+    queryKey: ['/api/news?status=published&limit=3'],
   });
 
   const nextEvent = upcomingEvents[0];
@@ -239,6 +244,36 @@ export default function Home() {
           ) : (
             <div className="text-center py-12">
               <p className="text-muted-foreground">Фотографии скоро появятся</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24 bg-card">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold">Новости</h2>
+            <Link href="/news">
+              <Button variant="ghost" data-testid="button-all-news">
+                Все новости
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          {newsLoading ? (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">Загрузка новостей...</p>
+            </div>
+          ) : news.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {news.map((newsItem) => (
+                <NewsCard key={newsItem.id} news={newsItem} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Новости скоро появятся</p>
             </div>
           )}
         </div>

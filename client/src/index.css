@@ -285,4 +285,13 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Prose link colors matching primary button color */
+  .prose a {
+    @apply text-primary no-underline font-medium;
+  }
+
+  .prose a:hover {
+    @apply underline;
+  }
 }

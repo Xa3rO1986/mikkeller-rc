@@ -124,6 +124,29 @@ Preferred communication style: Simple, everyday language.
 
 **Strava Integration**: OAuth 2.0 integration for automatic activity synchronization and runner leaderboard/rating system. Athletes connect their Strava accounts to sync running activities and participate in monthly distance challenges.
 
+### Deployment Readiness
+
+**Production Status**: ✅ Ready for deployment
+
+The project is fully configured for production deployment on CapRover or traditional VPS:
+
+- **Docker Configuration**: Multi-stage Dockerfile optimized for minimal production image size
+- **Build System**: Vite frontend build + esbuild backend bundling with proper externals
+- **Database Migrations**: Drizzle ORM with automated schema sync via `npm run db:push`
+- **Environment Variables**: Fully documented in `.env.example` with all required and optional variables
+- **Deployment Guides**: 
+  - `DEPLOYMENT.md` - Detailed CapRover deployment walkthrough (Russian)
+  - `PRODUCTION_CHECKLIST.md` - Complete deployment checklist
+  - `scripts/pre-deploy-check.js` - Automated pre-deployment validation script
+- **Security**: Production-ready with HTTPS, secure sessions, bcrypt password hashing
+- **File Uploads**: Persistent volume configuration for uploads (photos, covers, GPX files)
+- **Monitoring**: Integrated with CapRover logging and metrics
+
+**Deployment Platforms**:
+1. **CapRover** (Recommended): Full automation with web UI, SSL certificates, and easy updates
+2. **Traditional VPS**: PM2 + Nginx reverse proxy configuration provided
+3. **Replit Autoscale**: Native support for Replit's deployment platform
+
 ### Build & Deployment
 
 **Development**: Vite dev server with HMR, custom error overlay, and Replit-specific plugins (cartographer, dev banner)

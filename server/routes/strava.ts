@@ -6,9 +6,12 @@ import { stravaSync } from "../services/strava-sync";
 
 const router = Router();
 
-const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID!;
-const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET!;
-const STRAVA_REDIRECT_URI = process.env.STRAVA_REDIRECT_URI!;
+// Strava credentials - check if configured
+const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
+const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
+const STRAVA_REDIRECT_URI = process.env.STRAVA_REDIRECT_URI;
+
+const isStravaConfigured = !!(STRAVA_CLIENT_ID && STRAVA_CLIENT_SECRET && STRAVA_REDIRECT_URI);
 
 interface StravaTokenResponse {
   access_token: string;
@@ -27,7 +30,13 @@ interface StravaTokenResponse {
  * Redirect user to Strava authorization page
  */
 router.get("/auth", (_req: Request, res: Response) => {
-  const authUrl = `https://www.strava.com/oauth/authorize?client_id=${STRAVA_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(STRAVA_REDIRECT_URI)}&scope=activity:read_all`;
+  // Graceful degradation: redirect to rating page with error if Strava not configured
+  if (!isStravaConfigured) {
+    console.warn("Strava OAuth attempted but integration is not configured. Set STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, and STRAVA_REDIRECT_URI environment variables.");
+    return res.redirect("/rating?error=not_configured");
+  }
+
+  const authUrl = `https://www.strava.com/oauth/authorize?client_id=${STRAVA_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(STRAVA_REDIRECT_URI!)}&scope=activity:read_all`;
   
   res.redirect(authUrl);
 });
@@ -37,6 +46,10 @@ router.get("/auth", (_req: Request, res: Response) => {
  * Handle OAuth callback from Strava
  */
 router.get("/callback", async (req: Request, res: Response) => {
+  if (!isStravaConfigured) {
+    return res.redirect("/rating?error=not_configured");
+  }
+
   const { code, error } = req.query;
 
   if (error || !code) {
@@ -49,8 +62,8 @@ router.get("/callback", async (req: Request, res: Response) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        client_id: STRAVA_CLIENT_ID,
-        client_secret: STRAVA_CLIENT_SECRET,
+        client_id: STRAVA_CLIENT_ID!,
+        client_secret: STRAVA_CLIENT_SECRET!,
         code,
         grant_type: "authorization_code",
       }),

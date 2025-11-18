@@ -201,12 +201,26 @@ GRANT ALL ON SCHEMA public TO mikkeller_user;
 | `NODE_ENV` | `production` |
 | `DATABASE_URL` | `postgresql://mikkeller_user:ВАШ_ПАРОЛЬ@srv-captain--mikkeller-db:5432/mikkeller_rc` |
 | `SESSION_SECRET` | Любая случайная строка минимум 32 символа* |
-| `VITE_YANDEX_MAPS_API_KEY` | Ваш ключ Yandex Maps API |
+| `STRAVA_CLIENT_ID` | Ваш Strava Client ID |
+| `STRAVA_CLIENT_SECRET` | Ваш Strava Client Secret |
+| `STRAVA_REDIRECT_URI` | `https://ваш-домен.ru/api/strava/callback` |
+| `VITE_YANDEX_MAPS_API_KEY` | Ваш ключ Yandex Maps API (опционально) |
+| `YOOKASSA_SHOP_ID` | Ваш YooKassa Shop ID (опционально) |
+| `YOOKASSA_SECRET_KEY` | Ваш YooKassa Secret Key (опционально) |
 
 **Генерация SESSION_SECRET:**
 Откройте [этот генератор](https://randomkeygen.com/) и скопируйте любую длинную строку из раздела "Fort Knox Passwords".
 
-**Важно:** В `DATABASE_URL` замените `ВАШ_ПАРОЛЬ` на пароль который вы создали для mikkeller_user в Шаге 8.
+**Важно:** 
+- В `DATABASE_URL` замените `ВАШ_ПАРОЛЬ` на пароль который вы создали для mikkeller_user в Шаге 8.
+- В `STRAVA_REDIRECT_URI` замените `ваш-домен.ru` на ваш реальный домен.
+- Переменные с пометкой "опционально" можно добавить позже, если понадобятся.
+
+**Получение Strava API ключей:**
+1. Зайдите на https://www.strava.com/settings/api
+2. Создайте новое приложение
+3. В поле "Authorization Callback Domain" введите `ваш-домен.ru`
+4. Скопируйте Client ID и Client Secret
 
 После добавления всех переменных нажмите **"Save & Update"**.
 

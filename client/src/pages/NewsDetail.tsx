@@ -131,7 +131,7 @@ export default function NewsDetail() {
           </div>
 
           <div
-            className="prose prose-lg max-w-none"
+            className="prose prose-lg max-w-none text-muted-foreground"
             dangerouslySetInnerHTML={{ __html: news.content }}
             data-testid="content-body"
           />

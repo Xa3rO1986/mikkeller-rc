@@ -17,7 +17,7 @@ import { Calendar, Package, Image as ImageIcon, ShoppingCart, Users, LogOut, Plu
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Admin, Event, Location, Product, Photo, Order, EventRoute } from "@shared/schema";
+import type { Admin, Event, Location, Product, Photo, Order, EventRoute, News } from "@shared/schema";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { LocationPicker } from "@/components/LocationPicker";
 import ImageCropper from "@/components/ImageCropper";
@@ -216,6 +216,7 @@ export default function Admin() {
             <TabsTrigger value="locations">Локации</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="photos">Фотографии</TabsTrigger>
+            <TabsTrigger value="news">Новости</TabsTrigger>
             <TabsTrigger value="orders">Заказы</TabsTrigger>
             <TabsTrigger value="admins">Администраторы</TabsTrigger>
           </TabsList>
@@ -238,6 +239,10 @@ export default function Admin() {
 
           <TabsContent value="photos">
             <PhotosManagement />
+          </TabsContent>
+
+          <TabsContent value="news">
+            <NewsManagement />
           </TabsContent>
 
           <TabsContent value="orders">
@@ -3098,6 +3103,381 @@ function SEOPageEditor({
           </div>
         </CardContent>
       )}
+    </Card>
+  );
+}
+
+function NewsManagement() {
+  const { toast } = useToast();
+  const [isCreating, setIsCreating] = useState(false);
+  const [editingNews, setEditingNews] = useState<News | null>(null);
+
+  const { data: news } = useQuery<News[]>({
+    queryKey: ["/api/news"],
+  });
+
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    slug: "",
+    excerpt: "",
+    content: "",
+    status: "draft" as "draft" | "published",
+    publishedAt: "",
+  });
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      slug: "",
+      excerpt: "",
+      content: "",
+      status: "draft",
+      publishedAt: "",
+    });
+    setCoverFile(null);
+    setIsCreating(false);
+    setEditingNews(null);
+  };
+
+  useEffect(() => {
+    if (editingNews) {
+      setFormData({
+        title: editingNews.title,
+        slug: editingNews.slug,
+        excerpt: editingNews.excerpt || "",
+        content: editingNews.content,
+        status: editingNews.status,
+        publishedAt: editingNews.publishedAt ? new Date(editingNews.publishedAt).toISOString().slice(0, 16) : "",
+      });
+    }
+  }, [editingNews]);
+
+  const createNewsMutation = useMutation({
+    mutationFn: async () => {
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("slug", formData.slug);
+      if (formData.excerpt) data.append("excerpt", formData.excerpt);
+      data.append("content", formData.content);
+      data.append("status", formData.status);
+      if (formData.publishedAt) {
+        data.append("publishedAt", new Date(formData.publishedAt).toISOString());
+      }
+      if (coverFile) {
+        data.append("coverImage", coverFile);
+      }
+
+      const response = await fetch("/api/news", {
+        method: "POST",
+        body: data,
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to create news");
+      }
+
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      toast({
+        title: "Новость создана",
+        description: "Новость успешно добавлена",
+      });
+      resetForm();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка создания",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateNewsMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingNews) return;
+      
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("slug", formData.slug);
+      if (formData.excerpt) data.append("excerpt", formData.excerpt);
+      data.append("content", formData.content);
+      data.append("status", formData.status);
+      if (formData.publishedAt) {
+        data.append("publishedAt", new Date(formData.publishedAt).toISOString());
+      }
+      if (coverFile) {
+        data.append("coverImage", coverFile);
+      }
+
+      const response = await fetch(`/api/news/${editingNews.id}`, {
+        method: "PATCH",
+        body: data,
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update news");
+      }
+
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      toast({
+        title: "Новость обновлена",
+        description: "Изменения сохранены",
+      });
+      resetForm();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка обновления",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteNewsMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/news/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      toast({
+        title: "Новость удалена",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingNews) {
+      updateNewsMutation.mutate();
+    } else {
+      createNewsMutation.mutate();
+    }
+  };
+
+  const handleTitleChange = (title: string) => {
+    setFormData({
+      ...formData,
+      title,
+      slug: createSlug(title),
+    });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Управление новостями</CardTitle>
+        <CardDescription>
+          Создавайте и редактируйте новости клуба
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {(isCreating || editingNews) && (
+          <Card className="bg-muted/50">
+            <CardHeader>
+              <CardTitle className="text-lg">
+                {editingNews ? "Редактировать новость" : "Создать новость"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="news-title" data-testid="label-news-title">Заголовок *</Label>
+                  <Input
+                    id="news-title"
+                    value={formData.title}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    placeholder="Название новости"
+                    required
+                    data-testid="input-news-title"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="news-slug" data-testid="label-news-slug">Slug (URL)</Label>
+                  <Input
+                    id="news-slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    placeholder="news-slug"
+                    required
+                    data-testid="input-news-slug"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    URL: /news/{formData.slug}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="news-excerpt" data-testid="label-news-excerpt">Краткое описание</Label>
+                  <Textarea
+                    id="news-excerpt"
+                    value={formData.excerpt}
+                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                    placeholder="Краткое описание новости (отображается в превью)"
+                    rows={3}
+                    data-testid="input-news-excerpt"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="news-cover" data-testid="label-news-cover">Обложка</Label>
+                  <Input
+                    id="news-cover"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
+                    data-testid="input-news-cover"
+                  />
+                  {editingNews?.coverImageUrl && !coverFile && (
+                    <div className="mt-2">
+                      <img
+                        src={editingNews.coverImageUrl}
+                        alt="Current cover"
+                        className="w-32 h-auto rounded border"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="news-content" data-testid="label-news-content">Содержание *</Label>
+                  <RichTextEditor
+                    content={formData.content}
+                    onChange={(content) => setFormData({ ...formData, content })}
+                    placeholder="Содержание новости..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="news-status" data-testid="label-news-status">Статус</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value as "draft" | "published" })}
+                    >
+                      <SelectTrigger id="news-status" data-testid="select-news-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Черновик</SelectItem>
+                        <SelectItem value="published">Опубликовано</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="news-published-at" data-testid="label-news-published-at">Дата публикации</Label>
+                    <Input
+                      id="news-published-at"
+                      type="datetime-local"
+                      value={formData.publishedAt}
+                      onChange={(e) => setFormData({ ...formData, publishedAt: e.target.value })}
+                      data-testid="input-news-published-at"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    type="submit"
+                    disabled={createNewsMutation.isPending || updateNewsMutation.isPending}
+                    data-testid="button-submit-news"
+                  >
+                    {editingNews ? "Сохранить изменения" : "Создать новость"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetForm}
+                    data-testid="button-cancel-news"
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {!isCreating && !editingNews && (
+          <Button onClick={() => setIsCreating(true)} data-testid="button-create-news">
+            <Plus className="mr-2 h-4 w-4" />
+            Создать новость
+          </Button>
+        )}
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Все новости</h3>
+          {news && news.length > 0 ? (
+            <div className="space-y-2">
+              {news.map((newsItem) => (
+                <Card key={newsItem.id}>
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-semibold">{newsItem.title}</h4>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          newsItem.status === 'published' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {newsItem.status === 'published' ? 'Опубликовано' : 'Черновик'}
+                        </span>
+                      </div>
+                      {newsItem.excerpt && (
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {newsItem.excerpt}
+                        </p>
+                      )}
+                      {newsItem.publishedAt && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(newsItem.publishedAt).toLocaleDateString('ru-RU')}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingNews(newsItem)}
+                        data-testid={`button-edit-news-${newsItem.id}`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm("Вы уверены, что хотите удалить эту новость?")) {
+                            deleteNewsMutation.mutate(newsItem.id);
+                          }
+                        }}
+                        data-testid={`button-delete-news-${newsItem.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">Новостей пока нет</p>
+          )}
+        </div>
+      </CardContent>
     </Card>
   );
 }

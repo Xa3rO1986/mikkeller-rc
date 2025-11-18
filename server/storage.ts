@@ -12,6 +12,7 @@ import {
   homeSettings,
   aboutSettings,
   pageSettings,
+  news,
   type Admin,
   type InsertAdmin,
   type Event,
@@ -34,6 +35,8 @@ import {
   type InsertAboutSettings,
   type PageSettings,
   type InsertPageSettings,
+  type News,
+  type InsertNews,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -114,6 +117,14 @@ export interface IStorage {
   getAllPageSettings(): Promise<PageSettings[]>;
   updatePageSettings(pageKey: string, settings: Partial<InsertPageSettings>): Promise<PageSettings>;
   initializePageSettings(): Promise<void>;
+
+  // News
+  getNews(filters?: { status?: string; limit?: number }): Promise<News[]>;
+  getNewsItem(id: string): Promise<News | undefined>;
+  getNewsBySlug(slug: string): Promise<News | undefined>;
+  createNews(newsItem: InsertNews): Promise<News>;
+  updateNews(id: string, newsItem: Partial<InsertNews>): Promise<News | undefined>;
+  deleteNews(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -593,6 +604,56 @@ export class DatabaseStorage implements IStorage {
     }
     
     console.log("Page SEO settings initialized with default values");
+  }
+
+  // News
+  async getNews(filters?: { status?: string; limit?: number }): Promise<News[]> {
+    let query = db.select().from(news);
+    
+    const conditions = [];
+    if (filters?.status) {
+      conditions.push(eq(news.status, filters.status as any));
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+    
+    query = query.orderBy(desc(news.publishedAt)) as any;
+    
+    if (filters?.limit) {
+      query = query.limit(filters.limit) as any;
+    }
+    
+    return await query;
+  }
+
+  async getNewsItem(id: string): Promise<News | undefined> {
+    const [newsItem] = await db.select().from(news).where(eq(news.id, id)).limit(1);
+    return newsItem;
+  }
+
+  async getNewsBySlug(slug: string): Promise<News | undefined> {
+    const [newsItem] = await db.select().from(news).where(eq(news.slug, slug)).limit(1);
+    return newsItem;
+  }
+
+  async createNews(newsItem: InsertNews): Promise<News> {
+    const [created] = await db.insert(news).values(newsItem).returning();
+    return created;
+  }
+
+  async updateNews(id: string, newsItem: Partial<InsertNews>): Promise<News | undefined> {
+    const [updated] = await db.update(news).set({
+      ...newsItem,
+      updatedAt: new Date(),
+    }).where(eq(news.id, id)).returning();
+    return updated;
+  }
+
+  async deleteNews(id: string): Promise<boolean> {
+    const result = await db.delete(news).where(eq(news.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 }
 

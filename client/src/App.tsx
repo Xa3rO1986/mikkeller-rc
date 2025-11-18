@@ -15,6 +15,8 @@ import Shop from "@/pages/Shop";
 import ProductDetail from "@/pages/ProductDetail";
 import About from "@/pages/About";
 import PaceCalculator from "@/pages/PaceCalculator";
+import News from "@/pages/News";
+import NewsDetail from "@/pages/NewsDetail";
 import Admin from "@/pages/Admin";
 import AdminLogin from "@/pages/AdminLogin";
 import NotFound from "@/pages/not-found";
@@ -32,6 +34,8 @@ function Router() {
       <Route path="/shop/:slug" component={ProductDetail} />
       <Route path="/about" component={About} />
       <Route path="/pace-calculator" component={PaceCalculator} />
+      <Route path="/news" component={News} />
+      <Route path="/news/:slug" component={NewsDetail} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />

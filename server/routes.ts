@@ -1616,6 +1616,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import and register Strava routes
+  const stravaRoutes = (await import("./routes/strava")).default;
+  const ratingRoutes = (await import("./routes/rating")).default;
+  
+  app.use("/api/strava", stravaRoutes);
+  app.use("/api/rating", ratingRoutes);
+
   const httpServer = createServer(app);
 
   return httpServer;

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, real, boolean, integer, jsonb, pgEnum, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, real, boolean, integer, jsonb, pgEnum, index, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -159,6 +159,58 @@ export const insertNewsSchema = createInsertSchema(news).omit({
 
 export type InsertNews = z.infer<typeof insertNewsSchema>;
 export type News = typeof news.$inferSelect;
+
+// Strava integration tables
+export const stravaAccounts = pgTable("strava_accounts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique(),
+  stravaId: bigint("strava_id", { mode: "number" }).notNull().unique(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: bigint("expires_at", { mode: "number" }).notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  profilePicture: text("profile_picture"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("strava_accounts_strava_id_idx").on(table.stravaId),
+  index("strava_accounts_user_id_idx").on(table.userId),
+]);
+
+export const insertStravaAccountSchema = createInsertSchema(stravaAccounts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertStravaAccount = z.infer<typeof insertStravaAccountSchema>;
+export type StravaAccount = typeof stravaAccounts.$inferSelect;
+
+export const activities = pgTable("activities", {
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  userId: varchar("user_id").notNull(),
+  name: text("name").notNull(),
+  distance: real("distance").notNull(),
+  movingTime: integer("moving_time").notNull(),
+  sportType: text("sport_type").notNull(),
+  polyline: text("polyline"),
+  startDate: timestamp("start_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("activities_user_id_idx").on(table.userId),
+  index("activities_start_date_idx").on(table.startDate),
+  index("activities_sport_type_idx").on(table.sportType),
+]);
+
+export const insertActivitySchema = createInsertSchema(activities).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertActivity = z.infer<typeof insertActivitySchema>;
+export type Activity = typeof activities.$inferSelect;
 
 // Products table
 export const products = pgTable("products", {

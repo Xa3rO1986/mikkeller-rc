@@ -17,6 +17,7 @@ import About from "@/pages/About";
 import PaceCalculator from "@/pages/PaceCalculator";
 import News from "@/pages/News";
 import NewsDetail from "@/pages/NewsDetail";
+import Rating from "@/pages/Rating";
 import Admin from "@/pages/Admin";
 import AdminLogin from "@/pages/AdminLogin";
 import NotFound from "@/pages/not-found";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/pace-calculator" component={PaceCalculator} />
       <Route path="/news" component={News} />
       <Route path="/news/:slug" component={NewsDetail} />
+      <Route path="/rating" component={Rating} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />

@@ -50,8 +50,15 @@ COPY --from=builder /app/migrations ./migrations
 # Создаем директории для загрузок
 RUN mkdir -p server/uploads/photos server/uploads/covers server/uploads/gpx
 
+# Установка netcat для проверки БД
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+# Копируем entrypoint скрипт
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Порт приложения
 EXPOSE 5000
 
-# Запуск приложения
-CMD ["node", "dist/index.js"]
+# Запуск приложения через entrypoint скрипт
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

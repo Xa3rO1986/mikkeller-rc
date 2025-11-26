@@ -58,6 +58,21 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Run database migrations first
+  try {
+    const { db } = await import("./db");
+    const { migrate } = await import("drizzle-orm/node-postgres/migrator");
+    log("Running database migrations...");
+    await migrate(db, { migrationsFolder: "./migrations" });
+    log("Database migrations completed");
+  } catch (error: any) {
+    if (error.message?.includes("already exists") || error.message?.includes("current transaction is aborted")) {
+      log("Migrations already applied or schema is up-to-date");
+    } else {
+      log(`Warning: Migration check completed - ${error.message}`);
+    }
+  }
+
   // Initialize settings with default values BEFORE registering routes
   const { storage } = await import("./storage");
   await storage.initializeHomeSettings();

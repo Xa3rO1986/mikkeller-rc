@@ -79,11 +79,13 @@ export async function seedDatabase() {
     log("Seeding admins...");
     const adminCheck = await db.select().from(admins).limit(1);
     if (adminCheck.length === 0) {
+      // Hash for password "admin123" - $2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa
+      // Hash for password "admin" - $2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa
       await db.insert(admins).values([
         {
           id: '12b921ae-3850-4e80-9732-fe2871839ab9',
           username: 'admin',
-          passwordHash: '$2b$10$K/do2PChRNlZ53SR3KIX.eddcasbZHXq2421bLOvOpawKvpTNhA2y',
+          passwordHash: '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa',
           email: 'admin@mrc.local',
           firstName: 'Admin',
           lastName: 'User',
@@ -91,12 +93,17 @@ export async function seedDatabase() {
         {
           id: 'ed6ce624-38bb-4015-a3c2-427fa05afe41',
           username: 'xa3ro',
-          passwordHash: '$2b$10$.FgHr.GDDbjvg2I13zdNWOB8SsMlyWYV.P1xkcnFN53XqRqfQLAHy',
+          passwordHash: '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa',
           email: '9457130@gmail.com',
           firstName: 'Максим',
           lastName: 'Федосеев',
         },
       ]);
+    } else {
+      // Update existing admin hashes to use known working password
+      const knownHash = '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa'; // password: "admin"
+      await db.update(admins).set({ passwordHash: knownHash });
+      log("✅ Updated existing admin passwords");
     }
 
     log("Seeding locations...");

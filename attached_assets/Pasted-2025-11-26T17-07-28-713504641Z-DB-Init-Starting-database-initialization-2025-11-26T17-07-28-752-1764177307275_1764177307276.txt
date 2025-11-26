@@ -1,0 +1,59 @@
+2025-11-26T17:07:28.713504641Z [DB Init] Starting database initialization...
+2025-11-26T17:07:28.752169439Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T17:07:28.752191540Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T17:07:28.767265425Z 5:07:28 PM [express] ✅ Database initialization completed
+2025-11-26T17:07:28.778480545Z 5:07:28 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T17:07:28.796011368Z Page SEO settings initialized with default values
+2025-11-26T17:07:28.803363817Z 5:07:28 PM [express] Environment: production (isDev: false)
+2025-11-26T17:07:28.805412895Z 5:07:28 PM [express] serving on port 5000
+2025-11-26T17:08:27.255778026Z Error fetching about settings: error: column "stats_members" does not exist
+2025-11-26T17:08:27.255801540Z at /app/node_modules/pg-pool/index.js:45:11
+2025-11-26T17:08:27.255807942Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-26T17:08:27.255813684Z at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+2025-11-26T17:08:27.255819214Z at async DatabaseStorage.getAboutSettings (file:///app/dist/index.js:624:28)
+2025-11-26T17:08:27.255824544Z at async file:///app/dist/index.js:2393:24 {
+2025-11-26T17:08:27.255829974Z length: 113,
+2025-11-26T17:08:27.255835354Z severity: 'ERROR',
+2025-11-26T17:08:27.255860732Z code: '42703',
+2025-11-26T17:08:27.255867885Z detail: undefined,
+2025-11-26T17:08:27.255873275Z hint: undefined,
+2025-11-26T17:08:27.255878615Z position: '91',
+2025-11-26T17:08:27.255883986Z internalPosition: undefined,
+2025-11-26T17:08:27.255889276Z internalQuery: undefined,
+2025-11-26T17:08:27.255894697Z where: undefined,
+2025-11-26T17:08:27.255900177Z schema: undefined,
+2025-11-26T17:08:27.255905407Z table: undefined,
+2025-11-26T17:08:27.255910627Z column: undefined,
+2025-11-26T17:08:27.255916067Z dataType: undefined,
+2025-11-26T17:08:27.255921497Z constraint: undefined,
+2025-11-26T17:08:27.255926917Z file: 'parse_relation.c',
+2025-11-26T17:08:27.255932247Z line: '3633',
+2025-11-26T17:08:27.255937387Z routine: 'errorMissingColumn'
+2025-11-26T17:08:27.255942647Z }
+2025-11-26T17:08:27.257385001Z 5:08:27 PM [express] GET /api/about-settings 500 in 20ms :: {"message":"Failed to fetch about settin…
+2025-11-26T17:08:29.165550383Z 5:08:29 PM [express] GET /api/news 304 in 31ms :: []
+2025-11-26T17:08:29.168708967Z 5:08:29 PM [express] GET /api/events 304 in 30ms :: []
+2025-11-26T17:08:29.169841296Z 5:08:29 PM [express] GET /api/home-settings 304 in 41ms :: {"id":"singleton","heroImageUrl":null,"he…
+2025-11-26T17:08:29.170942686Z 5:08:29 PM [express] GET /api/photos 304 in 26ms :: []
+2025-11-26T17:12:46.625807502Z [DB Init] Starting database initialization...
+2025-11-26T17:12:46.670879803Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T17:12:46.671018746Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T17:12:46.686995327Z 5:12:46 PM [express] ✅ Database initialization completed
+2025-11-26T17:12:46.687439305Z [Seed] Starting database seeding...
+2025-11-26T17:12:46.692544706Z [Seed] Seeding home_settings...
+2025-11-26T17:12:46.696134893Z [Seed] Seeding about_settings...
+2025-11-26T17:12:46.700809058Z [Seed] ⚠️ Seeding error: column "stats_members" of relation "about_settings" does not exist
+2025-11-26T17:12:46.714834170Z 5:12:46 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T17:12:46.728925117Z Page SEO settings initialized with default values
+2025-11-26T17:12:46.735721244Z 5:12:46 PM [express] Environment: production (isDev: false)
+2025-11-26T17:12:46.737327580Z 5:12:46 PM [express] serving on port 5000
+2025-11-26T17:13:01.936139005Z 5:13:01 PM [express] GET /api/home-settings 200 in 37ms :: {"id":"singleton","heroImageUrl":"/upload…
+2025-11-26T17:13:01.943348414Z 5:13:01 PM [express] GET /api/news 304 in 34ms :: []
+2025-11-26T17:13:01.944539185Z 5:13:01 PM [express] GET /api/photos 304 in 42ms :: []
+2025-11-26T17:13:01.945830025Z 5:13:01 PM [express] GET /api/events 304 in 40ms :: []
+2025-11-26T17:13:09.844941720Z 5:13:09 PM [express] GET /api/events 200 in 4ms :: []
+2025-11-26T17:13:09.846051558Z 5:13:09 PM [express] GET /api/locations 200 in 3ms :: []
+2025-11-26T17:13:19.412421727Z 5:13:19 PM [express] GET /api/home-settings 304 in 3ms :: {"id":"singleton","heroImageUrl":"/uploads…
+2025-11-26T17:13:29.461901020Z 5:13:29 PM [express] POST /api/admin/login 401 in 11ms :: {"message":"Invalid credentials"}
+2025-11-26T17:14:27.658183471Z 5:14:27 PM [express] POST /api/admin/login 401 in 12ms :: {"message":"Invalid credentials"}
+2025-11-26T17:14:39.811432140Z 5:14:39 PM [express] POST /api/admin/login 401 in 13ms :: {"message":"Invalid credentials"}

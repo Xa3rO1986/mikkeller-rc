@@ -289,6 +289,41 @@ export async function initializeDatabase() {
       log("✅ Constraints and indexes verified!");
     } else {
       log("✅ All required tables already exist - preserving all data");
+      
+      // Add missing columns to existing about_settings table
+      try {
+        const missingColumns = [
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_members" text DEFAULT '1,200+' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_members_label" text DEFAULT 'Участников' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_bars" text DEFAULT '25+' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_bars_label" text DEFAULT 'Баров-партнеров' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_runs" text DEFAULT '500+' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_runs_label" text DEFAULT 'Забегов' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_distance" text DEFAULT '15,000' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "stats_distance_label" text DEFAULT 'Км пробежано' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_1_title" text DEFAULT 'Все уровни' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_1_text" text DEFAULT 'Для всех' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_2_title" text DEFAULT 'Вместе' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_2_text" text DEFAULT 'Разные темпы' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_3_title" text DEFAULT 'Безопасность' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_3_text" text DEFAULT 'ПДД' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_4_title" text DEFAULT 'Уважение' NOT NULL`,
+          `ALTER TABLE "about_settings" ADD COLUMN IF NOT EXISTS "rule_4_text" text DEFAULT 'Всех' NOT NULL`,
+        ];
+
+        for (const alterSql of missingColumns) {
+          try {
+            await db.execute(sql.raw(alterSql));
+          } catch (e: any) {
+            if (!e.message?.includes("already exists")) {
+              log(`Note: ${e.message}`);
+            }
+          }
+        }
+        log("✅ Schema columns synchronized");
+      } catch (err: any) {
+        log(`Note during schema sync: ${err.message}`);
+      }
     }
 
   } catch (error: any) {

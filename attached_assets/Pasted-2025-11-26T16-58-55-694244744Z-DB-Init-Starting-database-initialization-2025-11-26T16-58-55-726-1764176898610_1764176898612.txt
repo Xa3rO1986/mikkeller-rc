@@ -1,0 +1,50 @@
+2025-11-26T16:58:55.694244744Z [DB Init] Starting database initialization...
+2025-11-26T16:58:55.726372569Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T16:58:55.726421882Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T16:58:55.741323958Z 4:58:55 PM [express] ✅ Database initialization completed
+2025-11-26T16:58:55.750782910Z 4:58:55 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:58:55.767767632Z Page SEO settings initialized with default values
+2025-11-26T16:58:55.777813747Z 4:58:55 PM [express] Environment: production (isDev: false)
+2025-11-26T16:58:55.779599661Z 4:58:55 PM [express] serving on port 5000
+2025-11-26T16:59:50.606679581Z 4:59:50 PM [express] GET /api/home-settings 304 in 38ms :: {"id":"singleton","heroImageUrl":null,"he…
+2025-11-26T16:59:50.608415460Z 4:59:50 PM [express] GET /api/news 304 in 31ms :: []
+2025-11-26T16:59:50.610031121Z 4:59:50 PM [express] GET /api/photos 304 in 35ms :: []
+2025-11-26T16:59:50.612260365Z 4:59:50 PM [express] GET /api/events 304 in 31ms :: []
+2025-11-26T17:06:01.319037764Z 5:06:01 PM [express] GET /api/photos 304 in 28ms :: []
+2025-11-26T17:06:01.321384161Z 5:06:01 PM [express] GET /api/events 304 in 35ms :: []
+2025-11-26T17:06:01.322676520Z 5:06:01 PM [express] GET /api/news 304 in 28ms :: []
+2025-11-26T17:06:01.324472829Z 5:06:01 PM [express] GET /api/home-settings 304 in 32ms :: {"id":"singleton","heroImageUrl":null,"he…
+2025-11-26T17:06:03.901065285Z 5:06:03 PM [express] GET /api/rating/year=2025 200 in 6ms
+2025-11-26T17:06:13.466316741Z Error fetching about settings: error: column "stats_members" does not exist
+2025-11-26T17:06:13.466346758Z at /app/node_modules/pg-pool/index.js:45:11
+2025-11-26T17:06:13.466354002Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-26T17:06:13.466360023Z at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+2025-11-26T17:06:13.466366054Z at async DatabaseStorage.getAboutSettings (file:///app/dist/index.js:624:28)
+2025-11-26T17:06:13.466372036Z at async file:///app/dist/index.js:2393:24 {
+2025-11-26T17:06:13.466377736Z length: 113,
+2025-11-26T17:06:13.466383477Z severity: 'ERROR',
+2025-11-26T17:06:13.466388617Z code: '42703',
+2025-11-26T17:06:13.466393847Z detail: undefined,
+2025-11-26T17:06:13.466399066Z hint: undefined,
+2025-11-26T17:06:13.466404356Z position: '91',
+2025-11-26T17:06:13.466409968Z internalPosition: undefined,
+2025-11-26T17:06:13.466415218Z internalQuery: undefined,
+2025-11-26T17:06:13.466420467Z where: undefined,
+2025-11-26T17:06:13.466494717Z schema: undefined,
+2025-11-26T17:06:13.466516869Z table: undefined,
+2025-11-26T17:06:13.466521267Z column: undefined,
+2025-11-26T17:06:13.466524944Z dataType: undefined,
+2025-11-26T17:06:13.466528461Z constraint: undefined,
+2025-11-26T17:06:13.466532078Z file: 'parse_relation.c',
+2025-11-26T17:06:13.466535835Z line: '3633',
+2025-11-26T17:06:13.466539582Z routine: 'errorMissingColumn'
+2025-11-26T17:06:13.466543319Z }
+2025-11-26T17:06:13.468200436Z 5:06:13 PM [express] GET /api/about-settings 500 in 21ms :: {"message":"Failed to fetch about settin…
+2025-11-26T17:07:28.713504641Z [DB Init] Starting database initialization...
+2025-11-26T17:07:28.752169439Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T17:07:28.752191540Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T17:07:28.767265425Z 5:07:28 PM [express] ✅ Database initialization completed
+2025-11-26T17:07:28.778480545Z 5:07:28 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T17:07:28.796011368Z Page SEO settings initialized with default values
+2025-11-26T17:07:28.803363817Z 5:07:28 PM [express] Environment: production (isDev: false)
+2025-11-26T17:07:28.805412895Z 5:07:28 PM [express] serving on port 5000

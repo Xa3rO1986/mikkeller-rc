@@ -68,6 +68,14 @@ app.use((req, res, next) => {
     // Continue anyway - database might be already initialized
   }
 
+  // Seed database with real data
+  try {
+    const { seedDatabase } = await import("./seed");
+    await seedDatabase();
+  } catch (error: any) {
+    log(`⚠️ Seeding error: ${error.message}`);
+  }
+
   // Initialize settings with default values BEFORE registering routes
   const { storage } = await import("./storage");
   try {

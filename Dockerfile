@@ -32,6 +32,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Set production environment
+ENV NODE_ENV=production
+
 # Копируем package files
 COPY package*.json ./
 

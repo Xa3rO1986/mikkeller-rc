@@ -88,8 +88,22 @@ app.use((req, res, next) => {
     }
     
     log(`Running database migrations from: ${migrationsPath}`);
-    const result = await migrate(db, { migrationsFolder: migrationsPath });
-    log(`✅ Database migrations completed: ${JSON.stringify(result)}`);
+    try {
+      const result = await migrate(db, { migrationsFolder: migrationsPath });
+      log(`✅ Database migrations completed: ${JSON.stringify(result)}`);
+    } catch (migrationError: any) {
+      // If migration system says it's applied but tables don't exist, this is a fallback
+      log(`Initial migration attempt result: ${migrationError.message}`);
+      
+      // Force re-run migrations to ensure tables are created
+      if (migrationError.message?.includes("does not exist") || migrationError.message?.includes("relation")) {
+        log("Attempting forced migration execution...");
+        const result = await migrate(db, { migrationsFolder: migrationsPath });
+        log(`✅ Forced migration completed: ${JSON.stringify(result)}`);
+      } else {
+        throw migrationError;
+      }
+    }
   } catch (error: any) {
     log(`Migration error: ${error.message}`);
     log(`Error stack: ${error.stack}`);

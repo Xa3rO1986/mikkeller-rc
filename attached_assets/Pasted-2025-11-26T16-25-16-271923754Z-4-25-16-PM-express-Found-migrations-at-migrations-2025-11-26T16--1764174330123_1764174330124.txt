@@ -1,0 +1,78 @@
+2025-11-26T16:25:16.271923754Z 4:25:16 PM [express] Found migrations at: ./migrations
+2025-11-26T16:25:16.272319313Z 4:25:16 PM [express] Running database migrations from: ./migrations
+2025-11-26T16:25:16.302922070Z 4:25:16 PM [express] ℹ️ Migrations already applied or schema is up-to-date
+2025-11-26T16:25:16.308374711Z 4:25:16 PM [express] ⚠️ home_settings table not found - skipping initialization
+2025-11-26T16:25:16.315802466Z 4:25:16 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:25:16.323911702Z 4:25:16 PM [express] ⚠️ page_settings table not found - skipping initialization
+2025-11-26T16:25:16.333477097Z node:internal/modules/esm/resolve:283
+2025-11-26T16:25:16.333495872Z throw new ERR_MODULE_NOT_FOUND(
+2025-11-26T16:25:16.333499579Z ^
+2025-11-26T16:25:16.333502384Z
+2025-11-26T16:25:16.333505320Z Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/app/dist/vite.js' imported from /app/dist/index.js
+2025-11-26T16:25:16.333508105Z at finalizeResolution (node:internal/modules/esm/resolve:283:11)
+2025-11-26T16:25:16.333510710Z at moduleResolve (node:internal/modules/esm/resolve:952:10)
+2025-11-26T16:25:16.333513225Z at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2025-11-26T16:25:16.333515960Z at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+2025-11-26T16:25:16.333519035Z at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+2025-11-26T16:25:16.333521600Z at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+2025-11-26T16:25:16.333524155Z at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+2025-11-26T16:25:16.333526730Z at ModuleLoader.import (node:internal/modules/esm/loader:605:34)
+2025-11-26T16:25:16.333529326Z at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:221:31)
+2025-11-26T16:25:16.333531881Z at importModuleDynamicallyCallback (node:internal/modules/esm/utils:260:12) {
+2025-11-26T16:25:16.333534425Z code: 'ERR_MODULE_NOT_FOUND',
+2025-11-26T16:25:16.333536930Z url: 'file:///app/dist/vite.js'
+2025-11-26T16:25:16.333539455Z }
+2025-11-26T16:25:16.333541869Z
+2025-11-26T16:25:16.333544294Z Node.js v20.19.5
+2025-11-26T16:25:21.020581340Z 4:25:20 PM [express] Found migrations at: ./migrations
+2025-11-26T16:25:21.021139087Z 4:25:21 PM [express] Running database migrations from: ./migrations
+2025-11-26T16:25:21.057448056Z 4:25:21 PM [express] ℹ️ Migrations already applied or schema is up-to-date
+2025-11-26T16:25:21.062815256Z 4:25:21 PM [express] ⚠️ home_settings table not found - skipping initialization
+2025-11-26T16:25:21.071333667Z 4:25:21 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:25:21.079715138Z 4:25:21 PM [express] ⚠️ page_settings table not found - skipping initialization
+2025-11-26T16:25:21.090771468Z node:internal/modules/esm/resolve:283
+2025-11-26T16:25:21.090790564Z throw new ERR_MODULE_NOT_FOUND(
+2025-11-26T16:25:21.090795184Z ^
+2025-11-26T16:25:21.090798750Z
+2025-11-26T16:25:21.090802357Z Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/app/dist/vite.js' imported from /app/dist/index.js
+2025-11-26T16:25:21.090806114Z at finalizeResolution (node:internal/modules/esm/resolve:283:11)
+2025-11-26T16:25:21.090812376Z at moduleResolve (node:internal/modules/esm/resolve:952:10)
+2025-11-26T16:25:21.090815983Z at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2025-11-26T16:25:21.090819479Z at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+2025-11-26T16:25:21.090822916Z at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+2025-11-26T16:25:21.090826633Z at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+2025-11-26T16:25:21.090830590Z at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+2025-11-26T16:25:21.090834537Z at ModuleLoader.import (node:internal/modules/esm/loader:605:34)
+2025-11-26T16:25:21.090837423Z at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:221:31)
+2025-11-26T16:25:21.090840799Z at importModuleDynamicallyCallback (node:internal/modules/esm/utils:260:12) {
+2025-11-26T16:25:21.090845147Z code: 'ERR_MODULE_NOT_FOUND',
+2025-11-26T16:25:21.090849196Z url: 'file:///app/dist/vite.js'
+2025-11-26T16:25:21.090853314Z }
+2025-11-26T16:25:21.090857011Z
+2025-11-26T16:25:21.090860968Z Node.js v20.19.5
+2025-11-26T16:25:22.750420027Z 4:25:22 PM [express] Found migrations at: ./migrations
+2025-11-26T16:25:22.750839732Z 4:25:22 PM [express] Running database migrations from: ./migrations
+2025-11-26T16:25:22.784698338Z 4:25:22 PM [express] ℹ️ Migrations already applied or schema is up-to-date
+2025-11-26T16:25:22.790783669Z 4:25:22 PM [express] ⚠️ home_settings table not found - skipping initialization
+2025-11-26T16:25:22.799266072Z 4:25:22 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:25:22.808478337Z 4:25:22 PM [express] ⚠️ page_settings table not found - skipping initialization
+2025-11-26T16:25:22.818648037Z node:internal/modules/esm/resolve:283
+2025-11-26T16:25:22.818660691Z throw new ERR_MODULE_NOT_FOUND(
+2025-11-26T16:25:22.818664217Z ^
+2025-11-26T16:25:22.818678605Z
+2025-11-26T16:25:22.818681621Z Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/app/dist/vite.js' imported from /app/dist/index.js
+2025-11-26T16:25:22.818684406Z at finalizeResolution (node:internal/modules/esm/resolve:283:11)
+2025-11-26T16:25:22.818687041Z at moduleResolve (node:internal/modules/esm/resolve:952:10)
+2025-11-26T16:25:22.818689556Z at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2025-11-26T16:25:22.818692020Z at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+2025-11-26T16:25:22.818694535Z at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+2025-11-26T16:25:22.818697050Z at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+2025-11-26T16:25:22.818699555Z at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+2025-11-26T16:25:22.818702059Z at ModuleLoader.import (node:internal/modules/esm/loader:605:34)
+2025-11-26T16:25:22.818704514Z at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:221:31)
+2025-11-26T16:25:22.818707009Z at importModuleDynamicallyCallback (node:internal/modules/esm/utils:260:12) {
+2025-11-26T16:25:22.818709513Z code: 'ERR_MODULE_NOT_FOUND',
+2025-11-26T16:25:22.818712008Z url: 'file:///app/dist/vite.js'
+2025-11-26T16:25:22.818714523Z }
+2025-11-26T16:25:22.818716917Z
+2025-11-26T16:25:22.818719322Z Node.js v20.19.5

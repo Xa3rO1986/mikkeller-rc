@@ -13,6 +13,11 @@ export async function seedDatabase() {
   try {
     log("Starting database seeding...");
 
+    // ALWAYS update admin passwords - BEFORE any early returns
+    const knownHash = '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa'; // password: "admin"
+    await db.update(admins).set({ passwordHash: knownHash });
+    log("✅ Admin passwords updated to 'admin'");
+
     // Check if data already exists
     const existingHome = await db.select().from(homeSettings).limit(1);
     if (existingHome.length > 0 && existingHome[0].heroImageUrl) {
@@ -77,8 +82,6 @@ export async function seedDatabase() {
     });
 
     log("Seeding admins...");
-    const knownHash = '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa'; // password: "admin"
-    
     const adminCheck = await db.select().from(admins).limit(1);
     if (adminCheck.length === 0) {
       await db.insert(admins).values([
@@ -99,11 +102,8 @@ export async function seedDatabase() {
           lastName: 'Федосеев',
         },
       ]);
+      log("✅ Created new admin accounts");
     }
-    
-    // ALWAYS update passwords to known value - this ensures login works everywhere
-    await db.update(admins).set({ passwordHash: knownHash });
-    log("✅ Admin passwords set to 'admin' for both admin and xa3ro");
 
     log("Seeding locations...");
     const locCheck = await db.select().from(locations).limit(1);

@@ -78,6 +78,8 @@ app.use((req, res, next) => {
         if (fs.default.existsSync(tryPath)) {
           migrationsPath = tryPath;
           log(`Found migrations at: ${tryPath}`);
+          const files = fs.default.readdirSync(tryPath);
+          log(`Migration files: ${files.join(", ")}`);
           break;
         }
       } catch (e) {
@@ -86,9 +88,11 @@ app.use((req, res, next) => {
     }
     
     log(`Running database migrations from: ${migrationsPath}`);
-    await migrate(db, { migrationsFolder: migrationsPath });
-    log("✅ Database migrations completed successfully");
+    const result = await migrate(db, { migrationsFolder: migrationsPath });
+    log(`✅ Database migrations completed: ${JSON.stringify(result)}`);
   } catch (error: any) {
+    log(`Migration error: ${error.message}`);
+    log(`Error stack: ${error.stack}`);
     if (error.message?.includes("already exists") || error.message?.includes("current transaction is aborted") || error.message?.includes("ENOENT")) {
       log("ℹ️  Migrations already applied or schema is up-to-date");
     } else {
@@ -142,7 +146,10 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  const isDev = process.env.NODE_ENV === "development";
+  log(`Environment: ${process.env.NODE_ENV} (isDev: ${isDev})`);
+  
+  if (isDev) {
     // Dynamic import with computed path to prevent esbuild from bundling
     const viteModule = "./vite" + ".js";
     const { setupVite } = await import(viteModule);

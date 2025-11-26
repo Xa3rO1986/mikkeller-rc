@@ -1,0 +1,37 @@
+2025-11-26T16:36:02.991673518Z [DB Init] Starting database initialization...
+2025-11-26T16:36:03.057962190Z [DB Init] Found 0 existing tables:
+2025-11-26T16:36:03.058141069Z [DB Init] Core tables not found. Creating all tables...
+2025-11-26T16:36:03.077363559Z [DB Init] Cleaned up existing tables
+2025-11-26T16:36:03.079330825Z [DB Init] event_status type already exists
+2025-11-26T16:36:03.094872855Z [DB Init] event_type type already exists
+2025-11-26T16:36:03.103253409Z [DB Init] news_status type already exists
+2025-11-26T16:36:03.112644998Z [DB Init] order_status type already exists
+2025-11-26T16:36:03.123066388Z [DB Init] photo_status type already exists
+2025-11-26T16:36:03.123081937Z [DB Init] Created or verified types
+2025-11-26T16:36:03.219848769Z [DB Init] ✅ All tables created successfully!
+2025-11-26T16:36:03.234937560Z 4:36:03 PM [express] ✅ Database initialization completed
+2025-11-26T16:36:03.244101178Z Home settings initialized with default values
+2025-11-26T16:36:03.247566401Z 4:36:03 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:36:03.272671123Z Page SEO settings initialized with default values
+2025-11-26T16:36:03.280330582Z 4:36:03 PM [express] Environment: production (isDev: false)
+2025-11-26T16:36:03.281991558Z 4:36:03 PM [express] serving on port 5000
+2025-11-26T16:37:07.589080350Z 4:37:07 PM [express] GET /api/events 200 in 44ms :: []
+2025-11-26T16:37:07.590867205Z 4:37:07 PM [express] GET /api/home-settings 200 in 33ms :: {"id":"singleton","heroImageUrl":null,"he…
+2025-11-26T16:37:07.593011977Z 4:37:07 PM [express] GET /api/photos 200 in 42ms :: []
+2025-11-26T16:37:07.593973530Z 4:37:07 PM [express] GET /api/news 200 in 39ms :: []
+2025-11-26T16:52:19.089377036Z [DB Init] Starting database initialization...
+2025-11-26T16:52:19.125843639Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T16:52:19.125866442Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T16:52:19.140729073Z 4:52:19 PM [express] ✅ Database initialization completed
+2025-11-26T16:52:19.150585447Z 4:52:19 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:52:19.168104822Z Page SEO settings initialized with default values
+2025-11-26T16:52:19.174836807Z 4:52:19 PM [express] Environment: production (isDev: false)
+2025-11-26T16:52:19.176268419Z 4:52:19 PM [express] serving on port 5000
+2025-11-26T16:52:46.049961580Z 4:52:46 PM [express] GET /api/home-settings 304 in 48ms :: {"id":"singleton","heroImageUrl":null,"he…
+2025-11-26T16:52:46.051045774Z 4:52:46 PM [express] GET /api/events 304 in 44ms :: []
+2025-11-26T16:52:46.051972390Z 4:52:46 PM [express] GET /api/photos 304 in 56ms :: []
+2025-11-26T16:52:46.052793705Z 4:52:46 PM [express] GET /api/news 304 in 42ms :: []
+2025-11-26T16:52:52.921695399Z 4:52:52 PM [express] GET /api/news 304 in 4ms :: []
+2025-11-26T16:52:52.923072587Z 4:52:52 PM [express] GET /api/events 304 in 3ms :: []
+2025-11-26T16:52:52.925593374Z 4:52:52 PM [express] GET /api/photos 304 in 2ms :: []
+2025-11-26T16:52:52.930714177Z 4:52:52 PM [express] GET /api/home-settings 304 in 3ms :: {"id":"singleton","heroImageUrl":null,"her…

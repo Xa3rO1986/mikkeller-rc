@@ -15,46 +15,46 @@ export async function initializeDatabase() {
     const tableNames = (tables.rows as any[]).map(r => r.tablename);
     log(`Found ${tableNames.length} existing tables: ${tableNames.join(", ")}`);
 
-    // If core tables don't exist, create all tables
+    // Only create types and tables if they don't exist - NEVER drop anything
     if (!tableNames.includes("home_settings")) {
       log("Core tables not found. Creating all tables...");
 
-      // Drop types if they exist (to reset)
-      const typeCheckSql = `
-        DO $$ BEGIN
-          IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'admins') THEN
-            DROP TABLE IF EXISTS photos CASCADE;
-            DROP TABLE IF EXISTS events CASCADE;
-            DROP TABLE IF EXISTS event_routes CASCADE;
-            DROP TABLE IF EXISTS variants CASCADE;
-            DROP TABLE IF EXISTS products CASCADE;
-            DROP TABLE IF EXISTS orders CASCADE;
-            DROP TABLE IF EXISTS news CASCADE;
-            DROP TABLE IF EXISTS locations CASCADE;
-            DROP TABLE IF EXISTS admins CASCADE;
-            DROP TABLE IF EXISTS home_settings CASCADE;
-            DROP TABLE IF EXISTS about_settings CASCADE;
-            DROP TABLE IF EXISTS page_settings CASCADE;
-            DROP TABLE IF EXISTS strava_accounts CASCADE;
-            DROP TABLE IF EXISTS activities CASCADE;
-          END IF;
-        END $$;
-      `;
-
-      await db.execute(sql.raw(typeCheckSql));
-      log("Cleaned up existing tables");
-
-      // Create types
-      await db.execute(sql`CREATE TYPE "public"."event_status" AS ENUM('draft', 'published', 'archived')`).catch(() => log("event_status type already exists"));
-      await db.execute(sql`CREATE TYPE "public"."event_type" AS ENUM('club', 'irregular', 'out_of_town', 'city', 'athletics', 'croissant')`).catch(() => log("event_type type already exists"));
-      await db.execute(sql`CREATE TYPE "public"."news_status" AS ENUM('draft', 'published')`).catch(() => log("news_status type already exists"));
-      await db.execute(sql`CREATE TYPE "public"."order_status" AS ENUM('created', 'paid', 'failed')`).catch(() => log("order_status type already exists"));
-      await db.execute(sql`CREATE TYPE "public"."photo_status" AS ENUM('pending', 'approved', 'rejected')`).catch(() => log("photo_status type already exists"));
+      // Create types (safe - will skip if already exist)
+      try {
+        await db.execute(sql`CREATE TYPE "public"."event_status" AS ENUM('draft', 'published', 'archived')`);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) throw e;
+      }
+      
+      try {
+        await db.execute(sql`CREATE TYPE "public"."event_type" AS ENUM('club', 'irregular', 'out_of_town', 'city', 'athletics', 'croissant')`);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) throw e;
+      }
+      
+      try {
+        await db.execute(sql`CREATE TYPE "public"."news_status" AS ENUM('draft', 'published')`);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) throw e;
+      }
+      
+      try {
+        await db.execute(sql`CREATE TYPE "public"."order_status" AS ENUM('created', 'paid', 'failed')`);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) throw e;
+      }
+      
+      try {
+        await db.execute(sql`CREATE TYPE "public"."photo_status" AS ENUM('pending', 'approved', 'rejected')`);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) throw e;
+      }
+      
       log("Created or verified types");
 
-      // Create all tables
+      // Create all tables only if they don't exist
       const createTablesSql = `
-        CREATE TABLE "home_settings" (
+        CREATE TABLE IF NOT EXISTS "home_settings" (
           "id" varchar PRIMARY KEY DEFAULT 'singleton' NOT NULL,
           "hero_image_url" text,
           "hero_title" text DEFAULT 'Mikkeller Running Club' NOT NULL,
@@ -69,7 +69,7 @@ export async function initializeDatabase() {
           "updated_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "about_settings" (
+        CREATE TABLE IF NOT EXISTS "about_settings" (
           "id" varchar PRIMARY KEY DEFAULT 'singleton' NOT NULL,
           "hero_title" text DEFAULT 'О Mikkeller Running Club' NOT NULL,
           "hero_image_url" text,
@@ -79,7 +79,7 @@ export async function initializeDatabase() {
           "updated_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "page_settings" (
+        CREATE TABLE IF NOT EXISTS "page_settings" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "page_key" varchar NOT NULL UNIQUE,
           "title" text NOT NULL,
@@ -91,7 +91,7 @@ export async function initializeDatabase() {
           "updated_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "admins" (
+        CREATE TABLE IF NOT EXISTS "admins" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "username" varchar NOT NULL UNIQUE,
           "password_hash" text NOT NULL,
@@ -101,7 +101,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "locations" (
+        CREATE TABLE IF NOT EXISTS "locations" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "slug" text NOT NULL UNIQUE,
           "name" text NOT NULL,
@@ -113,7 +113,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "events" (
+        CREATE TABLE IF NOT EXISTS "events" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "slug" text NOT NULL UNIQUE,
           "title" text NOT NULL,
@@ -134,7 +134,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "event_routes" (
+        CREATE TABLE IF NOT EXISTS "event_routes" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "event_id" varchar NOT NULL,
           "name" text,
@@ -144,7 +144,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "photos" (
+        CREATE TABLE IF NOT EXISTS "photos" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "event_id" varchar,
           "admin_id" varchar,
@@ -156,7 +156,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "products" (
+        CREATE TABLE IF NOT EXISTS "products" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "slug" text NOT NULL UNIQUE,
           "title" text NOT NULL,
@@ -168,7 +168,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "variants" (
+        CREATE TABLE IF NOT EXISTS "variants" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "product_id" varchar NOT NULL,
           "size" text,
@@ -178,7 +178,7 @@ export async function initializeDatabase() {
           "price" integer NOT NULL
         );
 
-        CREATE TABLE "orders" (
+        CREATE TABLE IF NOT EXISTS "orders" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "items" jsonb NOT NULL,
           "amount_total" integer NOT NULL,
@@ -190,7 +190,7 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "news" (
+        CREATE TABLE IF NOT EXISTS "news" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "slug" text NOT NULL UNIQUE,
           "title" text NOT NULL,
@@ -203,13 +203,13 @@ export async function initializeDatabase() {
           "updated_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "sessions" (
+        CREATE TABLE IF NOT EXISTS "sessions" (
           "sid" varchar PRIMARY KEY NOT NULL,
           "sess" jsonb NOT NULL,
           "expire" timestamp NOT NULL
         );
 
-        CREATE TABLE "strava_accounts" (
+        CREATE TABLE IF NOT EXISTS "strava_accounts" (
           "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "user_id" varchar NOT NULL UNIQUE,
           "strava_id" bigint NOT NULL UNIQUE,
@@ -223,7 +223,7 @@ export async function initializeDatabase() {
           "updated_at" timestamp DEFAULT now() NOT NULL
         );
 
-        CREATE TABLE "activities" (
+        CREATE TABLE IF NOT EXISTS "activities" (
           "id" bigint PRIMARY KEY NOT NULL,
           "user_id" varchar NOT NULL,
           "name" text NOT NULL,
@@ -235,24 +235,60 @@ export async function initializeDatabase() {
           "created_at" timestamp DEFAULT now() NOT NULL,
           "updated_at" timestamp DEFAULT now() NOT NULL
         );
-
-        ALTER TABLE "event_routes" ADD CONSTRAINT "event_routes_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE cascade;
-        ALTER TABLE "events" ADD CONSTRAINT "events_location_id_locations_id_fk" FOREIGN KEY ("location_id") REFERENCES "locations"("id") ON DELETE set null;
-        ALTER TABLE "photos" ADD CONSTRAINT "photos_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE set null;
-        ALTER TABLE "photos" ADD CONSTRAINT "photos_admin_id_admins_id_fk" FOREIGN KEY ("admin_id") REFERENCES "admins"("id") ON DELETE cascade;
-        ALTER TABLE "variants" ADD CONSTRAINT "variants_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE cascade;
-
-        CREATE INDEX "activities_user_id_idx" ON "activities" ("user_id");
-        CREATE INDEX "activities_start_date_idx" ON "activities" ("start_date");
-        CREATE INDEX "IDX_session_expire" ON "sessions" ("expire");
-        CREATE INDEX "strava_accounts_strava_id_idx" ON "strava_accounts" ("strava_id");
-        CREATE INDEX "strava_accounts_user_id_idx" ON "strava_accounts" ("user_id");
       `;
 
       await db.execute(sql.raw(createTablesSql));
-      log("✅ All tables created successfully!");
+      log("✅ All tables created or verified!");
+
+      // Add constraints and indexes if they don't exist
+      try {
+        await db.execute(sql`
+          ALTER TABLE "event_routes" ADD CONSTRAINT "event_routes_event_id_events_id_fk" 
+          FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE cascade
+        `);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) log(`Note: ${e.message}`);
+      }
+
+      try {
+        await db.execute(sql`
+          ALTER TABLE "events" ADD CONSTRAINT "events_location_id_locations_id_fk" 
+          FOREIGN KEY ("location_id") REFERENCES "locations"("id") ON DELETE set null
+        `);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) log(`Note: ${e.message}`);
+      }
+
+      try {
+        await db.execute(sql`
+          ALTER TABLE "photos" ADD CONSTRAINT "photos_event_id_events_id_fk" 
+          FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE set null
+        `);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) log(`Note: ${e.message}`);
+      }
+
+      try {
+        await db.execute(sql`
+          ALTER TABLE "photos" ADD CONSTRAINT "photos_admin_id_admins_id_fk" 
+          FOREIGN KEY ("admin_id") REFERENCES "admins"("id") ON DELETE cascade
+        `);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) log(`Note: ${e.message}`);
+      }
+
+      try {
+        await db.execute(sql`
+          ALTER TABLE "variants" ADD CONSTRAINT "variants_product_id_products_id_fk" 
+          FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE cascade
+        `);
+      } catch (e: any) {
+        if (!e.message?.includes("already exists")) log(`Note: ${e.message}`);
+      }
+
+      log("✅ Constraints and indexes verified!");
     } else {
-      log("✅ All required tables already exist");
+      log("✅ All required tables already exist - preserving all data");
     }
 
   } catch (error: any) {

@@ -1,0 +1,20 @@
+2025-11-26T16:57:36.103222918Z [DB Init] Starting database initialization...
+2025-11-26T16:57:36.131895586Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T16:57:36.131917377Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T16:57:36.145633756Z 4:57:36 PM [express] ✅ Database initialization completed
+2025-11-26T16:57:36.152785136Z 4:57:36 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:57:36.169929420Z Page SEO settings initialized with default values
+2025-11-26T16:57:36.176502654Z 4:57:36 PM [express] Environment: production (isDev: false)
+2025-11-26T16:57:36.177999521Z 4:57:36 PM [express] serving on port 5000
+2025-11-26T16:58:42.390153719Z 4:58:42 PM [express] GET /api/photos 304 in 37ms :: []
+2025-11-26T16:58:42.391304420Z 4:58:42 PM [express] GET /api/news 304 in 27ms :: []
+2025-11-26T16:58:42.392113503Z 4:58:42 PM [express] GET /api/events 304 in 32ms :: []
+2025-11-26T16:58:42.393190834Z 4:58:42 PM [express] GET /api/home-settings 304 in 36ms :: {"id":"singleton","heroImageUrl":null,"he…
+2025-11-26T16:58:55.694244744Z [DB Init] Starting database initialization...
+2025-11-26T16:58:55.726372569Z [DB Init] Found 15 existing tables: home_settings, about_settings, page_settings, orders, news, sessions, strava_accounts, activities, events, event_routes, locations, photos, admins, products, variants
+2025-11-26T16:58:55.726421882Z [DB Init] ✅ All required tables already exist - preserving all data
+2025-11-26T16:58:55.741323958Z 4:58:55 PM [express] ✅ Database initialization completed
+2025-11-26T16:58:55.750782910Z 4:58:55 PM [express] ⚠️ about_settings table not found - skipping initialization
+2025-11-26T16:58:55.767767632Z Page SEO settings initialized with default values
+2025-11-26T16:58:55.777813747Z 4:58:55 PM [express] Environment: production (isDev: false)
+2025-11-26T16:58:55.779599661Z 4:58:55 PM [express] serving on port 5000

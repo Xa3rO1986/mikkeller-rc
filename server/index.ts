@@ -58,61 +58,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Run database migrations first
+  // Initialize database first
   try {
-    const { db } = await import("./db");
-    const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-    const fs = await import("fs");
-    const path = await import("path");
-    
-    // Try multiple possible migration folder locations
-    let migrationsPath = "./migrations";
-    const possiblePaths = [
-      "./migrations",
-      "/app/migrations",
-      new URL("../migrations", import.meta.url).pathname,
-    ];
-    
-    for (const tryPath of possiblePaths) {
-      try {
-        if (fs.default.existsSync(tryPath)) {
-          migrationsPath = tryPath;
-          log(`Found migrations at: ${tryPath}`);
-          const files = fs.default.readdirSync(tryPath);
-          log(`Migration files: ${files.join(", ")}`);
-          break;
-        }
-      } catch (e) {
-        // continue
-      }
-    }
-    
-    log(`Running database migrations from: ${migrationsPath}`);
-    try {
-      const result = await migrate(db, { migrationsFolder: migrationsPath });
-      log(`✅ Database migrations completed: ${JSON.stringify(result)}`);
-    } catch (migrationError: any) {
-      // If migration system says it's applied but tables don't exist, this is a fallback
-      log(`Initial migration attempt result: ${migrationError.message}`);
-      
-      // Force re-run migrations to ensure tables are created
-      if (migrationError.message?.includes("does not exist") || migrationError.message?.includes("relation")) {
-        log("Attempting forced migration execution...");
-        const result = await migrate(db, { migrationsFolder: migrationsPath });
-        log(`✅ Forced migration completed: ${JSON.stringify(result)}`);
-      } else {
-        throw migrationError;
-      }
-    }
+    const { initializeDatabase } = await import("./init-db");
+    await initializeDatabase();
+    log("✅ Database initialization completed");
   } catch (error: any) {
-    log(`Migration error: ${error.message}`);
-    log(`Error stack: ${error.stack}`);
-    if (error.message?.includes("already exists") || error.message?.includes("current transaction is aborted") || error.message?.includes("ENOENT")) {
-      log("ℹ️  Migrations already applied or schema is up-to-date");
-    } else {
-      log(`⚠️  Warning: Migration check completed - ${error.message}`);
-      // Don't throw - let app continue even if migrations fail
-    }
+    log(`⚠️ Database initialization error: ${error.message}`);
+    // Continue anyway - database might be already initialized
   }
 
   // Initialize settings with default values BEFORE registering routes

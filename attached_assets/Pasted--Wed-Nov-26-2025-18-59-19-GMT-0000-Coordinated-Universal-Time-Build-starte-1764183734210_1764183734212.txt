@@ -1,0 +1,130 @@
+------------------------ Wed Nov 26 2025 18:59:19 GMT+0000 (Coordinated Universal Time)
+Build started for mikkeller-rc
+Ignore warnings for unconsumed build-args if there is any
+Step 1/23 : FROM node:20-slim AS builder
+
+---> 12541e65a377
+Step 2/23 : WORKDIR /app
+
+---> Using cache
+---> 9a01222723fb
+Step 3/23 : COPY package*.json ./
+
+---> Using cache
+---> 01ebc0beeb9e
+Step 4/23 : RUN npm ci
+
+---> Using cache
+---> 4278e874c8e9
+Step 5/23 : COPY . .
+
+---> 995a226c3a55
+Step 6/23 : RUN npx vite build
+
+---> Running in 05703c5e8e24
+vite v5.4.20 building for production...
+transforming...
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+
+✓ 2647 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                                                      0.73 kB │ gzip:   0.41 kB
+../dist/public/assets/MRC_1763044539473-CWUSUGzG.png                          61.75 kB
+../dist/public/assets/Black_running_t-shirt_product_3eadb9cf-NyOzNCuB.png    631.91 kB
+../dist/public/assets/Yellow_tank_top_product_c8520cd2-DDnobC29.png          671.61 kB
+../dist/public/assets/Teal_hoodie_product_ad3ee456-BziiDsYd.png            1,138.99 kB
+../dist/public/assets/Runners_celebrating_finish_969c4387-J-CrJiSV.png     1,588.09 kB
+../dist/public/assets/Hero_runners_urban_setting_ad89a1fd-vbmRpD_X.png     2,101.88 kB
+../dist/public/assets/index-u7y2z43L.css                                     103.10 kB │ gzip:  15.17 kB
+../dist/public/assets/index-1QFEtWwJ.js                                    1,010.76 kB │ gzip: 305.68 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+✓ built in 8.85s
+---> Removed intermediate container 05703c5e8e24
+---> db79abd76455
+Step 7/23 : RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --external:vite --external:@vitejs/* --external:@replit/* --external:tsx --external:drizzle-kit --outdir=dist
+
+---> Running in ac732c57be2b
+
+  dist/index.js  152.8kb
+
+⚡ Done in 14ms
+
+---> Removed intermediate container ac732c57be2b
+---> f8b500961a3d
+Step 8/23 : RUN npx esbuild server/static.ts --platform=node --format=esm --outfile=dist/static.js
+
+---> Running in 18c0574ff29e
+
+  dist/static.js  487b 
+
+⚡ Done in 7ms
+
+---> Removed intermediate container 18c0574ff29e
+---> 595d5e85198c
+Step 9/23 : FROM node:20-slim
+
+---> 12541e65a377
+Step 10/23 : RUN apt-get update && apt-get install -y     ca-certificates     && rm -rf /var/lib/apt/lists/*
+
+---> Using cache
+---> faa90a8c4eda
+Step 11/23 : WORKDIR /app
+
+---> Using cache
+---> 753415e21e79
+Step 12/23 : ENV NODE_ENV=production
+
+---> Using cache
+---> 48c61c3132a6
+Step 13/23 : COPY package*.json ./
+
+---> Using cache
+---> 417f24b2b9b1
+Step 14/23 : RUN npm ci --only=production && npm cache clean --force
+
+---> Using cache
+---> d385cc68489e
+Step 15/23 : COPY --from=builder /app/dist ./dist
+
+---> e2db683c3d45
+Step 16/23 : COPY --from=builder /app/shared ./shared
+
+---> 1a1a16cabc71
+Step 17/23 : COPY --from=builder /app/package.json ./package.json
+
+---> 97dfc818c396
+Step 18/23 : COPY --from=builder /app/drizzle.config.js ./drizzle.config.js
+
+---> d92c802323fc
+Step 19/23 : COPY --from=builder /app/migrations ./migrations
+
+---> eef5f4521995
+Step 20/23 : COPY --from=builder /app/scripts ./scripts
+
+---> 4949a723147c
+Step 21/23 : RUN mkdir -p server/uploads/photos server/uploads/covers server/uploads/gpx
+
+---> Running in 58b06f5c00f1
+---> Removed intermediate container 58b06f5c00f1
+---> 9f97abc68b46
+Step 22/23 : EXPOSE 5000
+
+---> Running in 5f44fb0e83d3
+---> Removed intermediate container 5f44fb0e83d3
+---> a0a9175fd894
+Step 23/23 : CMD ["node", "dist/index.js"]
+
+---> Running in 5095b118bfdc
+---> Removed intermediate container 5095b118bfdc
+---> 02dbead34d71
+[Warning] One or more build-args [CAPROVER_GIT_COMMIT_SHA DATABASE_URL SESSION_SECRET] were not consumed
+Successfully built 02dbead34d71
+Successfully tagged img-captain-mikkeller-rc:latest
+Build has finished successfully!

@@ -22,6 +22,10 @@ if [ $attempt -eq $max_attempts ]; then
   exit 1
 fi
 
+# Initialize database (run migrations)
+echo "🔄 Initializing database..."
+node scripts/init-db.js || echo "⚠️  Database initialization warning - continuing startup"
+
 # Run the Node application
 echo "🚀 Starting application..."
 exec node dist/index.js

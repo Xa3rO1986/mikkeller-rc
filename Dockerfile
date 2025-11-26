@@ -46,6 +46,7 @@ COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/drizzle.config.js ./drizzle.config.js
 COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/scripts ./scripts
 
 # Создаем директории для загрузок
 RUN mkdir -p server/uploads/photos server/uploads/covers server/uploads/gpx

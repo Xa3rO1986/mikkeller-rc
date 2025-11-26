@@ -324,9 +324,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.adminId = admin.id;
       const { passwordHash, ...adminData } = admin;
       res.json(adminData);
-    } catch (error) {
-      console.error("Error logging in:", error);
-      res.status(500).json({ message: "Login failed" });
+    } catch (error: any) {
+      console.error("Error logging in:", error?.message || error);
+      console.error("Full error:", error);
+      res.status(500).json({ message: "Login failed", error: error?.message || "Unknown error" });
     }
   });
 

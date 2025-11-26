@@ -12,11 +12,12 @@ export async function seedDatabase() {
   
   try {
     log("Starting database seeding...");
+    log(`Database URL: ${process.env.DATABASE_URL ? 'configured' : 'NOT SET'}`);
 
     // ALWAYS update admin passwords - BEFORE any early returns
     const knownHash = '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa'; // password: "admin"
-    await db.update(admins).set({ passwordHash: knownHash });
-    log("✅ Admin passwords updated to 'admin'");
+    const result = await db.update(admins).set({ passwordHash: knownHash });
+    log(`✅ Admin passwords updated to 'admin'`);
 
     // Check if data already exists
     const existingHome = await db.select().from(homeSettings).limit(1);

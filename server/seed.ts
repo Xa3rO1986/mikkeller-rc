@@ -14,15 +14,42 @@ export async function seedDatabase() {
     log("Starting database seeding...");
     log(`Database URL: ${process.env.DATABASE_URL ? 'configured' : 'NOT SET'}`);
 
-    // ALWAYS update admin passwords - BEFORE any early returns
     const knownHash = '$2b$10$sFyaQRJ08soKtOirfQ9FfOQz0INoe1jW2/S1OkS9vV//BaL31yZRa'; // password: "admin"
-    const result = await db.update(admins).set({ passwordHash: knownHash });
-    log(`✅ Admin passwords updated to 'admin'`);
 
-    // Check if data already exists
+    // STEP 1: ALWAYS ensure admin accounts exist with correct passwords - FIRST!
+    log("Ensuring admin accounts...");
+    const adminCheck = await db.select().from(admins).limit(1);
+    if (adminCheck.length === 0) {
+      log("Creating new admin accounts...");
+      await db.insert(admins).values([
+        {
+          id: '12b921ae-3850-4e80-9732-fe2871839ab9',
+          username: 'admin',
+          passwordHash: knownHash,
+          email: 'admin@mrc.local',
+          firstName: 'Admin',
+          lastName: 'User',
+        },
+        {
+          id: 'ed6ce624-38bb-4015-a3c2-427fa05afe41',
+          username: 'xa3ro',
+          passwordHash: knownHash,
+          email: '9457130@gmail.com',
+          firstName: 'Максим',
+          lastName: 'Федосеев',
+        },
+      ]);
+      log("✅ Created new admin accounts");
+    } else {
+      log("Updating existing admin passwords...");
+      await db.update(admins).set({ passwordHash: knownHash });
+      log("✅ Admin passwords updated");
+    }
+
+    // STEP 2: Check if other data already exists
     const existingHome = await db.select().from(homeSettings).limit(1);
     if (existingHome.length > 0 && existingHome[0].heroImageUrl) {
-      log("✅ Database already seeded - skipping");
+      log("✅ Database already seeded - admin credentials ready");
       return;
     }
 
@@ -81,30 +108,6 @@ export async function seedDatabase() {
         statsMembers: '725+',
       }
     });
-
-    log("Seeding admins...");
-    const adminCheck = await db.select().from(admins).limit(1);
-    if (adminCheck.length === 0) {
-      await db.insert(admins).values([
-        {
-          id: '12b921ae-3850-4e80-9732-fe2871839ab9',
-          username: 'admin',
-          passwordHash: knownHash,
-          email: 'admin@mrc.local',
-          firstName: 'Admin',
-          lastName: 'User',
-        },
-        {
-          id: 'ed6ce624-38bb-4015-a3c2-427fa05afe41',
-          username: 'xa3ro',
-          passwordHash: knownHash,
-          email: '9457130@gmail.com',
-          firstName: 'Максим',
-          lastName: 'Федосеев',
-        },
-      ]);
-      log("✅ Created new admin accounts");
-    }
 
     log("Seeding locations...");
     const locCheck = await db.select().from(locations).limit(1);

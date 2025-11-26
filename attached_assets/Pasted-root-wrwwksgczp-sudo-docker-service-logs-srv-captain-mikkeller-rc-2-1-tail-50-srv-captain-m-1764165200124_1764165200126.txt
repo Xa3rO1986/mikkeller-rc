@@ -1,0 +1,102 @@
+root@wrwwksgczp:~# sudo docker service logs srv-captain--mikkeller-rc 2>&1 | tail -50
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   severity: 'ERROR',
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   code: '42P01',
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   detail: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   hint: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   position: '200',
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   internalPosition: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   internalQuery: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   where: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   schema: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   table: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   column: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   dataType: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   constraint: undefined,
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   file: 'parse_relation.c',
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   line: '1381',
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    |   routine: 'parserOpenTable'
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    | }
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.gs7nyk9vwsao@wrwwksgczp    | Node.js v20.19.5
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    | error: relation "home_settings" does not exist
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:604:28)
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:616:26)
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |     at async file:///app/dist/index.js:2626:3 {
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   length: 113,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   severity: 'ERROR',
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   code: '42P01',
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   detail: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   hint: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   position: '200',
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   internalPosition: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   internalQuery: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   where: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   schema: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   table: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   column: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   dataType: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   constraint: undefined,
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   file: 'parse_relation.c',
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   line: '1381',
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    |   routine: 'parserOpenTable'
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    | }
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.usi47dz18g4o@wrwwksgczp    | Node.js v20.19.5
+root@wrwwksgczp:~# sudo docker service logs srv-captain--mikkeller-rc 2>&1 | tail -50
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   severity: 'ERROR',
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   code: '42P01',
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   detail: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   hint: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   position: '200',
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   internalPosition: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   internalQuery: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   where: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   schema: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   table: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   column: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   dataType: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   constraint: undefined,
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   file: 'parse_relation.c',
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   line: '1381',
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    |   routine: 'parserOpenTable'
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    | }
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.n45nctoqfe9e@wrwwksgczp    | Node.js v20.19.5
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    | /app/node_modules/pg-pool/index.js:45
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     Error.captureStackTrace(err)
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |           ^
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    | error: relation "home_settings" does not exist
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     at /app/node_modules/pg-pool/index.js:45:11
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     at async file:///app/node_modules/drizzle-orm/node-postgres/session.js:83:22
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     at async DatabaseStorage.getHomeSettings (file:///app/dist/index.js:604:28)
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     at async DatabaseStorage.initializeHomeSettings (file:///app/dist/index.js:616:26)
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |     at async file:///app/dist/index.js:2626:3 {
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   length: 113,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   severity: 'ERROR',
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   code: '42P01',
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   detail: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   hint: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   position: '200',
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   internalPosition: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   internalQuery: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   where: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   schema: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   table: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   column: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   dataType: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   constraint: undefined,
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   file: 'parse_relation.c',
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   line: '1381',
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    |   routine: 'parserOpenTable'
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    | }
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    | 
+srv-captain--mikkeller-rc.1.r4sgscx87kwd@wrwwksgczp    | Node.js v20.19.5

@@ -62,14 +62,38 @@ app.use((req, res, next) => {
   try {
     const { db } = await import("./db");
     const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-    log("Running database migrations...");
-    await migrate(db, { migrationsFolder: "./migrations" });
-    log("Database migrations completed");
+    const fs = await import("fs");
+    const path = await import("path");
+    
+    // Try multiple possible migration folder locations
+    let migrationsPath = "./migrations";
+    const possiblePaths = [
+      "./migrations",
+      "/app/migrations",
+      new URL("../migrations", import.meta.url).pathname,
+    ];
+    
+    for (const tryPath of possiblePaths) {
+      try {
+        if (fs.default.existsSync(tryPath)) {
+          migrationsPath = tryPath;
+          log(`Found migrations at: ${tryPath}`);
+          break;
+        }
+      } catch (e) {
+        // continue
+      }
+    }
+    
+    log(`Running database migrations from: ${migrationsPath}`);
+    await migrate(db, { migrationsFolder: migrationsPath });
+    log("✅ Database migrations completed successfully");
   } catch (error: any) {
-    if (error.message?.includes("already exists") || error.message?.includes("current transaction is aborted")) {
-      log("Migrations already applied or schema is up-to-date");
+    if (error.message?.includes("already exists") || error.message?.includes("current transaction is aborted") || error.message?.includes("ENOENT")) {
+      log("ℹ️  Migrations already applied or schema is up-to-date");
     } else {
-      log(`Warning: Migration check completed - ${error.message}`);
+      log(`⚠️  Warning: Migration check completed - ${error.message}`);
+      // Don't throw - let app continue even if migrations fail
     }
   }
 

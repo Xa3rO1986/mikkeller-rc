@@ -415,7 +415,7 @@ psql -U mikkeller_user mikkeller_rc < backup.sql
 
 ---
 
-## ❓ Часто задаваемые вопросы
+## ❓ Часто задаваемые вопросы и решение проблем
 
 **Q: Что делать если приложение не запускается?**
 A: Проверьте логи в разделе "App Logs". Чаще всего проблема в неправильных переменных окружения.
@@ -438,6 +438,36 @@ A: Нужно увеличить лимит загрузки файлов в Ngi
    2. Вкладка **HTTP Settings**
    3. В поле **Nginx Configuration Override** добавьте: `client_max_body_size 50M;`
    4. Нажмите **Save & Update**
+
+**Q: Ошибки "relation already exists" при deployment**
+A: Таблицы БД уже созданы. Выполните:
+   1. CapRover → mikkeller-db → Execute Command:
+   ```bash
+   psql -U mikkeller_user -d mikkeller_rc -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+   ```
+   2. CapRover → mikkeller-rc → Execute Command:
+   ```bash
+   npm run db:push -- --force
+   ```
+
+**Q: Ошибка "password_hash" column does not exist**
+A: Используйте correct скрипт для создания админа:
+   ```bash
+   node scripts/create-admin.js
+   ```
+   Это корректно создаст пользователя с хэшированным паролем.
+
+**Q: Role "neondb_owner" does not exist**
+A: Это типично для Neon PostgreSQL. Просто проигнорируйте эти ошибки - они не влияют на работу приложения. Таблицы все равно будут созданы.
+
+**Q: Как создать первого администратора?**
+A: 
+   1. На CapRover, в приложении mikkeller-rc → Execute Command:
+   ```bash
+   npm run db:push -- --force  # Сначала создайте таблицы
+   node scripts/create-admin.js  # Потом создайте админа
+   ```
+   2. Используйте выданные credentials для входа в админ-панель
 
 ---
 

@@ -1,0 +1,513 @@
+logo
+CapRover
+Github
+Docs
+Dashboard
+Apps
+Monitoring
+Cluster
+Maintenance
+Settings
+mikkeller-db
+mikkeller-db
+2025-11-16T18:45:52.462695711Z 2025-11-16 18:45:52.462 UTC [210] STATEMENT: select "id", "hero_image_url", "hero_title", "hero_subtitle", "about_title", "about_text_1", "about_text_2", "stats_participants", "stats_cities", "stats_runs", "stats_kilometers", "updated_at" from "home_settings" where "home_settings"."id" = $1 limit $2
+2025-11-16T18:45:59.057726083Z 2025-11-16 18:45:59.057 UTC [211] ERROR: relation "home_settings" does not exist at character 200
+2025-11-16T18:45:59.057767121Z 2025-11-16 18:45:59.057 UTC [211] STATEMENT: select "id", "hero_image_url", "hero_title", "hero_subtitle", "about_title", "about_text_1", "about_text_2", "stats_participants", "stats_cities", "stats_runs", "stats_kilometers", "updated_at" from "home_settings" where "home_settings"."id" = $1 limit $2
+2025-11-16T18:46:05.623488049Z 2025-11-16 18:46:05.623 UTC [212] ERROR: relation "home_settings" does not exist at character 200
+2025-11-16T18:46:05.623535539Z 2025-11-16 18:46:05.623 UTC [212] STATEMENT: select "id", "hero_image_url", "hero_title", "hero_subtitle", "about_title", "about_text_1", "about_text_2", "stats_participants", "stats_cities", "stats_runs", "stats_kilometers", "updated_at" from "home_settings" where "home_settings"."id" = $1 limit $2
+2025-11-16T18:46:12.222449452Z 2025-11-16 18:46:12.222 UTC [213] ERROR: relation "home_settings" does not exist at character 200
+2025-11-16T18:46:12.222507412Z 2025-11-16 18:46:12.222 UTC [213] STATEMENT: select "id", "hero_image_url", "hero_title", "hero_subtitle", "about_title", "about_text_1", "about_text_2", "stats_participants", "stats_cities", "stats_runs", "stats_kilometers", "updated_at" from "home_settings" where "home_settings"."id" = $1 limit $2
+2025-11-16T18:46:18.783825815Z 2025-11-16 18:46:18.783 UTC [214] ERROR: relation "home_settings" does not exist at character 200
+2025-11-16T18:46:18.783879577Z 2025-11-16 18:46:18.783 UTC [214] STATEMENT: select "id", "hero_image_url", "hero_title", "hero_subtitle", "about_title", "about_text_1", "about_text_2", "stats_participants", "stats_cities", "stats_runs", "stats_kilometers", "updated_at" from "home_settings" where "home_settings"."id" = $1 limit $2
+2025-11-16T18:46:25.345765706Z 2025-11-16 18:46:25.345 UTC [216] ERROR: relation "home_settings" does not exist at character 200
+2025-11-16T18:46:25.345815741Z 2025-11-16 18:46:25.345 UTC [216] STATEMENT: select "id", "hero_image_url", "hero_title", "hero_subtitle", "about_title", "about_text_1", "about_text_2", "stats_participants", "stats_cities", "stats_runs", "stats_kilometers", "updated_at" from "home_settings" where "home_settings"."id" = $1 limit $2
+2025-11-16T20:09:16.617098242Z 2025-11-16 20:09:16.616 UTC [398] ERROR: column "password" of relation "admins" does not exist at character 31
+2025-11-16T20:09:16.617635459Z 2025-11-16 20:09:16.616 UTC [398] STATEMENT: INSERT INTO admins (username, password)
+2025-11-16T20:09:16.617643784Z VALUES ('max', '$2a$10$9QrUaK2yWgPmS3//Mo/4kuVC6KLI0vr.bMT7QEGb15c3jN9g0u8XC');
+2025-11-16T20:20:50.566855413Z 2025-11-16 20:20:50.566 UTC [430] FATAL: role "POSTGRES_USER" does not exist
+2025-11-16T20:26:16.026034952Z 2025-11-16 20:26:16.025 UTC [448] ERROR: type "event_status" already exists
+2025-11-16T20:26:16.026073896Z 2025-11-16 20:26:16.025 UTC [448] STATEMENT: CREATE TYPE public.event_status AS ENUM (
+2025-11-16T20:26:16.026079637Z 'draft',
+2025-11-16T20:26:16.026084416Z 'published',
+2025-11-16T20:26:16.026088644Z 'archived'
+2025-11-16T20:26:16.026092752Z );
+2025-11-16T20:26:16.027054122Z 2025-11-16 20:26:16.026 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.027070252Z 2025-11-16 20:26:16.026 UTC [448] STATEMENT: ALTER TYPE public.event_status OWNER TO neondb_owner;
+2025-11-16T20:26:16.027279578Z 2025-11-16 20:26:16.027 UTC [448] ERROR: type "event_type" already exists
+2025-11-16T20:26:16.027295548Z 2025-11-16 20:26:16.027 UTC [448] STATEMENT: CREATE TYPE public.event_type AS ENUM (
+2025-11-16T20:26:16.027345102Z 'club',
+2025-11-16T20:26:16.027349340Z 'irregular',
+2025-11-16T20:26:16.027351955Z 'out_of_town',
+2025-11-16T20:26:16.027354460Z 'city',
+2025-11-16T20:26:16.027357195Z 'athletics',
+2025-11-16T20:26:16.027359740Z 'croissant'
+2025-11-16T20:26:16.027362305Z );
+2025-11-16T20:26:16.027722977Z 2025-11-16 20:26:16.027 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.027738106Z 2025-11-16 20:26:16.027 UTC [448] STATEMENT: ALTER TYPE public.event_type OWNER TO neondb_owner;
+2025-11-16T20:26:16.028300721Z 2025-11-16 20:26:16.028 UTC [448] ERROR: type "order_status" already exists
+2025-11-16T20:26:16.028311080Z 2025-11-16 20:26:16.028 UTC [448] STATEMENT: CREATE TYPE public.order_status AS ENUM (
+2025-11-16T20:26:16.028315980Z 'created',
+2025-11-16T20:26:16.028320408Z 'paid',
+2025-11-16T20:26:16.028324216Z 'failed'
+2025-11-16T20:26:16.028328193Z );
+2025-11-16T20:26:16.028489729Z 2025-11-16 20:26:16.028 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.028497423Z 2025-11-16 20:26:16.028 UTC [448] STATEMENT: ALTER TYPE public.order_status OWNER TO neondb_owner;
+2025-11-16T20:26:16.028900156Z 2025-11-16 20:26:16.028 UTC [448] ERROR: type "photo_status" already exists
+2025-11-16T20:26:16.028912449Z 2025-11-16 20:26:16.028 UTC [448] STATEMENT: CREATE TYPE public.photo_status AS ENUM (
+2025-11-16T20:26:16.028915585Z 'pending',
+2025-11-16T20:26:16.028918320Z 'approved',
+2025-11-16T20:26:16.028920925Z 'rejected'
+2025-11-16T20:26:16.028923500Z );
+2025-11-16T20:26:16.028996738Z 2025-11-16 20:26:16.028 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.029002218Z 2025-11-16 20:26:16.028 UTC [448] STATEMENT: ALTER TYPE public.photo_status OWNER TO neondb_owner;
+2025-11-16T20:26:16.031497582Z 2025-11-16 20:26:16.031 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.031510667Z 2025-11-16 20:26:16.031 UTC [448] STATEMENT: ALTER TYPE public.role OWNER TO neondb_owner;
+2025-11-16T20:26:16.033163995Z 2025-11-16 20:26:16.032 UTC [448] ERROR: relation "about_settings" already exists
+2025-11-16T20:26:16.033176550Z 2025-11-16 20:26:16.032 UTC [448] STATEMENT: CREATE TABLE public.about_settings (
+2025-11-16T20:26:16.033180537Z id character varying DEFAULT 'singleton'::character varying NOT NULL,
+2025-11-16T20:26:16.033183513Z hero_title text DEFAULT 'О Mikkeller Running Club'::text NOT NULL,
+2025-11-16T20:26:16.033191317Z hero_text_1 text DEFAULT 'Mikkeller Running Club — это международное беговое сообщество, основанное в 2014 году в Копенгагене. Наша философия проста: бег должен быть доступен всем, независимо от уровня подготовки.'::text NOT NULL,
+2025-11-16T20:26:16.033206145Z hero_text_2 text DEFAULT 'Каждую неделю тысячи бегунов по всему миру выходят на улицы своих городов, чтобы пробежать вместе 5-10 километров. После забега мы собираемся вместе, чтобы отметить достижения и насладиться компанией друг друга.'::text NOT NULL,
+2025-11-16T20:26:16.033210694Z hero_text_3 text DEFAULT 'В Москве клуб работает с 2016 года и объединяет более 1200 активных участников. Мы проводим еженедельные забеги в разных локациях города.'::text NOT NULL,
+2025-11-16T20:26:16.033214331Z stats_members text DEFAULT '1,200+'::text NOT NULL,
+2025-11-16T20:26:16.033216926Z stats_members_label text DEFAULT 'Участников в Москве'::text NOT NULL,
+2025-11-16T20:26:16.033219701Z stats_bars text DEFAULT '25+'::text NOT NULL,
+2025-11-16T20:26:16.033222396Z stats_bars_label text DEFAULT 'Баров-партнеров'::text NOT NULL,
+2025-11-16T20:26:16.033225081Z stats_runs text DEFAULT '500+'::text NOT NULL,
+2025-11-16T20:26:16.033227616Z stats_runs_label text DEFAULT 'Проведено забегов'::text NOT NULL,
+2025-11-16T20:26:16.033230292Z stats_distance text DEFAULT '15,000'::text NOT NULL,
+2025-11-16T20:26:16.033232806Z stats_distance_label text DEFAULT 'Километров пробежано'::text NOT NULL,
+2025-11-16T20:26:16.033236163Z rule_1_title text DEFAULT 'Все уровни приветствуются'::text NOT NULL,
+2025-11-16T20:26:16.033239018Z rule_1_text text DEFAULT 'Не важно, новичок вы или опытный бегун — каждый найдёт свой темп и группу единомышленников.'::text NOT NULL,
+2025-11-16T20:26:16.033242565Z rule_2_title text DEFAULT 'Никто не остаётся позади'::text NOT NULL,
+2025-11-16T20:26:16.033245410Z rule_2_text text DEFAULT 'Мы всегда бежим вместе. У нас есть группы разного темпа, чтобы всем было комфортно.'::text NOT NULL,
+2025-11-16T20:26:16.033248626Z rule_3_title text DEFAULT 'Безопасность превыше всего'::text NOT NULL,
+2025-11-16T20:26:16.033251401Z rule_3_text text DEFAULT 'Следуйте правилам дорожного движения, бегайте по правой стороне дороги, используйте светоотражающие элементы.'::text NOT NULL,
+2025-11-16T20:26:16.033254818Z rule_4_title text DEFAULT 'Уважение к другим'::text NOT NULL,
+2025-11-16T20:26:16.033258915Z rule_4_text text DEFAULT 'Мы уважаем всех участников, пешеходов и других пользователей дорог. Будьте вежливы и дружелюбны.'::text NOT NULL,
+2025-11-16T20:26:16.033270868Z updated_at timestamp without time zone DEFAULT now() NOT NULL,
+2025-11-16T20:26:16.033275306Z hero_image_url text
+2025-11-16T20:26:16.033279364Z );
+2025-11-16T20:26:16.033743312Z 2025-11-16 20:26:16.033 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.033754904Z 2025-11-16 20:26:16.033 UTC [448] STATEMENT: ALTER TABLE public.about_settings OWNER TO neondb_owner;
+2025-11-16T20:26:16.034239050Z 2025-11-16 20:26:16.034 UTC [448] ERROR: relation "admins" already exists
+2025-11-16T20:26:16.034246514Z 2025-11-16 20:26:16.034 UTC [448] STATEMENT: CREATE TABLE public.admins (
+2025-11-16T20:26:16.034249841Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.034252666Z username character varying NOT NULL,
+2025-11-16T20:26:16.034255421Z password_hash text NOT NULL,
+2025-11-16T20:26:16.034258056Z email character varying,
+2025-11-16T20:26:16.034260641Z first_name character varying,
+2025-11-16T20:26:16.034263206Z last_name character varying,
+2025-11-16T20:26:16.034265740Z created_at timestamp without time zone DEFAULT now() NOT NULL
+2025-11-16T20:26:16.034268395Z );
+2025-11-16T20:26:16.034893268Z 2025-11-16 20:26:16.034 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.034905531Z 2025-11-16 20:26:16.034 UTC [448] STATEMENT: ALTER TABLE public.admins OWNER TO neondb_owner;
+2025-11-16T20:26:16.035383286Z 2025-11-16 20:26:16.035 UTC [448] ERROR: relation "event_routes" already exists
+2025-11-16T20:26:16.035390530Z 2025-11-16 20:26:16.035 UTC [448] STATEMENT: CREATE TABLE public.event_routes (
+2025-11-16T20:26:16.035393345Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.035396050Z event_id character varying NOT NULL,
+2025-11-16T20:26:16.035398685Z name text,
+2025-11-16T20:26:16.035401260Z distance_km real NOT NULL,
+2025-11-16T20:26:16.035403885Z gpx_url text,
+2025-11-16T20:26:16.035406380Z "order" integer DEFAULT 0 NOT NULL,
+2025-11-16T20:26:16.035409115Z created_at timestamp without time zone DEFAULT now() NOT NULL
+2025-11-16T20:26:16.035479498Z );
+2025-11-16T20:26:16.035689345Z 2025-11-16 20:26:16.035 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.035700767Z 2025-11-16 20:26:16.035 UTC [448] STATEMENT: ALTER TABLE public.event_routes OWNER TO neondb_owner;
+2025-11-16T20:26:16.035998149Z 2025-11-16 20:26:16.035 UTC [448] ERROR: relation "events" already exists
+2025-11-16T20:26:16.036004912Z 2025-11-16 20:26:16.035 UTC [448] STATEMENT: CREATE TABLE public.events (
+2025-11-16T20:26:16.036007587Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.036018188Z slug text NOT NULL,
+2025-11-16T20:26:16.036020843Z title text NOT NULL,
+2025-11-16T20:26:16.036023298Z description text NOT NULL,
+2025-11-16T20:26:16.036025762Z starts_at timestamp without time zone NOT NULL,
+2025-11-16T20:26:16.036028247Z ends_at timestamp without time zone,
+2025-11-16T20:26:16.036030922Z latitude real,
+2025-11-16T20:26:16.036153083Z longitude real,
+2025-11-16T20:26:16.036158653Z address text,
+2025-11-16T20:26:16.036161258Z distance_km real,
+2025-11-16T20:26:16.036223907Z gpx_url text,
+2025-11-16T20:26:16.036229327Z polyline text,
+2025-11-16T20:26:16.036315230Z cover_image_url text,
+2025-11-16T20:26:16.036318075Z status public.event_status DEFAULT 'draft'::public.event_status NOT NULL,
+2025-11-16T20:26:16.036320861Z tags text[] DEFAULT '{}'::text[] NOT NULL,
+2025-11-16T20:26:16.036323526Z created_at timestamp without time zone DEFAULT now() NOT NULL,
+2025-11-16T20:26:16.036326050Z event_type public.event_type DEFAULT 'club'::public.event_type,
+2025-11-16T20:26:16.036328615Z location_id character varying
+2025-11-16T20:26:16.036331230Z );
+2025-11-16T20:26:16.036334747Z 2025-11-16 20:26:16.036 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.036337662Z 2025-11-16 20:26:16.036 UTC [448] STATEMENT: ALTER TABLE public.events OWNER TO neondb_owner;
+2025-11-16T20:26:16.036637850Z 2025-11-16 20:26:16.036 UTC [448] ERROR: relation "home_settings" already exists
+2025-11-16T20:26:16.036644272Z 2025-11-16 20:26:16.036 UTC [448] STATEMENT: CREATE TABLE public.home_settings (
+2025-11-16T20:26:16.036647057Z id character varying DEFAULT 'singleton'::character varying NOT NULL,
+2025-11-16T20:26:16.036649753Z hero_image_url text,
+2025-11-16T20:26:16.036652368Z hero_title text DEFAULT 'Mikkeller Running Club'::text NOT NULL,
+2025-11-16T20:26:16.036657959Z hero_subtitle text DEFAULT 'Мы бегаем. Мы пьём пиво. Мы друзья.'::text NOT NULL,
+2025-11-16T20:26:16.036661205Z about_title text DEFAULT 'О клубе'::text NOT NULL,
+2025-11-16T20:26:16.036664181Z about_text_1 text DEFAULT 'Mikkeller Running Club — это международное сообщество бегунов, которые встречаются каждую неделю, чтобы вместе бегать и наслаждаться компанией друг друга.'::text NOT NULL,
+2025-11-16T20:26:16.036681102Z about_text_2 text DEFAULT 'Мы бегаем в более чем 50 городах по всему миру. Наши забеги подходят для всех уровней подготовки — от новичков до опытных марафонцев.'::text NOT NULL,
+2025-11-16T20:26:16.036697383Z stats_participants text DEFAULT '1200+'::text NOT NULL,
+2025-11-16T20:26:16.036700318Z stats_cities text DEFAULT '50+'::text NOT NULL,
+2025-11-16T20:26:16.036702923Z stats_runs text DEFAULT '500+'::text NOT NULL,
+2025-11-16T20:26:16.036705488Z stats_kilometers text DEFAULT '15K'::text NOT NULL,
+2025-11-16T20:26:16.036709106Z updated_at timestamp without time zone DEFAULT now() NOT NULL
+2025-11-16T20:26:16.036711691Z );
+2025-11-16T20:26:16.036994515Z 2025-11-16 20:26:16.036 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.037001399Z 2025-11-16 20:26:16.036 UTC [448] STATEMENT: ALTER TABLE public.home_settings OWNER TO neondb_owner;
+2025-11-16T20:26:16.037068025Z 2025-11-16 20:26:16.037 UTC [448] ERROR: relation "locations" already exists
+2025-11-16T20:26:16.037074026Z 2025-11-16 20:26:16.037 UTC [448] STATEMENT: CREATE TABLE public.locations (
+2025-11-16T20:26:16.037077062Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.037079827Z slug text NOT NULL,
+2025-11-16T20:26:16.037082382Z name text NOT NULL,
+2025-11-16T20:26:16.037084897Z description text,
+2025-11-16T20:26:16.037087351Z address text NOT NULL,
+2025-11-16T20:26:16.037307378Z latitude real NOT NULL,
+2025-11-16T20:26:16.037313790Z longitude real NOT NULL,
+2025-11-16T20:26:16.037316485Z created_at timestamp without time zone DEFAULT now() NOT NULL,
+2025-11-16T20:26:16.037371699Z logo_url text
+2025-11-16T20:26:16.037375867Z );
+2025-11-16T20:26:16.037404843Z 2025-11-16 20:26:16.037 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.037408389Z 2025-11-16 20:26:16.037 UTC [448] STATEMENT: ALTER TABLE public.locations OWNER TO neondb_owner;
+2025-11-16T20:26:16.037802835Z 2025-11-16 20:26:16.037 UTC [448] ERROR: relation "orders" already exists
+2025-11-16T20:26:16.037813236Z 2025-11-16 20:26:16.037 UTC [448] STATEMENT: CREATE TABLE public.orders (
+2025-11-16T20:26:16.037816351Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.037819086Z items jsonb NOT NULL,
+2025-11-16T20:26:16.037821651Z amount_total integer NOT NULL,
+2025-11-16T20:26:16.037824376Z currency text DEFAULT 'RUB'::text NOT NULL,
+2025-11-16T20:26:16.037826961Z status public.order_status DEFAULT 'created'::public.order_status NOT NULL,
+2025-11-16T20:26:16.037831279Z email text NOT NULL,
+2025-11-16T20:26:16.037833864Z shipping_address jsonb,
+2025-11-16T20:26:16.037969651Z created_at timestamp without time zone DEFAULT now() NOT NULL,
+2025-11-16T20:26:16.037987836Z yookassa_payment_id text
+2025-11-16T20:26:16.037991393Z );
+2025-11-16T20:26:16.038095409Z 2025-11-16 20:26:16.038 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.038126368Z 2025-11-16 20:26:16.038 UTC [448] STATEMENT: ALTER TABLE public.orders OWNER TO neondb_owner;
+2025-11-16T20:26:16.038423750Z 2025-11-16 20:26:16.038 UTC [448] ERROR: relation "photos" already exists
+2025-11-16T20:26:16.038436194Z 2025-11-16 20:26:16.038 UTC [448] STATEMENT: CREATE TABLE public.photos (
+2025-11-16T20:26:16.038439730Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.038442426Z event_id character varying,
+2025-11-16T20:26:16.038444941Z title text,
+2025-11-16T20:26:16.038447556Z description text,
+2025-11-16T20:26:16.038450171Z url text NOT NULL,
+2025-11-16T20:26:16.038452626Z thumb_url text NOT NULL,
+2025-11-16T20:26:16.038455130Z status public.photo_status DEFAULT 'pending'::public.photo_status NOT NULL,
+2025-11-16T20:26:16.038457715Z created_at timestamp without time zone DEFAULT now() NOT NULL,
+2025-11-16T20:26:16.038460260Z admin_id character varying
+2025-11-16T20:26:16.038462785Z );
+2025-11-16T20:26:16.038735381Z 2025-11-16 20:26:16.038 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.038746121Z 2025-11-16 20:26:16.038 UTC [448] STATEMENT: ALTER TABLE public.photos OWNER TO neondb_owner;
+2025-11-16T20:26:16.039012565Z 2025-11-16 20:26:16.038 UTC [448] ERROR: relation "products" already exists
+2025-11-16T20:26:16.039019207Z 2025-11-16 20:26:16.038 UTC [448] STATEMENT: CREATE TABLE public.products (
+2025-11-16T20:26:16.039022244Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.039024959Z slug text NOT NULL,
+2025-11-16T20:26:16.039027434Z title text NOT NULL,
+2025-11-16T20:26:16.039029958Z description text NOT NULL,
+2025-11-16T20:26:16.039032593Z images text[] DEFAULT '{}'::text[] NOT NULL,
+2025-11-16T20:26:16.039035168Z category text NOT NULL,
+2025-11-16T20:26:16.039037643Z active boolean DEFAULT true NOT NULL,
+2025-11-16T20:26:16.039040168Z created_at timestamp without time zone DEFAULT now() NOT NULL,
+2025-11-16T20:26:16.039042722Z base_price integer
+2025-11-16T20:26:16.039045177Z );
+2025-11-16T20:26:16.039387244Z 2025-11-16 20:26:16.039 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.039393606Z 2025-11-16 20:26:16.039 UTC [448] STATEMENT: ALTER TABLE public.products OWNER TO neondb_owner;
+2025-11-16T20:26:16.039588745Z 2025-11-16 20:26:16.039 UTC [448] ERROR: relation "sessions" already exists
+2025-11-16T20:26:16.039604306Z 2025-11-16 20:26:16.039 UTC [448] STATEMENT: CREATE TABLE public.sessions (
+2025-11-16T20:26:16.039607341Z sid character varying NOT NULL,
+2025-11-16T20:26:16.039610006Z sess jsonb NOT NULL,
+2025-11-16T20:26:16.039612521Z expire timestamp without time zone NOT NULL
+2025-11-16T20:26:16.039615126Z );
+2025-11-16T20:26:16.039628631Z 2025-11-16 20:26:16.039 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.039631647Z 2025-11-16 20:26:16.039 UTC [448] STATEMENT: ALTER TABLE public.sessions OWNER TO neondb_owner;
+2025-11-16T20:26:16.046444792Z 2025-11-16 20:26:16.046 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.046460542Z 2025-11-16 20:26:16.046 UTC [448] STATEMENT: ALTER TABLE public.users OWNER TO neondb_owner;
+2025-11-16T20:26:16.046618361Z 2025-11-16 20:26:16.046 UTC [448] ERROR: relation "variants" already exists
+2025-11-16T20:26:16.046624893Z 2025-11-16 20:26:16.046 UTC [448] STATEMENT: CREATE TABLE public.variants (
+2025-11-16T20:26:16.046628109Z id character varying DEFAULT gen_random_uuid() NOT NULL,
+2025-11-16T20:26:16.046630844Z product_id character varying NOT NULL,
+2025-11-16T20:26:16.046633499Z size text,
+2025-11-16T20:26:16.046636074Z color text,
+2025-11-16T20:26:16.046638619Z sku text NOT NULL,
+2025-11-16T20:26:16.046641164Z stock integer DEFAULT 0 NOT NULL,
+2025-11-16T20:26:16.046644139Z price integer NOT NULL
+2025-11-16T20:26:16.046646794Z );
+2025-11-16T20:26:16.046910784Z 2025-11-16 20:26:16.046 UTC [448] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:26:16.046922967Z 2025-11-16 20:26:16.046 UTC [448] STATEMENT: ALTER TABLE public.variants OWNER TO neondb_owner;
+2025-11-16T20:26:16.047879547Z 2025-11-16 20:26:16.047 UTC [448] ERROR: duplicate key value violates unique constraint "about_settings_pkey"
+2025-11-16T20:26:16.047893725Z 2025-11-16 20:26:16.047 UTC [448] DETAIL: Key (id)=(singleton) already exists.
+2025-11-16T20:26:16.047898484Z 2025-11-16 20:26:16.047 UTC [448] CONTEXT: COPY about_settings, line 1
+2025-11-16T20:26:16.047902291Z 2025-11-16 20:26:16.047 UTC [448] STATEMENT: COPY public.about_settings (id, hero_title, hero_text_1, hero_text_2, hero_text_3, stats_members, stats_members_label, stats_bars, stats_bars_label, stats_runs, stats_runs_label, stats_distance, stats_distance_label, rule_1_title, rule_1_text, rule_2_title, rule_2_text, rule_3_title, rule_3_text, rule_4_title, rule_4_text, updated_at, hero_image_url) FROM stdin;
+2025-11-16T20:26:16.050969276Z 2025-11-16 20:26:16.050 UTC [448] ERROR: insert or update on table "event_routes" violates foreign key constraint "event_routes_event_id_events_id_fk"
+2025-11-16T20:26:16.050984695Z 2025-11-16 20:26:16.050 UTC [448] DETAIL: Key (event_id)=(301ae252-d0c9-4104-9a42-5dca92650a49) is not present in table "events".
+2025-11-16T20:26:16.050989524Z 2025-11-16 20:26:16.050 UTC [448] STATEMENT: COPY public.event_routes (id, event_id, name, distance_km, gpx_url, "order", created_at) FROM stdin;
+2025-11-16T20:26:16.052210094Z 2025-11-16 20:26:16.052 UTC [448] ERROR: insert or update on table "events" violates foreign key constraint "events_location_id_locations_id_fk"
+2025-11-16T20:26:16.052225393Z 2025-11-16 20:26:16.052 UTC [448] DETAIL: Key (location_id)=(b0a092ed-056a-439a-a162-a5d6a87d0908) is not present in table "locations".
+2025-11-16T20:26:16.052229541Z 2025-11-16 20:26:16.052 UTC [448] STATEMENT: COPY public.events (id, slug, title, description, starts_at, ends_at, latitude, longitude, address, distance_km, gpx_url, polyline, cover_image_url, status, tags, created_at, event_type, location_id) FROM stdin;
+2025-11-16T20:26:16.052967507Z 2025-11-16 20:26:16.052 UTC [448] ERROR: duplicate key value violates unique constraint "home_settings_pkey"
+2025-11-16T20:26:16.053000600Z 2025-11-16 20:26:16.052 UTC [448] DETAIL: Key (id)=(singleton) already exists.
+2025-11-16T20:26:16.053005950Z 2025-11-16 20:26:16.052 UTC [448] CONTEXT: COPY home_settings, line 1
+2025-11-16T20:26:16.053009848Z 2025-11-16 20:26:16.052 UTC [448] STATEMENT: COPY public.home_settings (id, hero_image_url, hero_title, hero_subtitle, about_title, about_text_1, about_text_2, stats_participants, stats_cities, stats_runs, stats_kilometers, updated_at) FROM stdin;
+2025-11-16T20:26:16.057735272Z 2025-11-16 20:26:16.057 UTC [448] ERROR: multiple primary keys for table "about_settings" are not allowed
+2025-11-16T20:26:16.057748487Z 2025-11-16 20:26:16.057 UTC [448] STATEMENT: ALTER TABLE ONLY public.about_settings
+2025-11-16T20:26:16.057752324Z ADD CONSTRAINT about_settings_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.058092828Z 2025-11-16 20:26:16.057 UTC [448] ERROR: multiple primary keys for table "admins" are not allowed
+2025-11-16T20:26:16.058334786Z 2025-11-16 20:26:16.057 UTC [448] STATEMENT: ALTER TABLE ONLY public.admins
+2025-11-16T20:26:16.058340988Z ADD CONSTRAINT admins_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.060460059Z 2025-11-16 20:26:16.060 UTC [448] ERROR: multiple primary keys for table "event_routes" are not allowed
+2025-11-16T20:26:16.060473624Z 2025-11-16 20:26:16.060 UTC [448] STATEMENT: ALTER TABLE ONLY public.event_routes
+2025-11-16T20:26:16.060476750Z ADD CONSTRAINT event_routes_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.060789743Z 2025-11-16 20:26:16.060 UTC [448] ERROR: multiple primary keys for table "events" are not allowed
+2025-11-16T20:26:16.060800103Z 2025-11-16 20:26:16.060 UTC [448] STATEMENT: ALTER TABLE ONLY public.events
+2025-11-16T20:26:16.060804471Z ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.061278127Z 2025-11-16 20:26:16.060 UTC [448] ERROR: relation "events_slug_unique" already exists
+2025-11-16T20:26:16.061286022Z 2025-11-16 20:26:16.060 UTC [448] STATEMENT: ALTER TABLE ONLY public.events
+2025-11-16T20:26:16.061288977Z ADD CONSTRAINT events_slug_unique UNIQUE (slug);
+2025-11-16T20:26:16.061345124Z 2025-11-16 20:26:16.061 UTC [448] ERROR: multiple primary keys for table "home_settings" are not allowed
+2025-11-16T20:26:16.061359130Z 2025-11-16 20:26:16.061 UTC [448] STATEMENT: ALTER TABLE ONLY public.home_settings
+2025-11-16T20:26:16.061362055Z ADD CONSTRAINT home_settings_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.061788804Z 2025-11-16 20:26:16.061 UTC [448] ERROR: multiple primary keys for table "locations" are not allowed
+2025-11-16T20:26:16.061941723Z 2025-11-16 20:26:16.061 UTC [448] STATEMENT: ALTER TABLE ONLY public.locations
+2025-11-16T20:26:16.061948827Z ADD CONSTRAINT locations_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.064317190Z 2025-11-16 20:26:16.063 UTC [448] ERROR: multiple primary keys for table "orders" are not allowed
+2025-11-16T20:26:16.064332208Z 2025-11-16 20:26:16.063 UTC [448] STATEMENT: ALTER TABLE ONLY public.orders
+2025-11-16T20:26:16.064337027Z ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.065981569Z 2025-11-16 20:26:16.065 UTC [448] ERROR: multiple primary keys for table "photos" are not allowed
+2025-11-16T20:26:16.065996607Z 2025-11-16 20:26:16.065 UTC [448] STATEMENT: ALTER TABLE ONLY public.photos
+2025-11-16T20:26:16.066001668Z ADD CONSTRAINT photos_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.066533083Z 2025-11-16 20:26:16.066 UTC [448] ERROR: multiple primary keys for table "products" are not allowed
+2025-11-16T20:26:16.066543202Z 2025-11-16 20:26:16.066 UTC [448] STATEMENT: ALTER TABLE ONLY public.products
+2025-11-16T20:26:16.066547601Z ADD CONSTRAINT products_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.066626169Z 2025-11-16 20:26:16.066 UTC [448] ERROR: relation "products_slug_unique" already exists
+2025-11-16T20:26:16.066633503Z 2025-11-16 20:26:16.066 UTC [448] STATEMENT: ALTER TABLE ONLY public.products
+2025-11-16T20:26:16.066637240Z ADD CONSTRAINT products_slug_unique UNIQUE (slug);
+2025-11-16T20:26:16.066938962Z 2025-11-16 20:26:16.066 UTC [448] ERROR: multiple primary keys for table "sessions" are not allowed
+2025-11-16T20:26:16.066952477Z 2025-11-16 20:26:16.066 UTC [448] STATEMENT: ALTER TABLE ONLY public.sessions
+2025-11-16T20:26:16.066956595Z ADD CONSTRAINT sessions_pkey PRIMARY KEY (sid);
+2025-11-16T20:26:16.070237915Z 2025-11-16 20:26:16.069 UTC [448] ERROR: multiple primary keys for table "variants" are not allowed
+2025-11-16T20:26:16.070252252Z 2025-11-16 20:26:16.069 UTC [448] STATEMENT: ALTER TABLE ONLY public.variants
+2025-11-16T20:26:16.070256811Z ADD CONSTRAINT variants_pkey PRIMARY KEY (id);
+2025-11-16T20:26:16.070664392Z 2025-11-16 20:26:16.070 UTC [448] ERROR: relation "variants_sku_unique" already exists
+2025-11-16T20:26:16.070694219Z 2025-11-16 20:26:16.070 UTC [448] STATEMENT: ALTER TABLE ONLY public.variants
+2025-11-16T20:26:16.070699259Z ADD CONSTRAINT variants_sku_unique UNIQUE (sku);
+2025-11-16T20:26:16.070976573Z 2025-11-16 20:26:16.070 UTC [448] ERROR: relation "IDX_session_expire" already exists
+2025-11-16T20:26:16.070984769Z 2025-11-16 20:26:16.070 UTC [448] STATEMENT: CREATE INDEX "IDX_session_expire" ON public.sessions USING btree (expire);
+2025-11-16T20:26:16.074972437Z 2025-11-16 20:26:16.074 UTC [448] ERROR: constraint "photos_event_id_events_id_fk" for relation "photos" already exists
+2025-11-16T20:26:16.074995730Z 2025-11-16 20:26:16.074 UTC [448] STATEMENT: ALTER TABLE ONLY public.photos
+2025-11-16T20:26:16.075001030Z ADD CONSTRAINT photos_event_id_events_id_fk FOREIGN KEY (event_id) REFERENCES public.events(id) ON DELETE SET NULL;
+2025-11-16T20:26:16.075363566Z 2025-11-16 20:26:16.075 UTC [448] ERROR: constraint "variants_product_id_products_id_fk" for relation "variants" already exists
+2025-11-16T20:26:16.075373054Z 2025-11-16 20:26:16.075 UTC [448] STATEMENT: ALTER TABLE ONLY public.variants
+2025-11-16T20:26:16.075377122Z ADD CONSTRAINT variants_product_id_products_id_fk FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE;
+2025-11-16T20:26:16.075571190Z 2025-11-16 20:26:16.075 UTC [448] ERROR: role "neon_superuser" does not exist
+2025-11-16T20:26:16.075580156Z 2025-11-16 20:26:16.075 UTC [448] STATEMENT: ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO neon_superuser WITH GRANT OPTION;
+2025-11-16T20:26:16.075892467Z 2025-11-16 20:26:16.075 UTC [448] ERROR: role "neon_superuser" does not exist
+2025-11-16T20:26:16.075909510Z 2025-11-16 20:26:16.075 UTC [448] STATEMENT: ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON TABLES TO neon_superuser WITH GRANT OPTION;
+2025-11-16T20:31:03.501061662Z 2025-11-16 20:31:03.500 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.501234880Z 2025-11-16 20:31:03.500 UTC [472] STATEMENT: ALTER TYPE public.event_status OWNER TO neondb_owner;
+2025-11-16T20:31:03.502002785Z 2025-11-16 20:31:03.501 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.502018715Z 2025-11-16 20:31:03.501 UTC [472] STATEMENT: ALTER TYPE public.event_type OWNER TO neondb_owner;
+2025-11-16T20:31:03.502367556Z 2025-11-16 20:31:03.502 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.502378637Z 2025-11-16 20:31:03.502 UTC [472] STATEMENT: ALTER TYPE public.order_status OWNER TO neondb_owner;
+2025-11-16T20:31:03.502810986Z 2025-11-16 20:31:03.502 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.502882612Z 2025-11-16 20:31:03.502 UTC [472] STATEMENT: ALTER TYPE public.photo_status OWNER TO neondb_owner;
+2025-11-16T20:31:03.503785923Z 2025-11-16 20:31:03.503 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.503799228Z 2025-11-16 20:31:03.503 UTC [472] STATEMENT: ALTER TYPE public.role OWNER TO neondb_owner;
+2025-11-16T20:31:03.510816563Z 2025-11-16 20:31:03.510 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.510856999Z 2025-11-16 20:31:03.510 UTC [472] STATEMENT: ALTER TABLE public.about_settings OWNER TO neondb_owner;
+2025-11-16T20:31:03.513350543Z 2025-11-16 20:31:03.512 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.513411669Z 2025-11-16 20:31:03.512 UTC [472] STATEMENT: ALTER TABLE public.admins OWNER TO neondb_owner;
+2025-11-16T20:31:03.515381461Z 2025-11-16 20:31:03.514 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.515397861Z 2025-11-16 20:31:03.514 UTC [472] STATEMENT: ALTER TABLE public.event_routes OWNER TO neondb_owner;
+2025-11-16T20:31:03.517438968Z 2025-11-16 20:31:03.517 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.517611956Z 2025-11-16 20:31:03.517 UTC [472] STATEMENT: ALTER TABLE public.events OWNER TO neondb_owner;
+2025-11-16T20:31:03.520305780Z 2025-11-16 20:31:03.520 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.520322080Z 2025-11-16 20:31:03.520 UTC [472] STATEMENT: ALTER TABLE public.home_settings OWNER TO neondb_owner;
+2025-11-16T20:31:03.522345304Z 2025-11-16 20:31:03.522 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.522359631Z 2025-11-16 20:31:03.522 UTC [472] STATEMENT: ALTER TABLE public.locations OWNER TO neondb_owner;
+2025-11-16T20:31:03.524475699Z 2025-11-16 20:31:03.524 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.524489295Z 2025-11-16 20:31:03.524 UTC [472] STATEMENT: ALTER TABLE public.orders OWNER TO neondb_owner;
+2025-11-16T20:31:03.526759065Z 2025-11-16 20:31:03.526 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.526771890Z 2025-11-16 20:31:03.526 UTC [472] STATEMENT: ALTER TABLE public.photos OWNER TO neondb_owner;
+2025-11-16T20:31:03.528778611Z 2025-11-16 20:31:03.528 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.528895562Z 2025-11-16 20:31:03.528 UTC [472] STATEMENT: ALTER TABLE public.products OWNER TO neondb_owner;
+2025-11-16T20:31:03.530531813Z 2025-11-16 20:31:03.530 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.530543345Z 2025-11-16 20:31:03.530 UTC [472] STATEMENT: ALTER TABLE public.sessions OWNER TO neondb_owner;
+2025-11-16T20:31:03.532830537Z 2025-11-16 20:31:03.532 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.532843793Z 2025-11-16 20:31:03.532 UTC [472] STATEMENT: ALTER TABLE public.users OWNER TO neondb_owner;
+2025-11-16T20:31:03.534946857Z 2025-11-16 20:31:03.534 UTC [472] ERROR: role "neondb_owner" does not exist
+2025-11-16T20:31:03.535003845Z 2025-11-16 20:31:03.534 UTC [472] STATEMENT: ALTER TABLE public.variants OWNER TO neondb_owner;
+2025-11-16T20:31:03.571915513Z 2025-11-16 20:31:03.571 UTC [472] ERROR: role "neon_superuser" does not exist
+2025-11-16T20:31:03.572429907Z 2025-11-16 20:31:03.571 UTC [472] STATEMENT: ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO neon_superuser WITH GRANT OPTION;
+2025-11-16T20:31:03.572440617Z 2025-11-16 20:31:03.571 UTC [472] ERROR: role "neon_superuser" does not exist
+2025-11-16T20:31:03.572444244Z 2025-11-16 20:31:03.571 UTC [472] STATEMENT: ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON TABLES TO neon_superuser WITH GRANT OPTION;
+2025-11-26T11:37:18.382911435Z 2025-11-26 11:37:18.382 UTC [28435] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:37:18.383520627Z 2025-11-26 11:37:18.382 UTC [28435] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:37:30.032787946Z 2025-11-26 11:37:30.032 UTC [28436] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:37:30.032844112Z 2025-11-26 11:37:30.032 UTC [28436] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:37:36.517743548Z 2025-11-26 11:37:36.517 UTC [28438] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:37:36.517779034Z 2025-11-26 11:37:36.517 UTC [28438] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:37:42.893340626Z 2025-11-26 11:37:42.893 UTC [28439] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:37:42.893372125Z 2025-11-26 11:37:42.893 UTC [28439] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:37:49.664216305Z 2025-11-26 11:37:49.663 UTC [28440] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:37:49.664261932Z 2025-11-26 11:37:49.663 UTC [28440] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:37:56.102085903Z 2025-11-26 11:37:56.101 UTC [28441] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:37:56.102125548Z 2025-11-26 11:37:56.101 UTC [28441] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:02.693243969Z 2025-11-26 11:38:02.693 UTC [28442] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:02.693303792Z 2025-11-26 11:38:02.693 UTC [28442] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:09.111035308Z 2025-11-26 11:38:09.110 UTC [28444] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:09.111109288Z 2025-11-26 11:38:09.110 UTC [28444] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:15.602243558Z 2025-11-26 11:38:15.602 UTC [28445] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:15.602296078Z 2025-11-26 11:38:15.602 UTC [28445] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:22.016054976Z 2025-11-26 11:38:22.015 UTC [28446] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:22.016116373Z 2025-11-26 11:38:22.015 UTC [28446] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:28.459109619Z 2025-11-26 11:38:28.458 UTC [28447] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:28.459142161Z 2025-11-26 11:38:28.458 UTC [28447] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:34.879729450Z 2025-11-26 11:38:34.879 UTC [28448] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:34.879794674Z 2025-11-26 11:38:34.879 UTC [28448] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:41.289303976Z 2025-11-26 11:38:41.289 UTC [28450] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:41.289338452Z 2025-11-26 11:38:41.289 UTC [28450] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:47.664735811Z 2025-11-26 11:38:47.664 UTC [28451] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:47.664849315Z 2025-11-26 11:38:47.664 UTC [28451] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:38:54.174996204Z 2025-11-26 11:38:54.174 UTC [28452] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:38:54.175071166Z 2025-11-26 11:38:54.174 UTC [28452] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:00.911867228Z 2025-11-26 11:39:00.911 UTC [28453] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:00.911974170Z 2025-11-26 11:39:00.911 UTC [28453] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:07.348372139Z 2025-11-26 11:39:07.348 UTC [28455] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:07.348425470Z 2025-11-26 11:39:07.348 UTC [28455] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:13.830974225Z 2025-11-26 11:39:13.830 UTC [28456] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:13.831053195Z 2025-11-26 11:39:13.830 UTC [28456] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:20.198246179Z 2025-11-26 11:39:20.198 UTC [28457] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:20.198295282Z 2025-11-26 11:39:20.198 UTC [28457] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:26.678905311Z 2025-11-26 11:39:26.678 UTC [28458] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:26.678962529Z 2025-11-26 11:39:26.678 UTC [28458] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:33.221136836Z 2025-11-26 11:39:33.220 UTC [28459] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:33.221213080Z 2025-11-26 11:39:33.220 UTC [28459] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:39.695150665Z 2025-11-26 11:39:39.694 UTC [28461] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:39.695192283Z 2025-11-26 11:39:39.694 UTC [28461] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:46.100875921Z 2025-11-26 11:39:46.100 UTC [28462] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:46.100925895Z 2025-11-26 11:39:46.100 UTC [28462] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:52.538279811Z 2025-11-26 11:39:52.538 UTC [28463] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:52.538355343Z 2025-11-26 11:39:52.538 UTC [28463] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:39:59.078733074Z 2025-11-26 11:39:59.078 UTC [28464] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:39:59.078783769Z 2025-11-26 11:39:59.078 UTC [28464] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:05.579417468Z 2025-11-26 11:40:05.579 UTC [28465] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:05.579478614Z 2025-11-26 11:40:05.579 UTC [28465] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:11.980062885Z 2025-11-26 11:40:11.979 UTC [28467] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:11.980139650Z 2025-11-26 11:40:11.979 UTC [28467] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:18.491966125Z 2025-11-26 11:40:18.491 UTC [28468] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:18.492022461Z 2025-11-26 11:40:18.491 UTC [28468] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:24.946770124Z 2025-11-26 11:40:24.946 UTC [28469] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:24.946822784Z 2025-11-26 11:40:24.946 UTC [28469] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:31.462490904Z 2025-11-26 11:40:31.462 UTC [28470] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:31.462583149Z 2025-11-26 11:40:31.462 UTC [28470] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:38.044695027Z 2025-11-26 11:40:38.044 UTC [28472] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:38.044735424Z 2025-11-26 11:40:38.044 UTC [28472] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:44.474254756Z 2025-11-26 11:40:44.474 UTC [28473] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:44.474290314Z 2025-11-26 11:40:44.474 UTC [28473] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:50.905219799Z 2025-11-26 11:40:50.904 UTC [28474] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:50.905265355Z 2025-11-26 11:40:50.904 UTC [28474] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:40:57.270246020Z 2025-11-26 11:40:57.270 UTC [28475] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:40:57.270284633Z 2025-11-26 11:40:57.270 UTC [28475] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:03.661516186Z 2025-11-26 11:41:03.661 UTC [28476] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:03.661577933Z 2025-11-26 11:41:03.661 UTC [28476] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:10.230394232Z 2025-11-26 11:41:10.230 UTC [28478] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:10.230423337Z 2025-11-26 11:41:10.230 UTC [28478] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:16.651198755Z 2025-11-26 11:41:16.651 UTC [28479] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:16.651230023Z 2025-11-26 11:41:16.651 UTC [28479] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:22.998637796Z 2025-11-26 11:41:22.998 UTC [28480] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:22.998694894Z 2025-11-26 11:41:22.998 UTC [28480] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:29.347764652Z 2025-11-26 11:41:29.347 UTC [28481] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:29.347827531Z 2025-11-26 11:41:29.347 UTC [28481] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:35.787409511Z 2025-11-26 11:41:35.787 UTC [28482] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:35.787446070Z 2025-11-26 11:41:35.787 UTC [28482] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:42.267862382Z 2025-11-26 11:41:42.267 UTC [28484] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:42.267902337Z 2025-11-26 11:41:42.267 UTC [28484] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:48.706744638Z 2025-11-26 11:41:48.706 UTC [28485] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:48.706781968Z 2025-11-26 11:41:48.706 UTC [28485] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:41:55.217460686Z 2025-11-26 11:41:55.217 UTC [28486] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:41:55.217547100Z 2025-11-26 11:41:55.217 UTC [28486] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:01.832925959Z 2025-11-26 11:42:01.831 UTC [28487] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:01.833008144Z 2025-11-26 11:42:01.831 UTC [28487] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:08.451992706Z 2025-11-26 11:42:08.451 UTC [28489] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:08.452053130Z 2025-11-26 11:42:08.451 UTC [28489] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:14.953928568Z 2025-11-26 11:42:14.953 UTC [28490] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:14.953973434Z 2025-11-26 11:42:14.953 UTC [28490] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:21.443604532Z 2025-11-26 11:42:21.443 UTC [28491] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:21.443687990Z 2025-11-26 11:42:21.443 UTC [28491] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:27.922276821Z 2025-11-26 11:42:27.922 UTC [28492] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:27.922392360Z 2025-11-26 11:42:27.922 UTC [28492] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:34.316840411Z 2025-11-26 11:42:34.316 UTC [28493] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:34.316873474Z 2025-11-26 11:42:34.316 UTC [28493] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:40.826248927Z 2025-11-26 11:42:40.826 UTC [28495] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:40.826287790Z 2025-11-26 11:42:40.826 UTC [28495] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:47.347174449Z 2025-11-26 11:42:47.346 UTC [28496] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:47.347244381Z 2025-11-26 11:42:47.346 UTC [28496] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:42:53.792789467Z 2025-11-26 11:42:53.792 UTC [28497] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:42:53.792874568Z 2025-11-26 11:42:53.792 UTC [28497] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:00.230978106Z 2025-11-26 11:43:00.230 UTC [28498] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:00.231021949Z 2025-11-26 11:43:00.230 UTC [28498] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:06.658067085Z 2025-11-26 11:43:06.657 UTC [28499] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:06.658102342Z 2025-11-26 11:43:06.657 UTC [28499] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:13.166358505Z 2025-11-26 11:43:13.166 UTC [28501] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:13.166394753Z 2025-11-26 11:43:13.166 UTC [28501] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:19.625430773Z 2025-11-26 11:43:19.625 UTC [28502] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:19.625479155Z 2025-11-26 11:43:19.625 UTC [28502] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:26.090002511Z 2025-11-26 11:43:26.089 UTC [28503] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:26.090078766Z 2025-11-26 11:43:26.089 UTC [28503] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:32.619950190Z 2025-11-26 11:43:32.619 UTC [28504] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:32.620019713Z 2025-11-26 11:43:32.619 UTC [28504] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:39.139041539Z 2025-11-26 11:43:39.138 UTC [28506] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:39.139105269Z 2025-11-26 11:43:39.138 UTC [28506] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:45.596206762Z 2025-11-26 11:43:45.595 UTC [28507] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:45.596257979Z 2025-11-26 11:43:45.595 UTC [28507] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:52.029549857Z 2025-11-26 11:43:52.029 UTC [28508] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:52.029601394Z 2025-11-26 11:43:52.029 UTC [28508] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:43:58.398623519Z 2025-11-26 11:43:58.398 UTC [28509] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:43:58.398662524Z 2025-11-26 11:43:58.398 UTC [28509] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:04.785092856Z 2025-11-26 11:44:04.784 UTC [28510] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:04.785137300Z 2025-11-26 11:44:04.784 UTC [28510] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:11.331300356Z 2025-11-26 11:44:11.331 UTC [28512] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:11.331339500Z 2025-11-26 11:44:11.331 UTC [28512] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:17.820330182Z 2025-11-26 11:44:17.820 UTC [28513] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:17.820364497Z 2025-11-26 11:44:17.820 UTC [28513] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:24.432146414Z 2025-11-26 11:44:24.431 UTC [28514] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:24.432254569Z 2025-11-26 11:44:24.431 UTC [28514] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:30.945215712Z 2025-11-26 11:44:30.944 UTC [28515] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:30.945249326Z 2025-11-26 11:44:30.944 UTC [28515] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:37.403744073Z 2025-11-26 11:44:37.403 UTC [28517] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:37.403807933Z 2025-11-26 11:44:37.403 UTC [28517] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:43.874121518Z 2025-11-26 11:44:43.873 UTC [28518] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:43.874206349Z 2025-11-26 11:44:43.873 UTC [28518] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:50.313132997Z 2025-11-26 11:44:50.312 UTC [28519] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:50.313173685Z 2025-11-26 11:44:50.312 UTC [28519] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:44:56.837943173Z 2025-11-26 11:44:56.837 UTC [28520] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:44:56.838027323Z 2025-11-26 11:44:56.837 UTC [28520] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:03.371090220Z 2025-11-26 11:45:03.370 UTC [28521] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:03.371170512Z 2025-11-26 11:45:03.370 UTC [28521] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:09.879649803Z 2025-11-26 11:45:09.879 UTC [28523] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:09.879741076Z 2025-11-26 11:45:09.879 UTC [28523] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:16.231446734Z 2025-11-26 11:45:16.231 UTC [28524] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:16.231501147Z 2025-11-26 11:45:16.231 UTC [28524] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:22.717745399Z 2025-11-26 11:45:22.715 UTC [28525] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:22.717779804Z 2025-11-26 11:45:22.715 UTC [28525] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:29.204876021Z 2025-11-26 11:45:29.204 UTC [28526] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:29.204907541Z 2025-11-26 11:45:29.204 UTC [28526] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:35.674315028Z 2025-11-26 11:45:35.674 UTC [28527] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:35.674352719Z 2025-11-26 11:45:35.674 UTC [28527] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:42.159820209Z 2025-11-26 11:45:42.159 UTC [28529] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:42.159877327Z 2025-11-26 11:45:42.159 UTC [28529] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:48.630194748Z 2025-11-26 11:45:48.629 UTC [28530] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:48.630247789Z 2025-11-26 11:45:48.629 UTC [28530] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:45:54.983092267Z 2025-11-26 11:45:54.982 UTC [28531] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:45:54.983128977Z 2025-11-26 11:45:54.982 UTC [28531] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:46:01.624056233Z 2025-11-26 11:46:01.623 UTC [28532] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:46:01.624086741Z 2025-11-26 11:46:01.623 UTC [28532] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:46:08.026326359Z 2025-11-26 11:46:08.026 UTC [28534] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:46:08.026380061Z 2025-11-26 11:46:08.026 UTC [28534] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:46:14.489740326Z 2025-11-26 11:46:14.489 UTC [28535] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:46:14.489776675Z 2025-11-26 11:46:14.489 UTC [28535] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:46:20.879867121Z 2025-11-26 11:46:20.877 UTC [28536] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:46:20.879935641Z 2025-11-26 11:46:20.877 UTC [28536] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:46:27.401185621Z 2025-11-26 11:46:27.400 UTC [28537] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:46:27.401274268Z 2025-11-26 11:46:27.400 UTC [28537] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+2025-11-26T11:46:33.940451371Z 2025-11-26 11:46:33.940 UTC [28538] ERROR: relation "page_settings" does not exist at character 126
+2025-11-26T11:46:33.940519380Z 2025-11-26 11:46:33.940 UTC [28538] STATEMENT: select "id", "page_key", "title", "description", "keywords", "og_title", "og_description", "og_image_url", "updated_at" from "page_settings" where "page_settings"."page_key" = $1 limit $2
+

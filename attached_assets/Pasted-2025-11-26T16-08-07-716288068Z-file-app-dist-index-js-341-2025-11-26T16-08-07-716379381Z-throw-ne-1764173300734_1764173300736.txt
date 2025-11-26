@@ -1,0 +1,45 @@
+2025-11-26T16:08:07.716288068Z file:///app/dist/index.js:341
+2025-11-26T16:08:07.716379381Z throw new Error("DATABASE_URL environment variable is not set");
+2025-11-26T16:08:07.716385052Z ^
+2025-11-26T16:08:07.716388088Z
+2025-11-26T16:08:07.716390873Z Error: DATABASE_URL environment variable is not set
+2025-11-26T16:08:07.716394470Z at server/db.ts (file:///app/dist/index.js:341:13)
+2025-11-26T16:08:07.716402315Z at __init (file:///app/dist/index.js:4:56)
+2025-11-26T16:08:07.716406192Z at server/storage.ts (file:///app/dist/index.js:363:5)
+2025-11-26T16:08:07.716409999Z at __init (file:///app/dist/index.js:4:56)
+2025-11-26T16:08:07.716413987Z at file:///app/dist/index.js:1153:1
+2025-11-26T16:08:07.716417974Z at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2025-11-26T16:08:07.716421300Z at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2025-11-26T16:08:07.716423895Z at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+2025-11-26T16:08:07.716426470Z
+2025-11-26T16:08:07.716429005Z Node.js v20.19.5
+2025-11-26T16:08:12.443466145Z file:///app/dist/index.js:341
+2025-11-26T16:08:12.443525307Z throw new Error("DATABASE_URL environment variable is not set");
+2025-11-26T16:08:12.443529685Z ^
+2025-11-26T16:08:12.443532530Z
+2025-11-26T16:08:12.443535406Z Error: DATABASE_URL environment variable is not set
+2025-11-26T16:08:12.443538141Z at server/db.ts (file:///app/dist/index.js:341:13)
+2025-11-26T16:08:12.443540836Z at __init (file:///app/dist/index.js:4:56)
+2025-11-26T16:08:12.443543401Z at server/storage.ts (file:///app/dist/index.js:363:5)
+2025-11-26T16:08:12.443546136Z at __init (file:///app/dist/index.js:4:56)
+2025-11-26T16:08:12.443548791Z at file:///app/dist/index.js:1153:1
+2025-11-26T16:08:12.443551406Z at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2025-11-26T16:08:12.443554121Z at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2025-11-26T16:08:12.443556766Z at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+2025-11-26T16:08:12.443559472Z
+2025-11-26T16:08:12.443561957Z Node.js v20.19.5
+2025-11-26T16:08:14.081237870Z file:///app/dist/index.js:341
+2025-11-26T16:08:14.081321958Z throw new Error("DATABASE_URL environment variable is not set");
+2025-11-26T16:08:14.081327460Z ^
+2025-11-26T16:08:14.081348760Z
+2025-11-26T16:08:14.081352366Z Error: DATABASE_URL environment variable is not set
+2025-11-26T16:08:14.081355833Z at server/db.ts (file:///app/dist/index.js:341:13)
+2025-11-26T16:08:14.081359650Z at __init (file:///app/dist/index.js:4:56)
+2025-11-26T16:08:14.081363207Z at server/storage.ts (file:///app/dist/index.js:363:5)
+2025-11-26T16:08:14.081366954Z at __init (file:///app/dist/index.js:4:56)
+2025-11-26T16:08:14.081370090Z at file:///app/dist/index.js:1153:1
+2025-11-26T16:08:14.081373807Z at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2025-11-26T16:08:14.081377264Z at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2025-11-26T16:08:14.081380670Z at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+2025-11-26T16:08:14.081384357Z
+2025-11-26T16:08:14.081387674Z Node.js v20.19.5

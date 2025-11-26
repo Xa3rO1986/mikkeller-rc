@@ -99,9 +99,35 @@ app.use((req, res, next) => {
 
   // Initialize settings with default values BEFORE registering routes
   const { storage } = await import("./storage");
-  await storage.initializeHomeSettings();
-  await storage.initializeAboutSettings();
-  await storage.initializePageSettings();
+  try {
+    await storage.initializeHomeSettings();
+  } catch (err: any) {
+    if (err.message?.includes("does not exist")) {
+      log("⚠️  home_settings table not found - skipping initialization");
+    } else {
+      log(`Error initializing home settings: ${err.message}`);
+    }
+  }
+  
+  try {
+    await storage.initializeAboutSettings();
+  } catch (err: any) {
+    if (err.message?.includes("does not exist")) {
+      log("⚠️  about_settings table not found - skipping initialization");
+    } else {
+      log(`Error initializing about settings: ${err.message}`);
+    }
+  }
+  
+  try {
+    await storage.initializePageSettings();
+  } catch (err: any) {
+    if (err.message?.includes("does not exist")) {
+      log("⚠️  page_settings table not found - skipping initialization");
+    } else {
+      log(`Error initializing page settings: ${err.message}`);
+    }
+  }
 
   const server = await registerRoutes(app);
 

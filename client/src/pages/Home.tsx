@@ -90,7 +90,7 @@ export default function Home() {
     <>
       <SEO {...seoPages.home} ogImage={homeSettings?.heroImageUrl || seoPages.home.ogImage} />
       <div className="min-h-screen">
-      <section className="relative min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden max-w-[1920px] mx-auto">
         <div className="absolute inset-0">
           <img
             src={homeSettings?.heroImageUrl || heroImage}

@@ -1,4 +1,18 @@
 {
   "schemaVersion": 2,
-  "dockerfilePath": "./Dockerfile"
+  "dockerfilePath": "./Dockerfile",
+  "volumes": [
+    {
+      "hostPath": "/captain/data/mikkeller/photos",
+      "containerPath": "/app/server/uploads/photos"
+    },
+    {
+      "hostPath": "/captain/data/mikkeller/covers",
+      "containerPath": "/app/server/uploads/covers"
+    },
+    {
+      "hostPath": "/captain/data/mikkeller/gpx",
+      "containerPath": "/app/server/uploads/gpx"
+    }
+  ]
 }

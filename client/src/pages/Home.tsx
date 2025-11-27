@@ -24,6 +24,7 @@ interface EventWithRoutes extends Event {
 export default function Home() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [heroImageLoaded, setHeroImageLoaded] = useState(false);
 
   const { data: upcomingEvents = [], isLoading: eventsLoading } = useQuery<EventWithRoutes[]>({
     queryKey: ['/api/events?upcoming=true'],
@@ -93,13 +94,18 @@ export default function Home() {
       <section className="relative min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden max-w-[1920px] mx-auto">
         <div className="absolute inset-0">
           <img
-            src={homeSettings?.heroImageUrl || heroImage}
+            src={homeSettings?.heroImageUrl ? homeSettings.heroImageUrl : heroImage}
             alt="Mikkeller Running Club"
-            className="w-full h-full object-cover grayscale"
+            className={`w-full h-full object-cover grayscale transition-opacity duration-300 ${heroImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setHeroImageLoaded(true)}
             onError={(e) => {
               e.currentTarget.src = heroImage;
+              setHeroImageLoaded(true);
             }}
           />
+          {!heroImageLoaded && (
+            <div className="absolute inset-0 bg-black/50" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/30" />
         </div>
 
